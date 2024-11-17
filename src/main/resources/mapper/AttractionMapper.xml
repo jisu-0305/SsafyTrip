@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper file: 실행시킬 query를 가지고 있는 파일 -->
+
+<mapper namespace="com.trip.attraction.mapper.AttractionMapper">
+
+	<resultMap id="AttractionListResultMap" type="AttractionListDto">
+		<id property="contentId" column="content_id" />
+		<result property="no" column="no" />
+		<result property="title" column="title" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="firstImage1" column="first_image1" />
+	</resultMap>
+
+	<resultMap id="AttractionDetailResultMap" type="AttractionDetailDto">
+		<id property="contentId" column="content_id" />
+		<result property="no" column="no" />
+		<result property="title" column="title" />
+		<result property="contentTypeId" column="content_type_id" />
+		<result property="areaCode" column="area_code" />
+		<result property="siGunGuCode" column="si_gun_gu_code" />
+		<result property="firstImage1" column="first_image1" />
+		<result property="firstImage2" column="first_image2" />
+		<result property="mapLevel" column="map_level" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="tel" column="tel" />
+		<result property="addr1" column="addr1" />
+		<result property="addr2" column="addr2" />
+		<result property="homepage" column="homepage" />
+		<result property="overview" column="overview" />
+	</resultMap>
+	<!-- Attraction List 조회 -->
+	<select id="selectAllAttractions" parameterType="map" resultMap="AttractionListResultMap">
+		SELECT no, content_id, title, latitude, longitude, first_image1
+		FROM attractions
+		WHERE
+		(#{areaCode} IS NULL OR area_code = #{areaCode})
+		AND (#{sigunguCode} IS NULL OR si_gun_gu_code = #{sigunguCode})
+		AND (#{contentTypeId} IS NULL OR content_type_id = #{contentTypeId})
+		<if test="keyword != null and keyword != ''">
+			AND title LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		ORDER BY no ASC
+	</select>
+
+	<!-- Attraction Detail 조회 -->
+	<select id="selectAttractionById" parameterType="int" resultMap="AttractionDetailResultMap">
+		SELECT *
+		FROM attractions
+		WHERE content_id = #{contentId}
+	</select>
+
+</mapper>
+
+
+
+

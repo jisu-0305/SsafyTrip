@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.attraction.mapper.ContentTypeMapper">
+
+    <resultMap id="ContentTypeResultMap" type="com.trip.attraction.dto.ContentTypeDto">
+        <id property="contentTypeId" column="content_type_id" />
+        <result property="contentTypeName" column="content_type_name" />
+    </resultMap>
+
+    <select id="selectAllContentTypes" resultMap="ContentTypeResultMap">
+        SELECT content_type_id, content_type_name
+        FROM contenttypes
+    </select>
+
+</mapper>
