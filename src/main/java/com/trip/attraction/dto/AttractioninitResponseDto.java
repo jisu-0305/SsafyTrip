@@ -5,15 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractionListDto {
-	private int no;
-    private int contentId;
-    private String title;
-    private double latitude;
-    private double longitude;
-    private String firstImage1;
+public class AttractioninitResponseDto {
+    private List<SidoDto> sidoList;
+    private List<ContentTypeDto> contentTypeList;
+    private List<AttractionDto> attractList;
 }

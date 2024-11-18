@@ -6,7 +6,7 @@
 
 <mapper namespace="com.trip.attraction.mapper.AttractionMapper">
 
-	<resultMap id="AttractionListResultMap" type="AttractionListDto">
+	<resultMap id="AttractionResultMap" type="AttractionDto">
 		<id property="contentId" column="content_id" />
 		<result property="no" column="no" />
 		<result property="title" column="title" />
@@ -34,7 +34,7 @@
 		<result property="overview" column="overview" />
 	</resultMap>
 	<!-- Attraction List 조회 -->
-	<select id="selectAllAttractions" parameterType="map" resultMap="AttractionListResultMap">
+	<select id="selectAllAttractions" parameterType="map" resultMap="AttractionResultMap">
 		SELECT no, content_id, title, latitude, longitude, first_image1
 		FROM attractions
 		WHERE

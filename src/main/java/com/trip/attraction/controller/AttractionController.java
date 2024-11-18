@@ -1,6 +1,6 @@
 package com.trip.attraction.controller;
 
-import com.trip.attraction.dto.AttractionListDto;
+import com.trip.attraction.dto.AttractionDto;
 import com.trip.attraction.dto.AttractionDetailDto;
 import com.trip.attraction.dto.ContentTypeDto;
 import com.trip.attraction.dto.GuGunDto;
@@ -27,13 +27,13 @@ public class AttractionController {
 
     @GetMapping("/list")
     @Operation(summary = "관광지 정보 리스트 조회", description = "지역, 시/군/구, 관광지 유형, 키워드를 기준으로 관광지 정보를 검색합니다.")
-    public ResponseEntity<List<AttractionListDto>> getAttractionList(
+    public ResponseEntity<List<AttractionDto>> getAttractionList(
             @Parameter(description = "시도 코드", example = "1") @RequestParam(required = false) Integer sido,
             @Parameter(description = "시군구 코드", example = "1") @RequestParam(required = false) Integer sigun,
             @Parameter(description = "관광지 유형 코드", example = "12") @RequestParam(required = false) Integer type,
             @Parameter(description = "검색 키워드", example = "공원") @RequestParam(required = false) String word) {
 
-        List<AttractionListDto> attractions = attractionService.getAttractionList(sido, sigun, type, word);
+        List<AttractionDto> attractions = attractionService.getAttractionList(sido, sigun, type, word);
         return ResponseEntity.ok(attractions);
     }
 
