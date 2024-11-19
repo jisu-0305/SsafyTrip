@@ -30,8 +30,8 @@ public class AttractionServiceImpl implements AttractionService {
         response.setSidoList(sidoList);
         response.setContentTypeList(contentTypeList);
         response.setAttractList(attractList);
-        response.setTotalCount(totalCount); // 총 게시물 갯수 추가
-        response.setTotalPages(totalPages); // 총 페이지 수 추가
+        response.setTotalCount(totalCount);
+        response.setTotalPages(totalPages);
 
         return response;
     }
