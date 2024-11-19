@@ -85,6 +85,12 @@
 		SELECT COUNT(*)
 		FROM attractions
 	</select>
+
+	<update id="updateAttractionViews">
+		UPDATE attractions
+		SET views = views + 1
+		WHERE no = #{attractionId}
+	</update>
 </mapper>
 
 

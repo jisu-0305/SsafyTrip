@@ -19,16 +19,13 @@ public class AttractionServiceImpl implements AttractionService {
     public AttractionInitDataResponseDto getAttractionInitialData(int page, int size) {
         int offset = (page - 1) * size;
 
-        // 총 게시물 갯수 조회
         int totalCount = attractionMapper.countTotalAttractions();
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
-        // 각 Mapper에서 데이터 가져오기
         List<SidoDto> sidoList = sidoGunMapper.getSidoList();
         List<ContentTypeDto> contentTypeList = contentTypeMapper.selectAllContentTypes();
         List<AttractionDto> attractList = attractionMapper.getAttractions(offset, size);
 
-        // DTO 구성
         AttractionInitDataResponseDto response = new AttractionInitDataResponseDto();
         response.setSidoList(sidoList);
         response.setContentTypeList(contentTypeList);
@@ -43,14 +40,11 @@ public class AttractionServiceImpl implements AttractionService {
     public PagedAttractionResponseDto searchAttractions(Integer sidoCode, Integer gugunCode, Integer type, String word, int page, int size, String sortBy) {
         int offset = (page - 1) * size;
 
-        // 총 게시물 갯수 조회
         int totalCount = attractionMapper.countFilteredAttractions(sidoCode, gugunCode, type, word);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
-        // 조건에 맞는 관광지 데이터 조회
         List<AttractionDto> attractionList = attractionMapper.searchAttractions(sidoCode, gugunCode, type, word, offset, size, sortBy);
-
-        // DTO 구성
+        
         PagedAttractionResponseDto pagedAttractionResponseDto = new PagedAttractionResponseDto();
         pagedAttractionResponseDto.setAttractionList(attractionList);
         pagedAttractionResponseDto.setTotalCount(totalCount);
@@ -66,6 +60,7 @@ public class AttractionServiceImpl implements AttractionService {
 
     @Override
     public AttractionDetailDto getAttractionDetail(int attractionId) {
+        attractionMapper.updateAttractionViews(attractionId);
         return attractionMapper.getAttractionDetail(attractionId);
     }
 }

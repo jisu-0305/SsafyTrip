@@ -28,7 +28,7 @@ public class AttractionController {
         AttractionInitDataResponseDto response = attractionService.getAttractionInitialData(1, 5);
         return ResponseEntity.ok(response);
     }
-
+    
     @GetMapping("/search")
     @Operation(summary = "관광지 조건 검색", description = "지역, 시군구, 관광지 유형, 키워드, 페이지, 정렬 조건을 통해 관광지를 검색합니다.")
     public ResponseEntity<PagedAttractionResponseDto> searchAttractions(
