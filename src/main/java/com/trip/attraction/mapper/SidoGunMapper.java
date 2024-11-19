@@ -10,8 +10,6 @@ import java.util.List;
 
 @Mapper
 public interface SidoGunMapper {
-
-    List<SidoDto> selectAllSidos();
-
-    List<GuGunDto> selectGuGunsBySidoCode(@Param("sidoCode") int sidoCode);
+    List<SidoDto> getSidoList();
+    List<GuGunDto> getGuGunList(int sidoCode);
 }

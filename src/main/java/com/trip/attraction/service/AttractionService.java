@@ -1,21 +1,19 @@
 package com.trip.attraction.service;
 
-import com.trip.attraction.dto.AttractionListDto;
 import com.trip.attraction.dto.AttractionDetailDto;
-import com.trip.attraction.dto.ContentTypeDto;
+import com.trip.attraction.dto.AttractionInitDataResponseDto;
 import com.trip.attraction.dto.GuGunDto;
-import com.trip.attraction.dto.SidoDto;
+import com.trip.attraction.dto.PagedAttractionResponseDto;
 
 import java.util.List;
 
 public interface AttractionService {
-    List<AttractionListDto> getAttractionList(Integer areaCode, Integer sigunguCode, Integer contentTypeId, String keyword);
 
-    AttractionDetailDto getAttractionDetail(int contentId);
+    AttractionInitDataResponseDto getAttractionInitialData(int page, int size);
 
-    List<SidoDto> getSidosList();
+    PagedAttractionResponseDto searchAttractions(Integer sidoCode, Integer gugunCode, Integer type, String word, int page, int size, String sortBy);
 
     List<GuGunDto> getGuGunList(int sidoCode);
 
-    List<ContentTypeDto> getContentList();
+    AttractionDetailDto getAttractionDetail(int attractionId);
 }

@@ -13,5 +13,3 @@ public class SidoDto {
     private int sidoCode;
     private String sidoName;
 }
-
-

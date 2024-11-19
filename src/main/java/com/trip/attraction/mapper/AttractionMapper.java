@@ -1,7 +1,7 @@
 package com.trip.attraction.mapper;
 
 import com.trip.attraction.dto.AttractionDetailDto;
-import com.trip.attraction.dto.AttractionListDto;
+import com.trip.attraction.dto.AttractionDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,12 +9,30 @@ import java.util.List;
 
 @Mapper
 public interface AttractionMapper {
-    List<AttractionListDto> selectAllAttractions(
-            @Param("areaCode") Integer areaCode,
-            @Param("sigunguCode") Integer sigunguCode,
-            @Param("contentTypeId") Integer contentTypeId,
-            @Param("keyword") String keyword
+    List<AttractionDto> getAttractions(int offset, int size);
+    AttractionDetailDto getAttractionDetail(int attractionId);
+
+    // 조건에 맞는 관광지 리스트 조회
+    List<AttractionDto> searchAttractions(
+            @Param("sidoCode") Integer sidoCode,
+            @Param("gugunCode") Integer gugunCode,
+            @Param("type") Integer type,
+            @Param("word") String word,
+            @Param("offset") int offset,
+            @Param("limit") int limit,
+            @Param("sortBy") String sortBy
     );
 
-    AttractionDetailDto selectAttractionById(@Param("contentId") int contentId); // 추가된 메서드
+    // 조건에 맞는 관광지의 총 갯수 조회
+    int countFilteredAttractions(
+            @Param("sidoCode") Integer sidoCode,
+            @Param("gugunCode") Integer gugunCode,
+            @Param("type") Integer type,
+            @Param("word") String word
+    );
+
+    int countTotalAttractions();
+
+    void updateAttractionViews(@Param("attractionId") int attractionId);
 }
+
