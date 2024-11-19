@@ -11,8 +11,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractioninitResponseDto {
+public class AttractionInitDataResponseDto {
     private List<SidoDto> sidoList;
     private List<ContentTypeDto> contentTypeList;
     private List<AttractionDto> attractList;
+    private int totalCount;
+    private int totalPages;
 }

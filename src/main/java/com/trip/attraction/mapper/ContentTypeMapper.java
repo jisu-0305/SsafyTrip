@@ -8,5 +8,5 @@ import java.util.List;
 
 @Mapper
 public interface ContentTypeMapper {
-    List<ContentTypeDto> selectAllContentTypes(); // ContentType 테이블 조회 쿼리
+    List<ContentTypeDto> selectAllContentTypes();
 }

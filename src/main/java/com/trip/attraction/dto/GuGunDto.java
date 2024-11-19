@@ -12,5 +12,4 @@ import lombok.Setter;
 public class GuGunDto {
     private int gugunCode;
     private String gugunName;
-    private int sidoCode;
 }

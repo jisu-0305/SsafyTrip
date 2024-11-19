@@ -4,15 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.trip.attraction.mapper.ContentTypeMapper">
-
-    <resultMap id="ContentTypeResultMap" type="com.trip.attraction.dto.ContentTypeDto">
-        <id property="contentTypeId" column="content_type_id" />
-        <result property="contentTypeName" column="content_type_name" />
-    </resultMap>
-
-    <select id="selectAllContentTypes" resultMap="ContentTypeResultMap">
-        SELECT content_type_id, content_type_name
+    <select id="selectAllContentTypes" resultType="ContentTypeDto">
+        SELECT
+            content_type_id AS contentTypeId,
+            content_type_name AS contentTypeName
         FROM contenttypes
     </select>
-
 </mapper>

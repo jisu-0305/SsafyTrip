@@ -5,14 +5,14 @@
 
 <mapper namespace="com.trip.attraction.mapper.SidoGunMapper">
     <!-- 모든 시도 목록 조회 -->
-    <select id="selectAllSidos" resultType="SidoDto">
+    <select id="getSidoList" resultType="SidoDto">
         SELECT sido_code AS sidoCode,
                sido_name AS sidoName
         FROM sidos
     </select>
 
     <!-- 특정 시도에 속하는 시군구 목록 조회 -->
-    <select id="selectGuGunsBySidoCode" parameterType="int" resultType="GuGunDto">
+    <select id="getGuGunList" parameterType="int" resultType="GuGunDto">
         SELECT gugun_code AS gugunCode,
                gugun_name AS gugunName,
                sido_code AS sidoCode
