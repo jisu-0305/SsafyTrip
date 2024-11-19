@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.notice.mapper.NoticeMapper">
+
+    <!-- 공통 ResultMap 정의 -->
+    <resultMap id="NoticeResultMap" type="Notice">
+        <id property="noticeId" column="notice_id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="userId" column="user_id" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+        <result property="imageUrl" column="image_url" />
+    </resultMap>
+
+    <!-- 공지사항 전체 조회 -->
+    <select id="findAll" resultMap="NoticeResultMap">
+        SELECT
+            notice_id,
+            title,
+            created_at
+        FROM notices;
+    </select>
+
+    <!-- 페이징 쿼리 -->
+    <select id="findPaged" resultMap="NoticeResultMap">
+        SELECT
+            notice_id,
+            title,
+            content,
+            user_id,
+            created_at,
+            updated_at,
+            image_url
+        FROM notices
+                 LIMIT #{size} OFFSET #{offset};
+    </select>
+
+    <!-- 특정 공지사항 조회 -->
+    <select id="findById" parameterType="int" resultMap="NoticeResultMap">
+        SELECT
+            notice_id,
+            title,
+            content,
+            user_id,
+            created_at,
+            updated_at,
+            image_url
+        FROM notices
+        WHERE notice_id = #{noticeId};
+    </select>
+
+    <!-- 공지사항 입력 -->
+    <insert id="insert" parameterType="Notice">
+        INSERT INTO notices (title, content, user_id, created_at, updated_at, image_url)
+        VALUES (#{title}, #{content}, #{userId}, #{createdAt}, #{updatedAt}, #{imageUrl});
+    </insert>
+
+    <!-- 공지사항 수정 -->
+    <update id="update" parameterType="Notice">
+        UPDATE notices
+        SET
+            title = #{title},
+            content = #{content},
+            image_url = #{imageUrl},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE notice_id = #{noticeId};
+    </update>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM notices
+        WHERE notice_id = #{noticeId};
+    </delete>
+
+</mapper>
