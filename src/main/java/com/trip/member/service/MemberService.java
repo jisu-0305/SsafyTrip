@@ -1,12 +1,13 @@
 package com.trip.member.service;
 
-import com.trip.member.dto.Member;
+import com.trip.member.dto.LoginRequestDTO;
+import com.trip.member.dto.LoginResponseDTO;
+import com.trip.board.dto.Member;
+import com.trip.member.dto.RegisterRequestDTO;
 
 public interface MemberService {
-	boolean idCheck(String userId);
-	String getSalt(String userId);
-	int joinMember(Member member);
-	Member loginMember(Member member);
+	boolean checkDuplicateEmail(String email);
+	int registerMember(RegisterRequestDTO request);
+	LoginResponseDTO loginMember(LoginRequestDTO request);
 	int deleteMember(String userId);
-	int editMember(Member member);
 }

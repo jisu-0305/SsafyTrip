@@ -5,41 +5,42 @@
 <!-- mapper file: 실행시킬 query를 가지고 있는 파일 -->
 
 <mapper namespace="com.trip.member.mapper.MemberMapper">
-	<resultMap type="Member" id="memberMap">
+
+	<resultMap type="com.trip.member.dto.LoginResponseDTO" id="loginResponseMap">
 		<id property="userId" column="user_id"/>
-		<result property="userName" column="user_name"/>
-		<result property="userPwd" column="user_pwd"/>
-		<result property="emailId" column="email_id"/>
-		<result property="emailDomain" column="email_domain"/>
-		<result property="joinDate" column="join_date"/>
-		<result property="salt" column="salt"/>
+		<result property="name" column="name"/>
+		<result property="email" column="email"/>
+		<result property="role" column="role"/>
+		<result property="profileImage" column="profile_image"/>
 	</resultMap>
-	
-	<select id="findById" parameterType="string" resultType="string">
-		select * from members where user_id = #{userId}
-	</select>
-	
-	<select id="findBySalt" parameterType="string" resultType="string">
-		select salt from members where user_id = #{userId}
-	</select>
-	
-	<insert id="save" parameterType="Member">
-		insert into members ( user_id, user_name, user_pwd, email_id, email_domain, salt) values( #{userId}, #{userName}, #{userPwd}, #{emailId}, #{emailDomain}, #{salt})
+
+
+	<insert id="save" parameterType="RegisterRequestDTO">
+		INSERT INTO members (name, email, password, birth_date, address, gender, role) values( #{name}, #{email}, #{password}, #{birthDate}, #{address}, #{gender}, #{role})
 	</insert>
-	
-	<select id="findByMember" parameterType="map" resultMap="memberMap">
-		select * from members where user_id = #{userId} and user_pwd=#{userPwd}
+
+
+	<select id="findByEmailAndPassword" parameterType="LoginRequestDTO" resultMap="loginResponseMap">
+		SELECT user_id, name, email, role, profile_image
+		FROM members
+		WHERE email = #{email} AND password = #{passWord}
 	</select>
-	
+
+
+	<select id="findByEmail" parameterType="string" resultType="string">
+		select * from members where email = #{email}
+	</select>
+
+
 	<delete id="delete" parameterType="string">
 		delete from members where user_id = #{userId}
 	</delete>
-	
-	<update id="update" parameterType="Member">
-		update members set user_name=#{userName} where user_id= #{userId}	
-	</update>
-	
+
 </mapper>
+
+
+	
+
 
 
 
