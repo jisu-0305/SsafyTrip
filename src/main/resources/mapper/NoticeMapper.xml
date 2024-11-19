@@ -5,69 +5,73 @@
 
 <mapper namespace="com.trip.notice.mapper.NoticeMapper">
 
-    <!-- 공통 ResultMap 정의 -->
-    <resultMap id="NoticeResultMap" type="Notice">
-        <id property="noticeId" column="notice_id" />
-        <result property="title" column="title" />
-        <result property="content" column="content" />
-        <result property="userId" column="user_id" />
-        <result property="createdAt" column="created_at" />
-        <result property="updatedAt" column="updated_at" />
-        <result property="imageUrl" column="image_url" />
-    </resultMap>
-
-    <!-- 공지사항 전체 조회 -->
-    <select id="findAll" resultMap="NoticeResultMap">
-        SELECT
-            notice_id,
+    <select id="selectNotices" resultType="NoticeListResponseDto">
+        SELECT 
+            notice_id AS noticeId,
             title,
-            created_at
-        FROM notices;
+            created_at AS createdAt
+        FROM notices
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <!-- 페이징 쿼리 -->
-    <select id="findPaged" resultMap="NoticeResultMap">
-        SELECT
-            notice_id,
-            title,
-            content,
-            user_id,
-            created_at,
-            updated_at,
-            image_url
+    <select id="selectNoticesTotalCount" resultType="int">
+        SELECT COUNT(*)
         FROM notices
-                 LIMIT #{size} OFFSET #{offset};
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
     </select>
 
-    <!-- 특정 공지사항 조회 -->
-    <select id="findById" parameterType="int" resultMap="NoticeResultMap">
+    <select id="selectById" parameterType="int" resultType="NoticeDetailDto">
         SELECT
-            notice_id,
+            notice_id AS noticeId,
             title,
             content,
-            user_id,
-            created_at,
-            updated_at,
-            image_url
+            user_id AS userId,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            image_url AS imageUrl
         FROM notices
-        WHERE notice_id = #{noticeId};
+        WHERE notice_id = #{noticeId}
     </select>
 
     <!-- 공지사항 입력 -->
-    <insert id="insert" parameterType="Notice">
-        INSERT INTO notices (title, content, user_id, created_at, updated_at, image_url)
-        VALUES (#{title}, #{content}, #{userId}, #{createdAt}, #{updatedAt}, #{imageUrl});
+    <insert id="insert" parameterType="NoticeCreateRequestDto">
+        INSERT INTO notices (
+            title, 
+            content, 
+            user_id, 
+            image_url
+        ) VALUES (
+            #{title}, 
+            #{content}, 
+            #{userId}, 
+            #{imageUrl}
+        )
     </insert>
 
     <!-- 공지사항 수정 -->
-    <update id="update" parameterType="Notice">
+    <update id="update">
         UPDATE notices
         SET
-            title = #{title},
-            content = #{content},
-            image_url = #{imageUrl},
-            updated_at = CURRENT_TIMESTAMP
-        WHERE notice_id = #{noticeId};
+            title = #{notice.title},
+            content = #{notice.content},
+            image_url = #{notice.imageUrl}
+        WHERE notice_id = #{noticeId}
     </update>
 
     <!-- 공지사항 삭제 -->
