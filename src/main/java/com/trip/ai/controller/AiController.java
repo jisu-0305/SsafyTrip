@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-class AIController {
+class AiController {
     private final ChatClient chatClient;
 
-    AIController(ChatClient chatClient) {
+    AiController(ChatClient chatClient) {
         this.chatClient = chatClient;
     }
     @GetMapping("/ai")
