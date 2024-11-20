@@ -1,6 +1,13 @@
 import myaxios from "@/util/axios.js";
 
-function register(member) {
-  myaxios.post("/register", JSON.stringify(customer));
+function registerAxios(member, success) {
+  console.log(JSON.stringify(member));
+  myaxios.post("/members/register", JSON.stringify(member))
+    .then(success);
 }
-export { register };
+
+function checkEmailDuplicationAxios(checkEmail, success) {
+  myaxios.get('/members/' + checkEmail)
+    .then(success);
+}
+export { registerAxios, checkEmailDuplicationAxios };
