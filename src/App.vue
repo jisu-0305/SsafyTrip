@@ -3,7 +3,7 @@ import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
 </script>
 
 <template>
-  <div>
+  <div>  
     <TheHeadingNavbar></TheHeadingNavbar>
     <RouterView />
   </div>
