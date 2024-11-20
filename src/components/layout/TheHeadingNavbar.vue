@@ -51,10 +51,17 @@ const handleMenuClick = (event) => {
       <!-- 중앙 텍스트 -->
       <v-spacer></v-spacer>
       <v-btn class="menu-item" @click="handleMenuClick">관광지 조회</v-btn>
-      <v-btn class="menu-item" @click="handleMenuClick">여행 계획 세우기</v-btn>
+      
+      <router-link :to="{ name: 'board' }" class="nav-link">
+        <v-btn class="menu-item" @click="handleMenuClick">여행 계획 세우기</v-btn>
+      </router-link>
+      
       <v-btn class="menu-item" @click="handleMenuClick">여행 후기</v-btn>
+      
       <v-btn class="menu-item" @click="handleMenuClick">AI기능</v-btn>
+      
       <v-btn class="menu-item" @click="handleMenuClick">공지사항</v-btn>
+      
       <v-spacer></v-spacer>
 
       <!-- 오른쪽 버튼 -->
