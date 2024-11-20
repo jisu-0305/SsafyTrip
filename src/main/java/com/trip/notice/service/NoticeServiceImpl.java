@@ -34,8 +34,6 @@ public class NoticeServiceImpl implements NoticeService {
                 .noticeList(notices)
                 .totalPages(totalPages)
                 .totalElements(totalCount)
-                .pageNumber(page)
-                .pageSize(size)
                 .build();
     }
     
@@ -49,7 +47,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional
     public NoticeCreateResponseDto createNotice(NoticeCreateRequestDto notice) {
-        noticeMapper.insert(notice);
+        noticeMapper.insertNotice(notice);
         return NoticeCreateResponseDto.of();
     }
 
@@ -57,7 +55,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     public NoticeUpdateResponseDto updateNotice(int noticeId, NoticeUpdateRequestDto dto) {
         getNoticeById(noticeId); 
-        noticeMapper.update(noticeId, dto); 
+        noticeMapper.updateNotice(noticeId, dto); 
         return NoticeUpdateResponseDto.of();
     }
 
@@ -65,7 +63,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     public NoticeDeleteResponseDto deleteNotice(int noticeId) {
         getNoticeById(noticeId);
-        noticeMapper.delete(noticeId);
+        noticeMapper.deleteNotice(noticeId);
         return NoticeDeleteResponseDto.of();
     }
 }

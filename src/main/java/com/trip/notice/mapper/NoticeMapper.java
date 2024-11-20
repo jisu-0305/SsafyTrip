@@ -21,8 +21,8 @@ public interface NoticeMapper {
     );
     int selectNoticesTotalCount(@Param("keyword") String keyword);
     NoticeDetailDto selectById(@Param("noticeId") int noticeId);
-    void insert(NoticeCreateRequestDto notice);
-    void update(@Param("noticeId") int noticeId, 
+    void insertNotice(NoticeCreateRequestDto notice);
+    void updateNotice(@Param("noticeId") int noticeId, 
                 @Param("notice") NoticeUpdateRequestDto notice);
-    void delete(int noticeId);
+    void deleteNotice(int noticeId);
 }

@@ -17,6 +17,4 @@ public class PagedNoticeResponseDto {
     private List<NoticeListResponseDto> noticeList;
     private int totalPages;
     private long totalElements; 
-    private int pageNumber;
-    private int pageSize;
-}
+} 

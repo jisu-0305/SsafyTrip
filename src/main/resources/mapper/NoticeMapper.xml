@@ -50,7 +50,7 @@
     </select>
 
     <!-- 공지사항 입력 -->
-    <insert id="insert" parameterType="NoticeCreateRequestDto">
+    <insert id="insertNotice" parameterType="NoticeCreateRequestDto">
         INSERT INTO notices (
             title, 
             content, 
@@ -65,7 +65,7 @@
     </insert>
 
     <!-- 공지사항 수정 -->
-    <update id="update">
+    <update id="updateNotice">
         UPDATE notices
         SET
             title = #{notice.title},
@@ -75,7 +75,7 @@
     </update>
 
     <!-- 공지사항 삭제 -->
-    <delete id="delete" parameterType="int">
+    <delete id="deleteNotice" parameterType="int">
         DELETE FROM notices
         WHERE notice_id = #{noticeId};
     </delete>
