@@ -1,22 +1,19 @@
 package com.trip.member.mapper;
 
+import com.trip.member.dto.LoginRequestDTO;
+import com.trip.member.dto.LoginResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.trip.member.dto.Member;
+import com.trip.member.dto.RegisterRequestDTO;
 
 @Mapper
 public interface MemberMapper {
+	int save(RegisterRequestDTO registerMember);
 
-	String findById(String userId);
+	LoginResponseDTO findByEmailAndPassword(LoginRequestDTO loginRequestDTO);
 
-	String findBySalt(String userId);
-
-	int save(Member member);
-
-	Member findByMember(Member member);
+	String findByEmail(String email);
 
 	int delete(String userId);
 
-	int update(Member member);
-	
 }

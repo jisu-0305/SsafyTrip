@@ -19,7 +19,7 @@ import com.trip.global.ErrorRes;
 import com.trip.global.GeneralRes;
 import com.trip.global.SuccessRes;
 import com.trip.board.dto.Board;
-import com.trip.member.dto.Member;
+import com.trip.board.dto.Member;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
