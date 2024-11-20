@@ -2,13 +2,10 @@ package com.trip.member.service;
 
 import com.trip.member.dto.LoginRequestDTO;
 import com.trip.member.dto.LoginResponseDTO;
-import org.springframework.stereotype.Service;
-
-import com.trip.member.mapper.MemberMapper;
-import com.trip.board.dto.Member;
 import com.trip.member.dto.RegisterRequestDTO;
-
+import com.trip.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +16,14 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public int registerMember(RegisterRequestDTO request) {
-		System.out.println("registerMember from service");
-		System.out.println(request);
 		return memberMapper.save(request);
 	}
 
 
 	@Override
 	public LoginResponseDTO loginMember(LoginRequestDTO request) {
-		System.out.println("MemberServiceImpl.loginMember");
 		LoginResponseDTO dto =memberMapper.findByEmailAndPassword(request);
-		System.out.println(dto);
+
 		return memberMapper.findByEmailAndPassword(request);
 	}
 

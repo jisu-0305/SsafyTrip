@@ -1,28 +1,18 @@
 package com.trip.member.controller;
 
-import com.trip.member.dto.LoginResponseDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.trip.member.service.MemberService;
 import com.trip.member.dto.LoginRequestDTO;
-import com.trip.board.dto.Member;
+import com.trip.member.dto.LoginResponseDTO;
 import com.trip.member.dto.RegisterRequestDTO;
-
+import com.trip.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 
@@ -62,7 +52,6 @@ public class MemberController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@Parameter(description = "로그인 시 필요한 회원정보(아이디, 비밀번호).", required = true)
 						@RequestBody LoginRequestDTO loginRequestDTO, HttpSession session) {
-
 		// 로그인한 정보가 없으면 예외처리하기.
 		LoginResponseDTO loginResponseDTO = memberService.loginMember(loginRequestDTO);
 
@@ -79,21 +68,6 @@ public class MemberController {
 		session.invalidate();
 
 		return ResponseEntity.ok("로그아웃이 완료되었습니다.");
-	}
-	
-
-	@Operation(summary = "회원 탈퇴", description = "세션 정보를 이용하여 탈퇴 처리")
-	@DeleteMapping
-	private ResponseEntity<String> deleteAccount(HttpSession session) {
-		System.out.println("MemberController.deleteAccount");
-
-		String userId = String.valueOf(session.getAttribute("userId"));
-		System.out.println(userId);
-
-		memberService.deleteMember(userId);
-		session.invalidate();
-		
-		return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
 	}
 
 }

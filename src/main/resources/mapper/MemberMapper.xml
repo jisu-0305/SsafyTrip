@@ -6,7 +6,7 @@
 
 <mapper namespace="com.trip.member.mapper.MemberMapper">
 
-	<resultMap type="com.trip.member.dto.LoginResponseDTO" id="loginResponseMap">
+	<resultMap type="LoginResponseDTO" id="loginResponseMap">
 		<id property="userId" column="user_id"/>
 		<result property="name" column="name"/>
 		<result property="email" column="email"/>

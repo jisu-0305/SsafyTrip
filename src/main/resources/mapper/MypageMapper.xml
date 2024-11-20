@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper file: 실행시킬 query를 가지고 있는 파일 -->
+
+<mapper namespace="com.trip.mypg.mapper.MypageMapper">
+
+	<select id="findPasswordByEmail" parameterType="string" >
+		SELECT password
+		FROM members
+		WHERE email = #{email}
+	</select>
+
+
+	<delete id="deleteMember" parameterType="string" >
+		delete from members
+		where email = #{email}
+	</delete>
+
+</mapper>
+
+
+	
+
+
+
+
+
