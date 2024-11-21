@@ -1,115 +1,175 @@
 <script setup>
+import { ref, computed } from "vue";
 import AttrationKakakMap from "@/components/search/AttrationKakakMap.vue";
-import SquareBox from "@/components/search/SquareBox .vue";
-import { ref } from "vue";
 
-// 더미 데이터
+// 더미 데이터 
 const attractions = ref([
   {
     title: "가회동성당",
-    latlng: new kakao.maps.LatLng(37.5820858828, 126.9846616856),
+    latlng: new kakao.maps.LatLng(37.5820858828, 126.9846616856), 
     img: "http://tong.visitkorea.or.kr/cms/resource/09/3303909_image2_1.jpg",
     loc: "서울특별시 종로구 율곡로23길 16",
   },
-  {
-    title: "간데메공원",
-    latlng: new kakao.maps.LatLng(37.5728520032, 127.0490977427),
-    img: "http://tong.visitkorea.or.kr/cms/resource/11/2779111_image2_1.png",
-    loc: "서울특별시 강남구 역삼동",
-  },
-  {
-    title: "갈산근린공원",
-    latlng: new kakao.maps.LatLng(37.5061176314, 126.8684105358),
-    img: "http://tong.visitkorea.or.kr/cms/resource/62/2612062_image2_1.bmp",
-    loc: "서울특별시 강남구 영동대로 513",
-  },
-  {
-    title: "감로암",
-    latlng: new kakao.maps.LatLng(37.5753148419, 127.0066015446),
-    img: "http://tong.visitkorea.or.kr/cms/resource/85/2031885_image2_1.jpg",
-    loc: "서울특별시 강남구 압구정로 161",
-  },
+  // ... 더미데이터
 ]);
+
+// 필터 상태
+const selectedCity = ref(null);
+const selectedDistrict = ref(null);
+const selectedType = ref(null);
+const searchKeyword = ref("");
+
+// 페이징 관련 상태
+const currentPage = ref(1);
+const itemsPerPage = 5;
+const totalPages = ref(10); // 백엔드에서 받아올 값
+
+// 도시 목록
+const cities = [
+  { title: '서울', value: 'seoul' },
+  { title: '인천', value: 'incheon' },
+  { title: '대전', value: 'daejeon' },
+  { title: '대구', value: 'daegu' },
+  { title: '광주', value: 'gwangju' },
+  { title: '부산', value: 'busan' },
+];
+
+// 관광지 유형
+const types = [
+  { title: '관광지', value: 'spot' },
+  { title: '문화시설', value: 'culture' },
+  { title: '축제공연행사', value: 'festival' },
+  { title: '여행코스', value: 'course' },
+  { title: '레포츠', value: 'leisure' },
+  { title: '숙박', value: 'accommodation' },
+  { title: '쇼핑', value: 'shopping' },
+  { title: '음식점', value: 'restaurant' },
+];
+
+const search = () => {
+  // 검색 로직 구현
+  console.log('검색:', {
+    city: selectedCity.value,
+    district: selectedDistrict.value,
+    type: selectedType.value,
+    keyword: searchKeyword.value
+  });
+};
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  // 백엔드에서 해당 페이지 데이터 요청
+};
 </script>
 
 <template>
-  <div class="container">
-    <div style="height: 90px"></div>
-    <div class="col-md-12">
-      <h1 class="mt-1 text-center">전국 관광지 정보</h1>
-      <!-- 관광지 검색 start -->
-      <form @submit.prevent="search" class="row mb-4">
-        <input type="hidden" name="action" value="list" />
-        <div class="col-3">
-          <select class="form-select" style="height: 60px; font-size: 20px">
-            <option value="전체" selected>시도</option>
-            <option value="서울">서울</option>
-            <option value="인천">인천</option>
-            <option value="대전">대전</option>
-            <option value="대구">대구</option>
-            <option value="광주">광주</option>
-            <option value="부산">부산</option>
-          </select>
-        </div>
-        <div class="col-3">
-          <select class="form-select" style="height: 60px; font-size: 20px">
-            <option value="전체" selected>구군</option>
-            <option value="서울">서울</option>
-            <option value="인천">인천</option>
-            <option value="대전">대전</option>
-            <option value="대구">대구</option>
-            <option value="광주">광주</option>
-            <option value="부산">부산</option>
-          </select>
-        </div>
-        <div class="col-3">
-          <select class="form-select" style="height: 60px; font-size: 20px">
-            <option value="전체" selected>관광지 유형</option>
-            <option value="관광지">관광지</option>
-            <option value="문화시설">문화시설</option>
-            <option value="축제공연행사">축제공연행사</option>
-            <option value="여행코스">여행코스</option>
-            <option value="레포츠">레포츠</option>
-            <option value="숙박">숙박</option>
-            <option value="쇼핑">쇼핑</option>
-            <option value="음식점">음식점</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="검색어를 입력하세요"
-            style="height: 60px; font-size: 20px"
-          />
-        </div>
+  <v-container fluid class="fill-height">
+    <v-row>
+      <!-- 필터 영역 -->
+      <v-col cols="12">
+        <v-card class="mb-4">
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="selectedCity"
+                  :items="cities"
+                  item-title="title"
+                  item-value="value"
+                  label="시도"
+                  variant="outlined"
+                  density="comfortable"
+                ></v-select>
+              </v-col>
 
-        <div class="col-md-1 d-flex align-items-end">
-          <button type="submit" class="btn btn-primary w-100">검색</button>
-        </div>
-      </form>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="selectedDistrict"
+                  :items="[]"
+                  label="구군"
+                  variant="outlined"
+                  density="comfortable"
+                ></v-select>
+              </v-col>
 
-      <!-- props를 통해 위도, 경도, title 값을 가진 객체 배열 넘겨주기 -->
-      <AttrationKakakMap :attractions="attractions"></AttrationKakakMap>
+              <v-col cols="12" md="3">
+                <v-select
+                  v-model="selectedType"
+                  :items="types"
+                  item-title="title"
+                  item-value="value"
+                  label="관광지 유형"
+                  variant="outlined"
+                  density="comfortable"
+                ></v-select>
+              </v-col>
 
-      <div class="square-container">
-        <SquareBox
-          v-for="(attraction, index) in attractions"
-          :key="index"
-          :title="attraction.title"
-          :latlng="attraction.latlng"
-          :img="attraction.img"
-          :loc="attraction.loc"
-        />
-      </div>
-    </div>
-  </div>
+              <v-col cols="12" md="2">
+                <v-text-field
+                  v-model="searchKeyword"
+                  label="검색어"
+                  variant="outlined"
+                  density="comfortable"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="1">
+                <v-btn 
+                  color="primary" 
+                  block 
+                  @click="search"
+                  height="56"
+                >
+                  검색
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <!-- 지도 영역 -->
+      <v-col cols="12" md="6">
+        <v-card height="700">
+          <AttrationKakakMap :attractions="attractions" />
+        </v-card>
+      </v-col>
+
+      <!-- 리스트 영역 -->
+      <v-col cols="12" md="6">
+        <v-card>
+          <v-list lines="two">
+            <v-list-item
+              v-for="attraction in attractions"
+              :key="attraction.title"
+              :title="attraction.title"
+              :subtitle="attraction.loc"
+            >
+              <template v-slot:prepend>
+                <v-avatar size="100">
+                  <v-img :src="attraction.img" cover></v-img>
+                </v-avatar>
+              </template>
+            </v-list-item>
+          </v-list>
+
+          <!-- 페이지네이션 -->
+          <v-card-actions class="justify-center">
+            <v-pagination
+              v-model="currentPage"
+              :length="totalPages"
+              :total-visible="7"
+              @update:model-value="handlePageChange"
+            ></v-pagination>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
-.square-container {
-  display: flex;
-  justify-content: flex-start; /* 수평 정렬 */
-  flex-wrap: nowrap; /* 줄바꿈 없이 한 줄로 정렬 */
+.v-container {
+  max-width: none;
 }
 </style>
