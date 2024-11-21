@@ -21,4 +21,19 @@
         DELETE FROM comments WHERE comment_id = #{commentId}
     </delete>
 
+    <select id="findCommentsByAttractionId" resultType="CommentDto">
+        SELECT
+            c.comment_id AS id,
+            m.email AS email,
+            c.created_at AS createdAt,
+            c.content AS content
+        FROM
+            comments c
+                JOIN
+            members m ON c.author_id = m.user_id
+        WHERE
+            c.attraction_id = #{attractionId}
+        ORDER BY
+            c.created_at DESC
+    </select>
 </mapper>

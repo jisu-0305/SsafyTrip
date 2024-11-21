@@ -1,8 +1,8 @@
 package com.trip.comment.controller;
 
 import com.trip.comment.dto.CommentCreateRequestDto;
-import com.trip.comment.dto.CommentDeleteResponseDto;
 import com.trip.comment.service.CommentService;
+import com.trip.common.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +21,18 @@ public class CommentController {
 
     @PostMapping("/{attractionId}")
     @Operation(summary = "댓글 생성", description = "관광지 ID와 댓글 정보를 통해 댓글을 생성합니다.")
-    public ResponseEntity<?> createComment(
+    public ResponseEntity<ResponseDto> createComment(
             @PathVariable("attractionId") int attractionId,
             @RequestBody CommentCreateRequestDto requestDto) {
 
         commentService.createComment(attractionId, requestDto);
-        return ResponseEntity.ok(new CommentDeleteResponseDto("success", "Comment created successfully"));
+        return ResponseEntity.ok(ResponseDto.success("Comment created successfully"));
     }
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글 ID를 통해 댓글을 삭제합니다.")
-    public ResponseEntity<?> deleteComment(@PathVariable("commentId") int commentId) {
+    public ResponseEntity<ResponseDto> deleteComment(@PathVariable("commentId") int commentId) {
         commentService.deleteComment(commentId);
-        return ResponseEntity.ok(new CommentDeleteResponseDto("success", "Comment deleted successfully"));
+        return ResponseEntity.ok(ResponseDto.success("Comment delete successfully"));
     }
 }

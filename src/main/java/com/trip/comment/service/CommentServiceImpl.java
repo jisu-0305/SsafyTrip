@@ -1,9 +1,12 @@
 package com.trip.comment.service;
 
 import com.trip.comment.dto.CommentCreateRequestDto;
+import com.trip.comment.dto.CommentDto;
 import com.trip.comment.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +22,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(int commentId) {
         commentMapper.deleteComment(commentId);
+    }
+
+    @Override
+    public List<CommentDto> getCommentsByAttractionId(int attractionId) {
+        return commentMapper.findCommentsByAttractionId(attractionId);
     }
 }

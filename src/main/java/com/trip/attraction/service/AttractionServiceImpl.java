@@ -2,6 +2,8 @@ package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
 import com.trip.attraction.mapper.*;
+import com.trip.comment.dto.CommentDto;
+import com.trip.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ public class AttractionServiceImpl implements AttractionService {
     private final AttractionMapper attractionMapper;
     private final SidoGunMapper sidoGunMapper;
     private final ContentTypeMapper contentTypeMapper;
+    private final CommentService commentService;
 
     @Override
     public AttractionInitDataResponseDto getAttractionInitialData(int page, int size) {
@@ -59,8 +62,15 @@ public class AttractionServiceImpl implements AttractionService {
     }
 
     @Override
-    public AttractionDetailDto getAttractionDetail(int attractionId) {
+    public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId) {
         attractionMapper.updateAttractionViews(attractionId);
-        return attractionMapper.getAttractionDetail(attractionId);
+        AttractionDetailDto attractionDetailDto = attractionMapper.getAttractionDetail(attractionId);
+
+        List<CommentDto> comments = commentService.getCommentsByAttractionId(attractionId);
+
+        return AttractionDetailResponseDto.builder()
+                .attract(attractionDetailDto)
+                .commentList(comments)
+                .build();
     }
 }
