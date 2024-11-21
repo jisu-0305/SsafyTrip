@@ -1,12 +1,13 @@
 <script setup>
-import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
+import { ref } from 'vue';
+import TheHeadingNavbar from '@/components/layout/TheHeadingNavbar.vue';
 </script>
 
 <template>
-  <div>  
-    <TheHeadingNavbar></TheHeadingNavbar>
-    <RouterView />
-  </div>
+  <TheHeadingNavbar/>
+  
+  <RouterView/>
+
 </template>
 
-<style scoped></style>
+

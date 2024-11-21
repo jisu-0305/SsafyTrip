@@ -26,76 +26,99 @@ const getRoute = (routeName) => {
 const logout = () => {
   changeMenuState();
 };
+
+const handleMenuClick = (event) => {
+  const allMenuItems = document.querySelectorAll(".menu-item");
+  allMenuItems.forEach((item) => {
+    item.classList.remove("selected");
+  });
+  event.currentTarget.classList.add("selected");
+};
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
-    <div class="container-fluid">
-      <router-link :to="{ name: 'main' }" class="navbar-brand">
-        <img
-          src="@/assets/enjoyTrip.png"
-          class="rounded mx-auto d-block"
-          alt="..."
-          width="50px"
-        />
+  <v-app>
+    <!-- App Bar -->
+    <v-app-bar app dense>
+      <!-- 로고 (왼쪽) -->
+      <v-img
+        src="src/assets/logo.png"
+        alt="Logo"
+        max-width="150"
+        class="logo"
+      ></v-img>
+
+      <!-- 중앙 텍스트 -->
+      <v-spacer></v-spacer>
+      <v-btn class="menu-item" @click="handleMenuClick">관광지 조회</v-btn>
+      
+      <router-link :to="{ name: 'board' }" class="nav-link">
+        <v-btn class="menu-item" @click="handleMenuClick">여행 계획 세우기</v-btn>
       </router-link>
+      
+      <v-btn class="menu-item" @click="handleMenuClick">여행 후기</v-btn>
+      
+      <v-btn class="menu-item" @click="handleMenuClick">AI기능</v-btn>
+      
+      <v-btn class="menu-item" @click="handleMenuClick">공지사항</v-btn>
+      
+      <v-spacer></v-spacer>
 
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarScroll"
-        aria-controls="navbarScroll"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
+      <!-- 오른쪽 버튼 -->
+      <v-btn
+        class="button-signup"
+        style="background-color: black; color: white; border: 1px solid black;"
       >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarScroll">
-        <ul
-          class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll"
-          style="--bs-scroll-height: 100px"
-        >
-          <li class="nav-item">
-            <router-link :to="{ name: 'SearchMap' }" class="nav-link">
-              관광지 정보
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">여행 계획(일정코스)</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">AI 기능</a>
-          </li>
-          <li class="nav-item">
-              <router-link :to="{ name: 'board' }" class="nav-link">
-              게시판
-            </router-link>
-          </li>
-        </ul>
-
-        <ul
-          class="navbar-nav ms-auto my-2 my-lg-0 navbar-nav-scroll"
-          style="--bs-scroll-height: 100px"
-        >
-          <template v-for="menu in menuList" :key="menu.routeName">
-            <li v-if="menu.show" class="nav-item">
-              <router-link
-                :to="getRoute(menu.routeName)"
-                @click.prevent="
-                  menu.routeName === 'user-logout' ? logout() : null
-                "
-                class="nav-link"
-              >
-                {{ menu.name }}
-              </router-link>
-            </li>
-          </template>
-        </ul>
-      </div>
-    </div>
-  </nav>
+        회원가입
+      </v-btn>
+      <v-btn
+        outlined
+        class="button-login"
+        style="border: 1px solid black; color: black;"
+      >
+        로그인
+      </v-btn>
+    </v-app-bar>
+  </v-app>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* 로고 스타일 */
+.logo {
+  height: 64px;
+  margin-left: 50px;
+}
+
+/* 메뉴 스타일 */
+.menu-item {
+  font-family: "Roboto", sans-serif;
+  font-size: 15px;
+  line-height: 26px;
+  color: black;
+  transition: color 0.3s ease;
+}
+
+.menu-item.selected {
+  color: #1890ff;
+}
+
+/* 버튼 스타일 */
+.button-signup {
+  font-family: "Roboto", sans-serif;
+  font-size: 15px;
+  line-height: 26px;
+  border-radius: 2px;
+  padding: 6px 12px;
+  margin-right: 10px;
+  margin-left: 50px;
+}
+
+.button-login {
+  font-family: "Roboto", sans-serif;
+  font-size: 15px;
+  line-height: 26px;
+  border-radius: 2px;
+  padding: 6px 12px;
+  margin-right: 50px;
+}
+</style>
