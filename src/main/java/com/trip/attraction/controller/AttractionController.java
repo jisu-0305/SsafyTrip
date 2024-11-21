@@ -55,9 +55,9 @@ public class AttractionController {
 
     @GetMapping("/detail/{attractionId}")
     @Operation(summary = "관광지 상세 정보 조회", description = "관광지 ID를 사용하여 관광지의 상세 정보를 조회합니다.")
-    public ResponseEntity<AttractionDetailDto> getAttractionDetail(
+    public ResponseEntity<AttractionDetailResponseDto> getAttractionDetail(
             @Parameter(description = "관광지 ID", required = true, example = "3820") @PathVariable("attractionId") int attractionId) {
-        AttractionDetailDto attraction = attractionService.getAttractionDetail(attractionId);
-        return ResponseEntity.ok(attraction);
+        AttractionDetailResponseDto attractionDetailResponseDto = attractionService.getAttractionDetailWithComments(attractionId);
+        return ResponseEntity.ok(attractionDetailResponseDto);
     }
 }
