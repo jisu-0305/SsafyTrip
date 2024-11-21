@@ -14,12 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("members")
-//@CrossOrigin("*")
 @Tag(name = "회원 인증 컨트롤러", description = "로그인, 로그아웃, 회원 정보등 회원관련 서비스를 처리하는 클래스.")
 public class MemberController {
 	
@@ -47,7 +44,6 @@ public class MemberController {
 		return ResponseEntity.ok(isDuplicate);
 	}
 
-
 	@Operation(summary = "로그인", description = "아이디와 비밀번호를 이용하여 로그인 처리")
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@Parameter(description = "로그인 시 필요한 회원정보(아이디, 비밀번호).", required = true)
@@ -56,6 +52,7 @@ public class MemberController {
 		LoginResponseDTO loginResponseDTO = memberService.loginMember(loginRequestDTO);
 
 		session.setAttribute("userId", loginResponseDTO.getUserId());
+		session.setAttribute("email", loginResponseDTO.getEmail());
 		session.setAttribute("userRole", loginResponseDTO.getRole());
 
 		return ResponseEntity.ok(loginResponseDTO);

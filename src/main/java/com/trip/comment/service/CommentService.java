@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface CommentService {
     void createComment(int attractionId, CommentCreateRequestDto requestDto);
-    void deleteComment(int commentId);
+
+    boolean deleteComment(int commentId, String loggedInEmail);
+
     List<CommentDto> getCommentsByAttractionId(int attractionId);
 }

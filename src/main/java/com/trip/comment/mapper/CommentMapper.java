@@ -13,5 +13,7 @@ public interface CommentMapper {
 
     void deleteComment(@Param("commentId") int commentId);
 
+    String findAuthorEmailByCommentId(@Param("commentId") int commentId);
+
     List<CommentDto> findCommentsByAttractionId(@Param("attractionId") int attractionId);
 }

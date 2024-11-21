@@ -69,11 +69,11 @@ public class NoticeController {
     public ResponseEntity<NoticeCreateResponseDto> createNotice(
             @Valid @RequestBody NoticeCreateRequestDto requestDto, 
             HttpSession session) {
-        String userId = (String) session.getAttribute("userId");
-//        if (userId == null) {
+        //수정 필요
+        String loggedInEmail = (String) session.getAttribute("email");
+//        if (loggedInEmail == null) {
 //            throw new RuntimeException("로그인이 필요합니다");
 //        }
-        requestDto.setUserId(userId);
         
         NoticeCreateResponseDto response = noticeService.createNotice(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -86,12 +86,12 @@ public class NoticeController {
             @PathVariable int noticeId,
             @Valid @RequestBody NoticeUpdateRequestDto requestDto,
             HttpSession session) {
-        
-        String userId = (String) session.getAttribute("userId");
-//        if (userId == null) {
+
+        String loggedInEmail = (String) session.getAttribute("email");
+//        if (loggedInEmail == null) {
 //            throw new RuntimeException("로그인이 필요합니다");
 //        }
-        
+
         NoticeUpdateResponseDto updatedNotice = noticeService.updateNotice(noticeId, requestDto);
         return ResponseEntity.ok(updatedNotice);
     }
@@ -103,9 +103,9 @@ public class NoticeController {
             @Parameter(description = "삭제할 공지사항의 ID", example = "1")
             @PathVariable int noticeId,
             HttpSession session) {
-        
-        String userId = (String) session.getAttribute("userId");
-//        if (userId == null) {
+
+        String loggedInEmail = (String) session.getAttribute("email");
+//        if (loggedInEmail == null) {
 //            throw new RuntimeException("로그인이 필요합니다");
 //        }
         

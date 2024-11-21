@@ -36,4 +36,11 @@
         ORDER BY
             c.created_at DESC
     </select>
+
+    <select id="findAuthorEmailByCommentId" resultType="String">
+        SELECT m.email
+        FROM comments c
+                 JOIN members m ON c.author_id = m.user_id
+        WHERE c.comment_id = #{commentId}
+    </select>
 </mapper>
