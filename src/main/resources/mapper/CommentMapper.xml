@@ -43,4 +43,15 @@
                  JOIN members m ON c.author_id = m.user_id
         WHERE c.comment_id = #{commentId}
     </select>
+
+    <select id="findCommentsByUserId" resultType="CommentResponseDto">
+        SELECT
+            c.comment_id AS id,
+            c.attraction_id AS attractionId,
+            c.content AS content,
+            c.created_at AS createdAt
+        FROM comments c
+        WHERE c.author_id = #{userId}
+        ORDER BY c.created_at DESC
+    </select>
 </mapper>

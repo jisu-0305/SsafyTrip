@@ -2,6 +2,7 @@ package com.trip.comment.mapper;
 
 import com.trip.comment.dto.CommentCreateRequestDto;
 import com.trip.comment.dto.CommentDto;
+import com.trip.comment.dto.CommentResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,4 +17,6 @@ public interface CommentMapper {
     String findAuthorEmailByCommentId(@Param("commentId") int commentId);
 
     List<CommentDto> findCommentsByAttractionId(@Param("attractionId") int attractionId);
+
+    List<CommentResponseDto> findCommentsByUserId(@Param("userId") Long userId);
 }
