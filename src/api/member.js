@@ -11,3 +11,12 @@ function checkEmailDuplicationAxios(checkEmail, success) {
     .then(success);
 }
 export { registerAxios, checkEmailDuplicationAxios };
+
+
+export const loginAPI = {
+  login: (credentials) => 
+    myaxios.post('/members/login', {
+      email: credentials.email,
+      passWord: credentials.password
+    })
+};
