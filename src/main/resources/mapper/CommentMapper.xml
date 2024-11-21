@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.comment.mapper.CommentMapper">
+
+    <!-- 댓글 추가 -->
+    <insert id="insertComment">
+        INSERT INTO comments (author_id, attraction_id, created_at, content)
+        VALUES (
+        (SELECT user_id FROM members WHERE email = #{requestDto.email}),
+        #{attractionId},
+        NOW(),
+        #{requestDto.content}
+        )
+    </insert>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>
