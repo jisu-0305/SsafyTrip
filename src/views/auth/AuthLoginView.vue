@@ -68,7 +68,14 @@ const login = async () => {
       localStorage.removeItem('savedEmail')
     }
     
-    menuStore.changeMenuState()
+    // menuStore 상태 변경 - true 값을 전달
+    menuStore.changeMenuState(true)
+    
+    // 사용자 정보 설정
+    menuStore.setUserInfo({
+      name: authStore.user?.name || 'User' // authStore에서 사용자 이름 가져오기
+    })
+    
     router.push('/')
   } else {
     form.value.password = '' // 비밀번호 초기화

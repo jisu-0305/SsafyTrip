@@ -1,13 +1,16 @@
 <script setup>
-import { ref } from 'vue';
-import TheHeadingNavbar from '@/components/layout/TheHeadingNavbar.vue';
+import TheNavbar from "@/components/layout/TheNavbar.vue";
+// import TheFooter from "@/components/layout/TheFooter.vue";
 </script>
 
 <template>
-  <TheHeadingNavbar/>
-  
-  <RouterView/>
-
+  <v-app>
+    <TheNavbar />
+    <v-main>
+      <RouterView />
+    </v-main>
+  </v-app>
 </template>
 
 
+<style scoped></style>

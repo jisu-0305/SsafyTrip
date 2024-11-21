@@ -7,49 +7,49 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "main",
+      name: "main", 
       component: TheMainView,
     },
     {
       path: "/login",
       name: "user-login",
-      component: () => import("@/views/users/UserLogin.vue"),
+      component: () => import("@/views/auth/AuthLoginView.vue"),
     },
     {
       path: "/join",
       name: "user-join",
-      component: () => import("@/views/users/UserRegister.vue"),
+      component: () => import("@/views/auth/AuthRegisterView.vue"),
     },
     {
       path: "/mypage",
       name: "user-mypage",
-      component: () => import("@/views/users/UserMyPage.vue"),
+      component: () => import("@/views/users/MyPageView.vue"),
     },
     {
-      path: "/serch-map", // 여행지 맵을 표시하는 경로
-      name: "SearchMap", // 라우트 이름
-      component: () => import("@/views/SerchMapView.vue"),
+      path: "/attract/search", // 여행지 맵을 표시하는 경로
+      name: "attract-search", // 라우트 이름
+      component: () => import("@/views/attracts/SerchMapView.vue"),
     },
     {
-      path: "/board",
-      name: "board",
-      component: () => import("@/views/TheBoardView.vue"),
+      path: "/notice",
+      name: "notice",
+      component: () => import("@/views/notices/NoticeListView.vue"),
     },
     {
-      path: "/board/write",
-      name: "article-write",
-      component: () => import("@/views/WriteArticleView.vue"),
+      path: "/notice/write",
+      name: "notice-write",
+      component: () => import("@/views/notices/NoticeWrite.vue"),
     },
     {
-      path: "/board/:id",
-      name: "article-detail",
-      component: () => import("@/views/DetailView.vue"),
+      path: "/notice/:id",
+      name: "notice-detail",
+      component: () => import("@/views/notices/NoticeDetailView.vue"),
       props: true
     },
     {
-      path: "/board/:id/edit",
-      name: "article-edit",
-      component: () => import("@/views/EditArticleView.vue"), // 수정 페이지 컴포넌트
+      path: "/notice/:id/edit",
+      name: "notice-edit",
+      component: () => import("@/views/notices/NoticeEditView.vue"), // 수정 페이지 컴포넌트
       props: true,
     }
   ],

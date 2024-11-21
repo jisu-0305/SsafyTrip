@@ -17,7 +17,7 @@ const deleteArticle = () => {
   if (confirm("이 게시물을 삭제하시겠습니까?")) {
     articles.value = articles.value.filter((a) => a.id !== article.value.id);
     alert("삭제되었습니다.");
-    router.push({ name: "board" });
+    router.push({ name: "notice" });
   }
 };
 
