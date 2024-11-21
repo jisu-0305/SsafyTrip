@@ -329,7 +329,7 @@ const validateForm = () => {
               color="#0F172A"
               height="40"
               class="mb-3"
-              style="border-radius: 6px; font-family: Inter;"
+              style="border-radius: 6px;"
             >
               회원가입
             </v-btn>
