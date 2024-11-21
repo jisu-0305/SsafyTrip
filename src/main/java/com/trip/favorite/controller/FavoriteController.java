@@ -8,36 +8,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/favorites")
+@RequestMapping("/favorite")
 @RequiredArgsConstructor
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
-    @PostMapping("/{attractId}")
+    @PostMapping("/{attractionId}")
     public ResponseEntity<ResponseDto> addFavorite(
-            @PathVariable("attractId") int attractId,
+            @PathVariable("attractionId") int attractionId,
             HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return ResponseEntity.status(401).body(ResponseDto.failure("로그인이 필요합니다."));
         }
 
-        favoriteService.addFavorite(userId, attractId);
+        favoriteService.addFavorite(userId, attractionId);
         return ResponseEntity.status(201).body(ResponseDto.success("Favorite added successfully."));
     }
 
-    @DeleteMapping("/{attractId}")
+    @DeleteMapping("/{attractionId}")
     public ResponseEntity<ResponseDto> removeFavorite(
-            @PathVariable("attractId") int attractId,
-            @RequestParam("numId") Long numId,
+            @PathVariable("attractionId") int attractionId,
             HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return ResponseEntity.status(401).body(ResponseDto.failure("로그인이 필요합니다."));
         }
 
-        favoriteService.removeFavorite(userId, attractId, numId);
+        favoriteService.removeFavorite(userId, attractionId);
         return ResponseEntity.ok(ResponseDto.success("Favorite removed successfully."));
     }
 }

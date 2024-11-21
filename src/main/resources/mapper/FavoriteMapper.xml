@@ -8,14 +8,18 @@
 
     <insert id="insertFavorite">
         INSERT INTO favorites (user_id, attraction_id)
-        VALUES (#{userId}, #{attractId})
+        VALUES (#{userId}, #{attractionId})
     </insert>
 
     <delete id="deleteFavorite">
         DELETE FROM favorites
         WHERE user_id = #{userId}
-        AND attraction_id = #{attractId}
-        AND favorite_id = #{numId}
+        AND attraction_id = #{attractionId}
     </delete>
 
+    <select id="isAlreadyFavorited" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM favorites
+        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
+    </select>
 </mapper>

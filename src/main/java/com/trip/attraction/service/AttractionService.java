@@ -16,4 +16,8 @@ public interface AttractionService {
     List<GuGunDto> getGuGunList(int sidoCode);
 
     AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId);
+
+    void incrementHit(int attractionId);
+
+    void decrementHit(int attractionId);
 }

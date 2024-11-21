@@ -73,4 +73,14 @@ public class AttractionServiceImpl implements AttractionService {
                 .commentList(comments)
                 .build();
     }
+
+    @Override
+    public void incrementHit(int attractionId) {
+        attractionMapper.updateHit(attractionId, 1); // hit +1
+    }
+
+    @Override
+    public void decrementHit(int attractionId) {
+        attractionMapper.updateHit(attractionId, -1); // hit -1
+    }
 }
