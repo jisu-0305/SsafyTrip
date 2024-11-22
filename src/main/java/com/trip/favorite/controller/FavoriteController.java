@@ -4,6 +4,8 @@ import com.trip.attraction.dto.AttractionDto;
 import com.trip.common.ResponseDto;
 import com.trip.favorite.service.FavoriteService;
 import com.trip.global.UnauthorizedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/favorite")
 @RequiredArgsConstructor
+@Tag(name = "Favorite Controller", description = "관광지 좋아요 관련 API를 제공합니다.")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
     @PostMapping("/{attractionId}")
+    @Operation(summary = "좋아요 추가", description = "로그인한 사용자가 특정 관광지에 좋아요를 추가합니다.")
     public ResponseEntity<ResponseDto> addFavorite(
             @PathVariable("attractionId") int attractionId,
             HttpSession session) {
@@ -32,6 +36,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{attractionId}")
+    @Operation(summary = "좋아요 삭제", description = "로그인한 사용자가 특정 관광지에 좋아요를 삭제합니다.")
     public ResponseEntity<ResponseDto> removeFavorite(
             @PathVariable("attractionId") int attractionId,
             HttpSession session) {
@@ -45,6 +50,7 @@ public class FavoriteController {
     }
 
     @GetMapping
+    @Operation(summary = "좋아요 목록 조회", description = "로그인한 사용자가 좋아요를 누른 관광지의 상세 정보를 반환합니다.")
     public ResponseEntity<List<AttractionDto>> getFavoriteAttractions(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
@@ -52,7 +58,6 @@ public class FavoriteController {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        // 좋아요한 관광명소 리스트 가져오기
         List<AttractionDto> favoriteAttractions = favoriteService.getFavoriteAttractions(userId);
 
         return ResponseEntity.ok(favoriteAttractions);

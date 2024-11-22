@@ -132,10 +132,10 @@ CREATE TABLE favorites (
                            FOREIGN KEY (attraction_id) REFERENCES attractions(no) ON DELETE CASCADE
 );
 
-INSERT INTO favorites (user_id, attraction_id) VALUES
-    (1, 3820),
-    (1, 3821),
-    (1, 3823);
+-- INSERT INTO favorites (user_id, attraction_id) VALUES
+--     (1, 3820),
+--     (1, 3821),
+--     (1, 3823);
 
 -- 기존 questions 테이블이 존재하면 삭제
 DROP TABLE IF EXISTS questions;
