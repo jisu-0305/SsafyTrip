@@ -10,7 +10,6 @@ import AttractionPlan from "@/views/plan/AttractionPlan.vue";
     <v-main>
       <RouterView />
     </v-main>
-    <!-- <AttractionPlan /> -->
   </v-app>
 </template>
 

@@ -29,8 +29,9 @@ const goToSignup = () => {
 };
 
 const goToMyPage = () => {
-  router.push({ name: 'mypage' });
+  router.push({ name: 'user-mypage' });
 };
+
 </script>
 
 <template>
@@ -96,7 +97,8 @@ const goToMyPage = () => {
             class="mypage-btn"
             @click="goToMyPage"
           >
-            <v-icon size="14">{{ userInitial }}</v-icon>
+          마이페이지
+            <!-- <v-icon size="14">{{ userInitial }}</v-icon> -->
           </v-btn>
         </template>
       </div>
@@ -119,6 +121,7 @@ const goToMyPage = () => {
         <v-divider class="my-2"></v-divider>
 
         <!-- 모바일에서만 보이는 로그인/회원가입 버튼 -->
+        <template v-if="!menuStore.isLoggedIn">
         <v-list-item @click="goToLogin">
           <template v-slot:prepend>
             <v-icon>mdi-login</v-icon>
@@ -132,6 +135,15 @@ const goToMyPage = () => {
           </template>
           <v-list-item-title>회원가입</v-list-item-title>
         </v-list-item>
+      </template>
+      <template v-else>
+        <v-list-item @click="goToMyPage">
+          <template v-slot:prepend>
+            <v-icon>mdi-account-plus</v-icon>
+          </template>
+          <v-list-item-title>마이페이지</v-list-item-title>
+        </v-list-item>
+      </template>
       </v-list>
     </v-navigation-drawer>
   </div>
