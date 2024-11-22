@@ -1,9 +1,13 @@
 package com.trip.favorite.service;
 
+import com.trip.attraction.dto.AttractionDto;
 import com.trip.attraction.service.AttractionService;
 import com.trip.favorite.mapper.FavoriteMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +40,11 @@ public class FavoriteServiceImpl implements FavoriteService {
         } else {
             throw new IllegalStateException("좋아요하지 않은 상태에서 삭제 요청을 보낼 수 없습니다.");
         }
+    }
+
+    @Override
+    public List<AttractionDto> getFavoriteAttractions(Long userId) {
+        List<Integer> favoriteAttractionIds = favoriteMapper.selectFavoriteAttractionIdsByUserId(userId);
+        return attractionService.getAttractionsByIds(favoriteAttractionIds);
     }
 }

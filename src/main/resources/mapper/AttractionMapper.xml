@@ -6,7 +6,7 @@
 <mapper namespace="com.trip.attraction.mapper.AttractionMapper">
 
 	<!-- 페이징 처리된 관광지 리스트 조회 -->
-	<select id="getAttractions" resultType="com.trip.attraction.dto.AttractionDto">
+	<select id="getAttractions" resultType="AttractionDto">
 		SELECT
 			no,
 			content_id AS contentId,
@@ -21,7 +21,7 @@
 	</select>
 
 	<!-- 조건에 맞는 관광지 리스트 조회 -->
-	<select id="searchAttractions" resultType="com.trip.attraction.dto.AttractionDto">
+	<select id="searchAttractions" resultType="AttractionDto">
 		SELECT
 			no,
 			content_id AS contentId,
@@ -57,7 +57,7 @@
 	</select>
 
 	<!-- 관광지 상세 정보 조회 -->
-	<select id="getAttractionDetail" resultType="com.trip.attraction.dto.AttractionDetailDto">
+	<select id="getAttractionDetail" resultType="AttractionDetailDto">
 		SELECT
 			no,
 			content_id AS contentId,
@@ -96,6 +96,20 @@
 		SET hit = hit + #{amount}
 		WHERE no = #{attractionId}
 	</update>
+
+	<select id="findAttractionById" parameterType="int" resultType="AttractionDto">
+		SELECT
+			no,
+			content_id AS contentId,
+			title,
+			latitude,
+			longitude,
+			first_image1 AS firstImage1,
+			hit,
+			views
+		FROM attractions
+		WHERE no = #{attractionId}
+	</select>
 </mapper>
 
 

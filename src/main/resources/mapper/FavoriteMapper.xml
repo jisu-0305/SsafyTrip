@@ -22,4 +22,10 @@
         FROM favorites
         WHERE user_id = #{userId} AND attraction_id = #{attractionId}
     </select>
+
+    <select id="selectFavoriteAttractionIdsByUserId" resultType="int">
+        SELECT attraction_id
+        FROM favorites
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

@@ -36,5 +36,7 @@ public interface AttractionMapper {
     void updateAttractionViews(@Param("attractionId") int attractionId);
 
     void updateHit(@Param("attractionId") int attractionId, @Param("amount") int amount);
+
+    AttractionDto findAttractionById(@Param("attractionId") int attractionId);
 }
 

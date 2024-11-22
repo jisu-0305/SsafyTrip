@@ -1,9 +1,6 @@
 package com.trip.attraction.service;
 
-import com.trip.attraction.dto.AttractionDetailResponseDto;
-import com.trip.attraction.dto.AttractionInitDataResponseDto;
-import com.trip.attraction.dto.GuGunDto;
-import com.trip.attraction.dto.PagedAttractionResponseDto;
+import com.trip.attraction.dto.*;
 
 import java.util.List;
 
@@ -20,4 +17,6 @@ public interface AttractionService {
     void incrementHit(int attractionId);
 
     void decrementHit(int attractionId);
+
+    List<AttractionDto> getAttractionsByIds(List<Integer> attractionIds);
 }
