@@ -1,13 +1,13 @@
 <template>
     <div class="plan-page">
         <!-- 제목 및 날짜 입력 폼 -->
-        <TravelInputForm />
+        <TravelInputForm class="left-centered-content" />
 
         <!-- 지도 -->
-        <AttractionPlanMap />
+        <AttractionPlanMap class="left-centered-content" />
 
         <!-- 일정 카드 -->
-        <div class="plan-container">
+        <div class="plan-container left-centered-content">
             <AttractionPlanCard v-for="(plan, index) in plans" :key="index" :day="plan.day"
                 @addSchedule="showWishListPopup(plan.day)" class="plan-card" />
         </div>
@@ -64,16 +64,29 @@ const addSchedule = (schedule) => {
 
 <style scoped>
 .plan-page {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 자식 요소들을 수평 중앙에 정렬 */
 }
 
+/* 왼쪽 중앙 정도에 위치하는 컨테이너 */
+.left-centered-content {
+    width: 70%;
+    /* 전체 너비의 70% 사용 */
+    margin-left: -10%;
+    /* 살짝 왼쪽으로 이동 */
+    max-width: 1000px;
+    /* 컨테이너의 최대 너비 설정 */
+}
+
+/* 일정 카드 섹션 스타일 */
 .plan-container {
-    width: 60%;
-    margin: 5px auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 5px;
     /* 각 카드 간의 간격을 줄임 */
+    margin: 20px 0;
 }
 
 /* 일정 추가 팝업 스타일 */

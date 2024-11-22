@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
 
 // props와 emit 정의
 const props = defineProps(['day']);

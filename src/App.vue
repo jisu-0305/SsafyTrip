@@ -6,11 +6,11 @@ import AttractionPlan from "@/views/plan/AttractionPlan.vue";
 
 <template>
   <v-app>
-    <!-- <TheNavbar />
+    <TheNavbar />
     <v-main>
       <RouterView />
-    </v-main> -->
-    <AttractionPlan />
+    </v-main>
+    <!-- <AttractionPlan /> -->
   </v-app>
 </template>
 
