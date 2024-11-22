@@ -24,6 +24,7 @@ public class AttractionDetailDto {
     private String tel;
     private String addr1;
     private String addr2;
-    private String homepage;
     private String overview;
+    private int hit;
+    private int views;
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.comment.mapper.CommentMapper">
+
+    <!-- 댓글 추가, 추후 session 에서 userid받아와서 comments 안에 필드값으로 주입하도록 변경 필요 -->
+    <insert id="insertComment">
+        INSERT INTO comments (author_id, attraction_id, created_at, content)
+        VALUES (
+        (SELECT user_id FROM members WHERE email = #{requestDto.email}),
+        #{attractionId},
+        NOW(),
+        #{requestDto.content}
+        )
+    </insert>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>
+
+    <select id="findCommentsByAttractionId" resultType="CommentDto">
+        SELECT
+            c.comment_id AS id,
+            m.email AS email,
+            c.created_at AS createdAt,
+            c.content AS content
+        FROM
+            comments c
+                JOIN
+            members m ON c.author_id = m.user_id
+        WHERE
+            c.attraction_id = #{attractionId}
+        ORDER BY
+            c.created_at DESC
+    </select>
+
+    <select id="findAuthorEmailByCommentId" resultType="String">
+        SELECT m.email
+        FROM comments c
+                 JOIN members m ON c.author_id = m.user_id
+        WHERE c.comment_id = #{commentId}
+    </select>
+</mapper>

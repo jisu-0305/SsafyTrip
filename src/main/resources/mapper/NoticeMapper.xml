@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.notice.mapper.NoticeMapper">
+
+    <select id="selectNotices" resultType="NoticeListResponseDto">
+        SELECT 
+            notice_id AS noticeId,
+            title,
+            created_at AS createdAt
+        FROM notices
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="selectNoticesTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM notices
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="NoticeDetailDto">
+        SELECT
+            notice_id AS noticeId,
+            title,
+            content,
+            user_id AS userId,
+            created_at AS createdAt,
+            updated_at AS updatedAt,
+            image_url AS imageUrl
+        FROM notices
+        WHERE notice_id = #{noticeId}
+    </select>
+
+    <!-- 공지사항 입력 -->
+    <insert id="insertNotice" parameterType="NoticeCreateRequestDto">
+        INSERT INTO notices (
+            title, 
+            content, 
+            user_id, 
+            image_url
+        ) VALUES (
+            #{title}, 
+            #{content}, 
+            #{userId}, 
+            #{imageUrl}
+        )
+    </insert>
+
+    <!-- 공지사항 수정 -->
+    <update id="updateNotice">
+        UPDATE notices
+        SET
+            title = #{notice.title},
+            content = #{notice.content},
+            image_url = #{notice.imageUrl}
+        WHERE notice_id = #{noticeId}
+    </update>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="deleteNotice" parameterType="int">
+        DELETE FROM notices
+        WHERE notice_id = #{noticeId};
+    </delete>
+
+</mapper>

@@ -9,11 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractionListDto {
+public class AttractionDto {
 	private int no;
     private int contentId;
     private String title;
     private double latitude;
     private double longitude;
     private String firstImage1;
+    private int hit;
+    private int views;
 }
