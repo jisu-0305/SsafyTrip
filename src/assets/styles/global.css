@@ -1,0 +1,18 @@
+:root {
+  --font-family: 'Noto Sans KR', sans-serif;
+}
+
+html, 
+body,
+.v-application {
+  font-family: var(--font-family) !important;
+}
+
+.v-btn,
+.v-card,
+.v-text-field,
+.v-list-item,
+.v-card-title,
+.v-card-subtitle {
+  font-family: var(--font-family) !important;
+} 

@@ -24,7 +24,7 @@ const saveArticle = () => {
     date: new Date().toISOString().slice(0, 10),
   };
   emit("save-article", newArticle); 
-  router.push({ name: "board" }); 
+  router.push({ name: "notice" }); 
 };
 </script>
 
