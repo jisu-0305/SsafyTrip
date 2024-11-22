@@ -22,11 +22,10 @@ public class QuestionController {
     public ResponseEntity<List<QuestionsDto>> getAllQuestions(HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
 
-        System.out.println("QuestionController.getAllQuestions");
-        System.out.println(user);
-
         List<QuestionsDto> res = questionService.selectAllQuestions(user.getUserId());
+
         return ResponseEntity.ok(res);
+
     }
 
 
@@ -35,35 +34,27 @@ public class QuestionController {
     public ResponseEntity<Boolean> insertQuestions(@RequestBody QuestionInsertReqDto questionInsertReqDto, HttpSession session){
         AuthorizedUserDto user = isAuthenticated(session);
 
-        System.out.println("QuestionController.insertQuestions");
-        System.out.println(user);
-        System.out.println(questionInsertReqDto);
-
         Boolean isSuccess = questionService.insertQuestion(questionInsertReqDto,user.getUserId());
 
         return ResponseEntity.ok(isSuccess);
+
     }
 
 
     // 1:1 문의 상세보기
     @GetMapping("/questions/{questionId}")
     public ResponseEntity<QuestionDetailResDto> getQuestionById(@PathVariable int questionId, HttpSession session){
-        System.out.println("QuestionController.getQuestionById");
-
         AuthorizedUserDto user = isAuthenticated(session);
-
-        System.out.println("QuestionController.getQuestionById");
-        System.out.println(user);
-        System.out.println("id: " + questionId);
 
         // userId와 questionId 둘 다 동일해야 보내주기
         QuestionDetailResDto res = questionService.selectByUserAndQuestionId(user.getUserId(), questionId);
 
         return ResponseEntity.ok(res);
+
     }
 
 
-    // 1:1문의 답변하기(아직 못함)
+
     @PostMapping("/questions/{questionId}/answer")
     public ResponseEntity<Boolean> insertQuestionAnswer(@PathVariable int questionId,
                                                         @RequestBody QuestionAnswerContentDto questionAnswerContentDto,
@@ -71,17 +62,12 @@ public class QuestionController {
     {
         AuthorizedUserDto user = isAuthenticated(session);
 
-        // 관리자 아이디도 서버에서 받기
-        System.out.println("questionId: " + questionId);
-        System.out.println("QuestionController.insertQuestionAnswer");
-        System.out.println(user);
-        System.out.println(questionAnswerContentDto.getContent());
-
         questionService.insertAnswer(new QuestionAnswerReqDto(user.getUserId(), questionId, questionAnswerContentDto.getContent()));
 
         Boolean isSuccess = true;
 
         return ResponseEntity.ok(isSuccess);
+
     }
 
 

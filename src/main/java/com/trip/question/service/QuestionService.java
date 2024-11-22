@@ -5,8 +5,6 @@ import com.trip.question.mapper.QuestionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,28 +17,27 @@ public class QuestionService {
 
         int result = questionMapper.insertQuestion(questionInsertDto);
 
-        System.out.println("QuestionService.insertQuestion");
-        System.out.println(result);
-
         return true;
     }
 
     public List<QuestionsDto> selectAllQuestions(int userId) {
         List<QuestionsDto> questionsList = questionMapper.getQuestionsByUserId((int)userId);
 
-        System.out.println("QuestionService.selectAllQuestions");
-        System.out.println("개수: " + questionsList.size());
-
         return questionsList;
     }
 
 
+    @Transactional
     public QuestionDetailResDto selectByUserAndQuestionId(int userId, int questionId) {
-        System.out.println("QuestionService.selectByUserAndQuestionId");
-        System.out.println(userId + ", " + questionId);
-        QuestionDetailResDto questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
+        Boolean isAnswered = questionMapper.selectIsAnswered(userId, questionId);
 
-        System.out.println(questionDetailResDto);
+        QuestionDetailResDto questionDetailResDto;
+        if(isAnswered){
+            questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
+        }else{
+            questionDetailResDto = questionMapper.selectQuestionById(userId,questionId);
+        }
+
 
         return questionDetailResDto;
 
@@ -53,10 +50,12 @@ public class QuestionService {
         int updateResult = 0;
         if(insertResult == 1){
             updateResult = questionMapper.updateQuestionIsAnswered(req.getQuestionId());
+
         }
 
         if(updateResult == 1) return true;
         else return false;
+
     }
 
 }

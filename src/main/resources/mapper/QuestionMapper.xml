@@ -30,7 +30,16 @@
 
 
     <!-- 3. 특정 조건에 맞는 질문 데이터 조회 -->
-    <!-- ResultMap 정의  type="QuestionsDto-->
+    <!-- (1) 답변이 달렸는지 확인하기 -->
+    <!-- 특정 질문의 is_answered 값 조회 -->
+    <select id="selectIsAnswered" parameterType="map" resultType="boolean">
+        SELECT is_answered
+        FROM questions
+        WHERE user_id = #{userId} AND question_id = #{questionId};
+    </select>
+
+
+    <!-- (2,3)  -->
     <resultMap id="QuestionAndAnswerResultMap" type="QuestionDetailResDto">
         <!-- 질문 정보 -->
         <result property="questionId" column="question_id" />
@@ -47,6 +56,21 @@
         <result property="answerAuthorEmail" column="answer_author_email" />
     </resultMap>
 
+    <!-- (2) 답변이 없을 경우, question테이블만 가져오기 -->
+    <select id="selectQuestionById" parameterType="map" resultMap="QuestionAndAnswerResultMap">
+        SELECT
+            q.question_id,
+            q.title AS question_title,
+            q.content AS question_content,
+            q.created_at AS question_created_at,
+            q.is_answered AS question_isAnswered
+        FROM
+            questions q
+        WHERE
+            q.question_id = #{questionId} AND q.user_id = #{userId};
+    </select>
+
+    <!-- (3) 답변이 있을 경우, 전체 가져오기 -->
     <select id="selectQuestionAndAnswerById" parameterType="map" resultMap="QuestionAndAnswerResultMap">
         SELECT
             q.question_id,
