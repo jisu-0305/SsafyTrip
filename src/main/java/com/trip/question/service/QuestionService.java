@@ -1,12 +1,10 @@
 package com.trip.question.service;
 
-import com.trip.question.dto.QuestionDetailResDto;
-import com.trip.question.dto.QuestionInsertDto;
-import com.trip.question.dto.QuestionInsertReqDto;
-import com.trip.question.dto.QuestionsDto;
+import com.trip.question.dto.*;
 import com.trip.question.mapper.QuestionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ public class QuestionService {
 
 
     public QuestionDetailResDto selectByUserAndQuestionId(int userId, int questionId) {
-        QuestionDetailResDto questionDetailResDto = questionMapper.getQuestionByIdAndUserId(userId, questionId);
+        QuestionDetailResDto questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
 
         System.out.println("QuestionService.selectByUserAndQuestionId");
         System.out.println(questionDetailResDto);
@@ -46,4 +44,18 @@ public class QuestionService {
         return questionDetailResDto;
 
     }
+
+    @Transactional
+    public Boolean insertAnswer(QuestionAnswerReqDto req){
+        int insertResult = questionMapper.insertAnswer(req);
+
+        int updateResult = 0;
+        if(insertResult == 1){
+            updateResult = questionMapper.updateQuestionIsAnswered(req.getQuestionId());
+        }
+
+        if(updateResult == 1) return true;
+        else return false;
+    }
+
 }

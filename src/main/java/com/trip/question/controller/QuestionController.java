@@ -65,8 +65,8 @@ public class QuestionController {
 
     // 1:1문의 답변하기(아직 못함)
     @PostMapping("/questions/{questionId}/answer")
-    public ResponseEntity<Boolean> insertQuestionAnswer(@PathVariable Long questionId,
-                                                        @RequestBody QuestionAnswerReqDto questionAnswerReqDto,
+    public ResponseEntity<Boolean> insertQuestionAnswer(@PathVariable int questionId,
+                                                        @RequestBody QuestionAnswerContentDto questionAnswerContentDto,
                                                         HttpSession session)
     {
         AuthorizedUserDto user = isAuthenticated(session);
@@ -75,9 +75,12 @@ public class QuestionController {
         System.out.println("questionId: " + questionId);
         System.out.println("QuestionController.insertQuestionAnswer");
         System.out.println(user);
-        System.out.println(questionAnswerReqDto);
+        System.out.println(questionAnswerContentDto.getContent());
+
+        questionService.insertAnswer(new QuestionAnswerReqDto(user.getUserId(), questionId, questionAnswerContentDto.getContent()));
 
         Boolean isSuccess = true;
+
         return ResponseEntity.ok(isSuccess);
     }
 

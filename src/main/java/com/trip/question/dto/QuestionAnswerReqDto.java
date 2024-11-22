@@ -11,5 +11,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class QuestionAnswerReqDto {
+    int userId;
+    int questionId;
     String content;
+
+    public QuestionAnswerReqDto(int userId, int questionId, String content) {
+        this.userId = userId;
+        this.questionId = questionId;
+        this.content = content;
+    }
 }

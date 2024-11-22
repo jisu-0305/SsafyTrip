@@ -12,9 +12,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 public class QuestionDetailResDto {
-    private int questionId;  // 질문 고유 ID
-    private String title;     // 질문 제목
-    private String content;   // 질문 내용
-    private LocalDate createdAt; // 질문 생성 시간
-    private boolean isAnswered;      // 답변 여부
+    // 질문 정보
+    private int questionId;
+    private String questionTitle;
+    private String questionContent;
+    private LocalDate questionCreatedAt;
+    private boolean questionIsAnswered;
+    private String questionAuthorEmail;
+
+    // 답변 정보 (선택적)
+    private Integer answerId; // 답변이 없을 수 있으므로 Integer 사용
+    private String answerContent;
+    private LocalDate answerCreatedAt;
+    private String answerAuthorEmail;
 }

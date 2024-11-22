@@ -1,5 +1,6 @@
 package com.trip.question.mapper;
 
+import com.trip.question.dto.QuestionAnswerReqDto;
 import com.trip.question.dto.QuestionDetailResDto;
 import com.trip.question.dto.QuestionInsertDto;
 import com.trip.question.dto.QuestionsDto;
@@ -14,5 +15,9 @@ public interface QuestionMapper {
 
     List<QuestionsDto> getQuestionsByUserId(int userId);
 
-    QuestionDetailResDto getQuestionByIdAndUserId(@Param("questionId") int questionId, @Param("userId") int userId);
+    QuestionDetailResDto selectQuestionAndAnswerById(@Param("questionId") int questionId, @Param("userId") int userId);
+
+    int insertAnswer(QuestionAnswerReqDto questionAnswerReqDto);
+
+    int updateQuestionIsAnswered(@Param("questionId") int questionId);
 }

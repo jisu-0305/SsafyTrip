@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.trip.question.mapper.QuestionMapper">
+
+    <!-- 1. 질문 목록 조회 -->
     <!-- 결과 매핑 정의 -->
     <resultMap id="questionResultMap" type="QuestionsDto">
         <id property="questionId" column="question_id" />
@@ -12,7 +14,6 @@
         <result property="isAnswered" column="is_answered" />
     </resultMap>
 
-    <!-- 질문 목록 조회 -->
     <!-- 특정 user_id에 따른 질문 목록 조회 -->
     <select id="getQuestionsByUserId" resultMap="questionResultMap">
         SELECT question_id, title, created_at, is_answered
@@ -21,26 +22,69 @@
     </select>
 
 
+    <!-- 2. 질문 추가  -->
     <insert id="insertQuestion" parameterType="QuestionInsertDto">
         INSERT INTO questions (user_id, title, content)
         VALUES (#{userId}, #{title}, #{content})
     </insert>
 
 
+    <!-- 3. 특정 조건에 맞는 질문 데이터 조회 -->
     <!-- ResultMap 정의  type="QuestionsDto-->
-    <resultMap id="questionDetailtMap" type="QuestionDetailResDto">
-        <id property="questionId" column="question_id"/>
-        <result property="title" column="title"/>
-        <result property="content" column="content"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="isAnswered" column="is_answered"/>
+    <resultMap id="QuestionAndAnswerResultMap" type="QuestionDetailResDto">
+        <!-- 질문 정보 -->
+        <result property="questionId" column="question_id" />
+        <result property="questionTitle" column="question_title" />
+        <result property="questionContent" column="question_content" />
+        <result property="questionCreatedAt" column="question_created_at" />
+        <result property="questionIsAnswered" column="question_isAnswered" />
+        <result property="questionAuthorEmail" column="question_author_email" />
+
+        <!-- 답변 정보 -->
+        <result property="answerId" column="answer_id" />
+        <result property="answerContent" column="answer_content" />
+        <result property="answerCreatedAt" column="answer_created_at" />
+        <result property="answerAuthorEmail" column="answer_author_email" />
     </resultMap>
 
-    <!-- 특정 조건에 맞는 질문 데이터 조회 -->
-    <select id="getQuestionByIdAndUserId" parameterType="map" resultMap="questionDetailtMap">
-        SELECT question_id, title, content, created_at, is_answered
-        FROM questions
-        WHERE question_id = #{questionId} AND user_id = #{userId}
+    <select id="selectQuestionAndAnswerById" parameterType="map" resultMap="QuestionAndAnswerResultMap">
+        SELECT
+            q.question_id,
+            q.title AS question_title,
+            q.content AS question_content,
+            q.created_at AS question_created_at,
+            q.is_answered AS question_isAnswered,
+            m.email AS question_author_email,
+            a.answer_id,
+            a.content AS answer_content,
+            a.created_at AS answer_created_at,
+            am.email AS answer_author_email
+        FROM
+            questions q
+                JOIN
+            members m ON q.user_id = m.user_id
+                LEFT JOIN
+            answers a ON q.question_id = a.question_id
+                LEFT JOIN
+            members am ON a.user_id = am.user_id
+        WHERE
+            q.question_id = #{questionId}
+          AND m.user_id = #{userId};
     </select>
+
+
+    <!-- 4. 답변 추가  -->
+    <!-- (1) 답변 삽입 -->
+    <insert id="insertAnswer" parameterType="map">
+        INSERT INTO answers (question_id, user_id, content)
+        VALUES (#{questionId}, #{userId}, #{content});
+    </insert>
+
+    <!--(2) 질문 is_answered 업데이트 -->
+    <update id="updateQuestionIsAnswered" parameterType="int">
+        UPDATE questions
+        SET is_answered = TRUE
+        WHERE question_id = #{questionId};
+    </update>
 
 </mapper>
