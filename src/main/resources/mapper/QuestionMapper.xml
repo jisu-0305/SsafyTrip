@@ -67,9 +67,8 @@
             answers a ON q.question_id = a.question_id
                 LEFT JOIN
             members am ON a.user_id = am.user_id
-        WHERE
-            q.question_id = #{questionId}
-          AND m.user_id = #{userId};
+        WHERE q.question_id = #{questionId} AND m.user_id = #{userId};
+
     </select>
 
 

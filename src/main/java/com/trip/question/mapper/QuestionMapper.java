@@ -15,7 +15,7 @@ public interface QuestionMapper {
 
     List<QuestionsDto> getQuestionsByUserId(int userId);
 
-    QuestionDetailResDto selectQuestionAndAnswerById(@Param("questionId") int questionId, @Param("userId") int userId);
+    QuestionDetailResDto selectQuestionAndAnswerById( @Param("userId") int userId, @Param("questionId") int questionId);
 
     int insertAnswer(QuestionAnswerReqDto questionAnswerReqDto);
 

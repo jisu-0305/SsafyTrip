@@ -36,9 +36,10 @@ public class QuestionService {
 
 
     public QuestionDetailResDto selectByUserAndQuestionId(int userId, int questionId) {
+        System.out.println("QuestionService.selectByUserAndQuestionId");
+        System.out.println(userId + ", " + questionId);
         QuestionDetailResDto questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
 
-        System.out.println("QuestionService.selectByUserAndQuestionId");
         System.out.println(questionDetailResDto);
 
         return questionDetailResDto;
