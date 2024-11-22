@@ -2,6 +2,7 @@ package com.trip.comment.service;
 
 import com.trip.comment.dto.CommentCreateRequestDto;
 import com.trip.comment.dto.CommentDto;
+import com.trip.comment.dto.CommentResponseDto;
 import com.trip.comment.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,15 +22,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean deleteComment(int commentId, String loggedInEmail) {
-        // 댓글 작성자 이메일 조회
         String authorEmail = commentMapper.findAuthorEmailByCommentId(commentId);
 
-        // 검증 로직
         if (!loggedInEmail.equals(authorEmail)) {
-            return false; // 작성자와 로그인 이메일이 다르면 삭제 불가
+            return false;
         }
 
-        // 댓글 삭제
         commentMapper.deleteComment(commentId);
         return true;
     }
@@ -37,5 +35,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDto> getCommentsByAttractionId(int attractionId) {
         return commentMapper.findCommentsByAttractionId(attractionId);
+    }
+
+    @Override
+    public List<CommentResponseDto> getUserComments(Long userId) {
+        return commentMapper.findCommentsByUserId(userId);
     }
 }

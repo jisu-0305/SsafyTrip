@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.favorite.mapper.FavoriteMapper">
+
+    <insert id="insertFavorite">
+        INSERT INTO favorites (user_id, attraction_id)
+        VALUES (#{userId}, #{attractionId})
+    </insert>
+
+    <delete id="deleteFavorite">
+        DELETE FROM favorites
+        WHERE user_id = #{userId}
+        AND attraction_id = #{attractionId}
+    </delete>
+
+    <select id="isAlreadyFavorited" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM favorites
+        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
+    </select>
+
+    <select id="selectFavoriteAttractionIdsByUserId" resultType="int">
+        SELECT attraction_id
+        FROM favorites
+        WHERE user_id = #{userId}
+    </select>
+</mapper>
