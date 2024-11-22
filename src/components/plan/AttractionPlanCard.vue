@@ -1,39 +1,8 @@
-<script setup>
-import { ref } from 'vue';
-
-// data 배열 정의 (참조형)
-const datas = ref([
-    { title: '제목1', memo: '메모1' },
-    { title: '제목2', memo: '메모2' },
-    { title: '제목3', memo: '메모3' },
-    { title: '제목4', memo: '메모4' },
-    { title: '제목5', memo: '메모5' }
-]);
-
-// 일정 추가 핸들러
-const addItem = () => {
-    // 새로운 일정 항목 추가
-    const newItem = { title: `제목${datas.value.length + 1}`, memo: `메모${datas.value.length + 1}` };
-    datas.value.push(newItem);
-    console.log('Updated data:', datas.value);
-};
-
-// 일정 삭제 핸들러
-const removeItem = (index) => {
-    // 해당 인덱스의 항목을 삭제
-    datas.value.splice(index, 1);
-    console.log('Updated data after removal:', datas.value);
-};
-
-// 부모 컴포넌트로 팝업을 열도록 이벤트 발행
-const emit = defineEmits(['addSchedule']);
-</script>
-
 <template>
     <v-card class="mx-auto my-4" max-width="400">
         <v-toolbar flat color="black" dark>
             <v-toolbar-title>
-                DAY 1 <small class="day-date">2024.11.21</small>
+                DAY {{ day }} <small class="day-date">2024.11.21</small>
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon>
@@ -64,13 +33,38 @@ const emit = defineEmits(['addSchedule']);
             </v-container>
 
             <v-container>
-                <v-btn outlined color="primary" block @click="$emit('addSchedule')">
-                    일정 추가
+                <v-btn outlined color="primary" block @click="emitAddSchedule">
+                    관광지 추가
                 </v-btn>
             </v-container>
         </v-card-text>
     </v-card>
 </template>
+
+<script setup>
+import { ref } from 'vue';
+
+// props와 emit 정의
+const props = defineProps(['day']);
+const emit = defineEmits(['addSchedule']);
+
+// data 배열 정의 (참조형)
+const datas = ref([
+    { title: '제목1', memo: '메모1' },
+    { title: '제목2', memo: '메모2' },
+    { title: '제목3', memo: '메모3' }
+]);
+
+// 일정 삭제 핸들러
+const removeItem = (index) => {
+    datas.value.splice(index, 1);
+};
+
+// 일정 추가 이벤트 핸들러
+const emitAddSchedule = () => {
+    emit('addSchedule', props.day);
+};
+</script>
 
 <style scoped>
 .day-date {
