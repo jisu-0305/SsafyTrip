@@ -84,16 +84,4 @@ public class AttractionServiceImpl implements AttractionService {
     public void decrementHit(int attractionId) {
         attractionMapper.updateHit(attractionId, -1); // hit -1
     }
-
-    @Override
-    public List<AttractionDto> getAttractionsByIds(List<Integer> attractionIds) {
-        List<AttractionDto> attractionList = new ArrayList<>();
-        for (int id : attractionIds) {
-            AttractionDto attraction = attractionMapper.findAttractionById(id);
-            if (attraction != null) {
-                attractionList.add(attraction);
-            }
-        }
-        return attractionList;
-    }
 }

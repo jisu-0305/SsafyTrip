@@ -1,6 +1,7 @@
 package com.trip.favorite.controller;
 
 import com.trip.attraction.dto.AttractionDto;
+import com.trip.attraction.dto.PagedAttractionResponseDto;
 import com.trip.common.ResponseDto;
 import com.trip.favorite.service.FavoriteService;
 import com.trip.global.UnauthorizedException;
@@ -50,16 +51,20 @@ public class FavoriteController {
     }
 
     @GetMapping
-    @Operation(summary = "좋아요 목록 조회", description = "로그인한 사용자가 좋아요를 누른 관광지의 상세 정보를 반환합니다.")
-    public ResponseEntity<List<AttractionDto>> getFavoriteAttractions(HttpSession session) {
+    @Operation(summary = "좋아요 목록 조회", description = "로그인한 사용자가 좋아요를 누른 관광지의 상세 정보를 반환합니다. 페이징과 검색 기능을 제공합니다.")
+    public ResponseEntity<PagedAttractionResponseDto> getFavoriteAttractions(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            @RequestParam(value = "word", required = false) String word,
+            HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        List<AttractionDto> favoriteAttractions = favoriteService.getFavoriteAttractions(userId);
+        PagedAttractionResponseDto pagedAttractionResponseDto = favoriteService.getFavoriteAttractions(userId, page, size, word);
 
-        return ResponseEntity.ok(favoriteAttractions);
+        return ResponseEntity.ok(pagedAttractionResponseDto);
     }
 }

@@ -23,9 +23,33 @@
         WHERE user_id = #{userId} AND attraction_id = #{attractionId}
     </select>
 
-    <select id="selectFavoriteAttractionIdsByUserId" resultType="int">
-        SELECT attraction_id
-        FROM favorites
-        WHERE user_id = #{userId}
+    <select id="countFavoriteAttractions" resultType="int">
+        SELECT COUNT(*)
+        FROM favorites f
+        JOIN attractions a ON f.attraction_id = a.no
+        WHERE f.user_id = #{userId}
+        <if test="word != null and word != ''">
+            AND a.title LIKE CONCAT('%', #{word}, '%')
+        </if>
+    </select>
+
+    <select id="selectFavoriteAttractions" resultType="AttractionDto">
+        SELECT
+        a.no,
+        a.content_id AS contentId,
+        a.title,
+        a.latitude,
+        a.longitude,
+        a.first_image1 AS firstImage1,
+        a.hit,
+        a.views
+        FROM favorites f
+        JOIN attractions a ON f.attraction_id = a.no
+        WHERE f.user_id = #{userId}
+        <if test="word != null and word != ''">
+            AND a.title LIKE CONCAT('%', #{word}, '%')
+        </if>
+        ORDER BY a.title ASC
+        LIMIT #{offset}, #{size}
     </select>
 </mapper>
