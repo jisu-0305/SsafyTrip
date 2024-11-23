@@ -1,11 +1,9 @@
 package com.trip.favorite.service;
 
-import com.trip.attraction.dto.AttractionDto;
-
-import java.util.List;
+import com.trip.attraction.dto.PagedAttractionResponseDto;
 
 public interface FavoriteService {
     void addFavorite(Long userId, int attractionId);
     void removeFavorite(Long userId, int attractionId);
-    List<AttractionDto> getFavoriteAttractions(Long userId);
+    PagedAttractionResponseDto getFavoriteAttractions(Long userId, int page, int size, String word);
 }

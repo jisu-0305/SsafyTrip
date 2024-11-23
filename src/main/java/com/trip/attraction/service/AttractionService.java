@@ -17,6 +17,4 @@ public interface AttractionService {
     void incrementHit(int attractionId);
 
     void decrementHit(int attractionId);
-
-    List<AttractionDto> getAttractionsByIds(List<Integer> attractionIds);
 }

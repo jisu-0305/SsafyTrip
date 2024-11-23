@@ -96,20 +96,6 @@
 		SET hit = hit + #{amount}
 		WHERE no = #{attractionId}
 	</update>
-
-	<select id="findAttractionById" parameterType="int" resultType="AttractionDto">
-		SELECT
-			no,
-			content_id AS contentId,
-			title,
-			latitude,
-			longitude,
-			first_image1 AS firstImage1,
-			hit,
-			views
-		FROM attractions
-		WHERE no = #{attractionId}
-	</select>
 </mapper>
 
 

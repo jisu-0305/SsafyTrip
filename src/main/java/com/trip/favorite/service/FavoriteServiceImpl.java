@@ -1,6 +1,7 @@
 package com.trip.favorite.service;
 
 import com.trip.attraction.dto.AttractionDto;
+import com.trip.attraction.dto.PagedAttractionResponseDto;
 import com.trip.attraction.service.AttractionService;
 import com.trip.favorite.mapper.FavoriteMapper;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,20 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<AttractionDto> getFavoriteAttractions(Long userId) {
-        List<Integer> favoriteAttractionIds = favoriteMapper.selectFavoriteAttractionIdsByUserId(userId);
-        return attractionService.getAttractionsByIds(favoriteAttractionIds);
+    public PagedAttractionResponseDto getFavoriteAttractions(Long userId, int page, int size, String word) {
+        int offset = (page - 1) * size;
+
+        int totalCount = favoriteMapper.countFavoriteAttractions(userId, word);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        List<AttractionDto> attractionList = favoriteMapper.selectFavoriteAttractions(userId, word, offset, size);
+
+        PagedAttractionResponseDto responseDto = new PagedAttractionResponseDto();
+        responseDto.setAttractionList(attractionList);
+        responseDto.setTotalCount(totalCount);
+        responseDto.setTotalPages(totalPages);
+
+        return responseDto;
     }
+
 }
