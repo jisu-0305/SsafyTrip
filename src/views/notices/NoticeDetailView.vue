@@ -5,12 +5,14 @@ import { storeToRefs } from 'pinia';
 import { useNoticeStore } from "@/stores/noticeStores";
 import { useAuthStore } from '@/stores/authStores'
 import BoardDetail from "@/components/board/BoardDetail.vue";
+import { useLoadingStore } from '@/stores/loadingStore'
 
 const route = useRoute();
 const router = useRouter();
 const noticeStore = useNoticeStore();
 const { currentNotice } = storeToRefs(noticeStore);
 const authStore = useAuthStore()
+const loadingStore = useLoadingStore()
 
 // 컴포넌트 마운트 해제 시 사용할 flag
 let isComponentMounted = true;
@@ -18,11 +20,16 @@ let isComponentMounted = true;
 onMounted(async () => {
   try {
     if (isComponentMounted) {
+      loadingStore.startLoading('notice-detail')
       await noticeStore.fetchNoticeById(route.params.id);
     }
   } catch (error) {
     if (isComponentMounted) {
       console.error('공지사항 로딩 실패:', error);
+    }
+  } finally {
+    if (isComponentMounted) {
+      loadingStore.endLoading('notice-detail')
     }
   }
 });
