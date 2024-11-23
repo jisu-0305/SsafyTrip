@@ -1,3 +1,4 @@
+
 use ssafyweb;
 
 UNLOCK TABLES;
@@ -132,10 +133,17 @@ CREATE TABLE favorites (
                            FOREIGN KEY (attraction_id) REFERENCES attractions(no) ON DELETE CASCADE
 );
 
--- INSERT INTO favorites (user_id, attraction_id) VALUES
---     (1, 3820),
---     (1, 3821),
---     (1, 3823);
+INSERT INTO favorites (user_id, attraction_id) VALUES
+    (1, 3818),
+    (1, 3819),                                            
+    (1, 3820),
+    (1, 3821),
+    (1, 3823),
+    (1, 3824),
+    (1, 3825),                                            
+    (1, 3826),
+    (1, 3827),
+    (1, 3828);
 
 -- 기존 questions 테이블이 존재하면 삭제
 DROP TABLE IF EXISTS questions;
