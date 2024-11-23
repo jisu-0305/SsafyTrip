@@ -26,8 +26,8 @@ const router = createRouter({
       component: () => import("@/views/users/MyPageView.vue"),
     },
     {
-      path: "/attract/search", // 여행지 맵을 표시하는 경로
-      name: "attract-search", // 라우트 이름
+      path: "/attract/search", 
+      name: "attract-search", 
       component: () => import("@/views/attracts/SerchMapView.vue"),
     },
     {
@@ -43,7 +43,7 @@ const router = createRouter({
     {
       path: "/notice/write",
       name: "notice-write",
-      component: () => import("@/views/notices/NoticeWrite.vue"),
+      component: () => import("@/views/notices/NoticeWriteView.vue"),
     },
     {
       path: "/notice/:id",

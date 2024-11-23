@@ -1,33 +1,137 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted } from "vue";
+import { storeToRefs } from 'pinia';
+import { useNoticeStore } from "@/stores/noticeStores";
+import { useRouter } from 'vue-router';
+import PageHeader from "@/components/common/PageHeader.vue";
 import BoardList from "@/components/board/BoardList.vue";
 import SearchResultInfo from "@/components/common/SearchResultInfo.vue";
+import { useAuthStore } from '@/stores/authStores'
 
-const articles = ref([
-  { id: 1, title: "첫 번째 게시글", author: "user1", views: 10, date: "2024-11-15" },
-  { id: 2, title: "두 번째 게시글", author: "user2", views: 20, date: "2024-11-16" },
-  { id: 3, title: "세 번째 게시글", author: "user3", views: 30, date: "2024-11-17" },
-]);
+const router = useRouter();
+const noticeStore = useNoticeStore();
+const { notices, currentPage, totalPages, totalElements, searchKeyword } = storeToRefs(noticeStore);
+const authStore = useAuthStore()
 
-const addArticle = (newArticle) => {
-  articles.value.unshift(newArticle);
+onMounted(() => {
+  noticeStore.fetchNotices();
+});
+
+const handlePageChange = (page) => {
+  noticeStore.fetchNotices(page, 10, searchKeyword.value);
 };
+
+const handleSearch = () => {
+  noticeStore.fetchNotices(1, 10, searchKeyword.value);
+};
+
+const goToWrite = () => {
+  router.push({ name: 'notice-write' });
+};
+
+const columns = [
+  { 
+    key: 'noticeId', 
+    label: '번호',
+    style: 'width: 100px'
+  },
+  { 
+    key: 'title', 
+    label: '제목' 
+  },
+  { 
+    key: 'createdAt', 
+    label: '작성일',
+    style: 'width: 150px'
+  }
+];
 </script>
 
 <template>
   <v-container>
     <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-card class="mt-5">
-          <v-card-title class="text-center text-h4 py-4">
-            게시판
-          </v-card-title>
-          <v-card-text>
-            <SearchResultInfo :total-count="articles.length" />
-            <BoardList :articles="articles" @save-article="addArticle" />
-          </v-card-text>
-        </v-card>
+        <div class="page-wrapper">
+          <PageHeader 
+            title="공지사항" 
+            icon="mdi-bell-outline"
+          />
+          <div class="content-wrapper">
+          <div class="d-flex align-center justify-space-between py-4">
+            <v-btn
+              v-if="authStore.isAdmin"
+              color="primary"
+              @click="goToWrite"
+              prepend-icon="mdi-plus"
+              class="ms-auto"
+              :disabled="!authStore.isAdmin"
+              :title="!authStore.isAdmin ? '관리자만 작성할 수 있습니다' : ''"
+            >
+              작성
+            </v-btn>
+          </div>
+            
+            <v-divider class="mb-6"></v-divider>
+            
+            <!-- 검색 영역 -->
+            <div class="search-area mb-6">
+              <v-row>
+                <v-col cols="10">
+                  <v-text-field
+                    v-model="searchKeyword"
+                    label="검색어"
+                    @keyup.enter="handleSearch"
+                    density="compact"
+                    variant="outlined"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                  <v-btn color="primary" @click="handleSearch" block>
+                    검색
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
+            <!-- 게시글 리스트 영역 -->
+            <div class="list-area">
+              <SearchResultInfo :total-count="totalElements" />
+              <BoardList 
+                :articles="notices" 
+                :columns="columns"
+                type="notice"
+              />
+              
+              <!-- 페이지네이션 -->
+              <div class="text-center mt-6">
+                <v-pagination
+                  v-model="currentPage"
+                  :length="totalPages"
+                  @update:model-value="handlePageChange"
+                ></v-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.page-wrapper {
+  width: 100%;
+}
+
+.content-wrapper {
+  margin-top: 24px;
+}
+
+.search-area {
+  margin-bottom: 32px;
+}
+
+.list-area {
+  margin-top: 16px;
+}
+</style>
