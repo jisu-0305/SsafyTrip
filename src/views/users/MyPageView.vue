@@ -1,74 +1,80 @@
 <script setup>
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import PageHeader from '@/components/common/PageHeader.vue';
 import NavigationMyPage from '@/components/mypage/NavigationMyPage.vue';
 import ActivityMyPage from '@/components/mypage/ActivityMyPage.vue';
 import EditMyPage from '@/components/mypage/EditMyPage.vue';
 import DeleteMyPage from '@/components/mypage/DeleteMyPage.vue';
+import { useLoadingStore } from '@/stores/loadingStore';
 
-// 현재 컴포넌트를 결정하는 flag 값 (1, 2, 그 외)
 const currentCompFlag = ref(1);
+const loadingStore = useLoadingStore();
+const { isComponentLoading } = storeToRefs(loadingStore);
 
-// 컴포넌트 업데이트 핸들러
-function updateCurrentCompHanlder(params) {
-  currentCompFlag.value = params;
+async function updateCurrentCompHanlder(params) {
+  try {
+    loadingStore.startLoading('mypage-content');
+    currentCompFlag.value = params;
+    await new Promise(resolve => setTimeout(resolve, 300));
+  } finally {
+    loadingStore.endLoading('mypage-content');
+  }
 }
 </script>
 
 <template>
-  <div class="center-container">
-    <v-container class="page-container" fluid>
-      <!-- 마이페이지 타이틀 -->
-      <v-row>
-        <v-col>
-          <h1 class="my-page-title">
-            <v-icon left size="24">mdi-account-circle-outline</v-icon> 마이페이지
-          </h1>
-        </v-col>
-      </v-row>
-      <div class="content-wrapper">
-        <NavigationMyPage @updateFlag="updateCurrentCompHanlder"></NavigationMyPage>
-        <div v-if="currentCompFlag === 2">
-          <EditMyPage />
-        </div>
-        <div v-else-if="currentCompFlag === 3">
-          <DeleteMyPage />
-        </div>
-        <div v-else>
-          <ActivityMyPage />
-        </div>
-      </div>
-    </v-container>
-  </div>
+  <v-container class="fill-height">
+    <v-row justify="center">
+      <v-col cols="12" md="8">
+        <PageHeader 
+          title="마이페이지" 
+          icon="mdi-account-circle-outline" 
+        />
+        <v-card class="mt-4 mypage-card">
+          <v-row no-gutters style="min-height: 600px;">
+            <!-- 네비게이션 영역 -->
+            <v-col cols="4" style="background-color: #096DD9;">
+              <NavigationMyPage 
+                @updateFlag="updateCurrentCompHanlder" 
+                :currentFlag="currentCompFlag"
+              />
+            </v-col>
+            
+            <!-- 컨텐츠 영역 -->
+            <v-col cols="8">
+              <v-card flat class="content-card">
+                <template v-if="isComponentLoading('mypage-content')">
+                  <div class="d-flex justify-center align-center" style="height: 600px">
+                    <v-progress-circular
+                      indeterminate
+                      color="primary"
+                      size="64"
+                    ></v-progress-circular>
+                  </div>
+                </template>
+                <template v-else>
+                  <component 
+                    :is="currentCompFlag === 1 ? ActivityMyPage : 
+                         currentCompFlag === 2 ? EditMyPage : DeleteMyPage"
+                  />
+                </template>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
-/* 전체 컨테이너를 중앙에 배치 */
-.center-container {
-  display: flex;
-  justify-content: center;  /* 수평 중앙 정렬 */
-  align-items: center;      /* 수직 중앙 정렬 */
-  min-height: 100vh;        /* 화면 전체 높이 사용 */
-  padding: 20px;            /* 페이지 전체에 여유 공간 */
-}
 
-/* 페이지 컨테이너 스타일 */
-.page-container {
-  max-width: 1200px;        /* 페이지 최대 너비를 설정 (원하는 너비로 조절 가능) */
+.page-wrapper {
   width: 100%;
-  padding: 32px;
-  margin: 0 auto;           /* 자동으로 좌우 여백 설정 */
 }
 
-/* 타이틀 스타일 */
-.my-page-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-/* 콘텐츠 래퍼 */
 .content-wrapper {
-  display: flex;
-  gap: 20px;                /* 컴포넌트 간격 설정 */
+  margin-top: 12px;
 }
 </style>

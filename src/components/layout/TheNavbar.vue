@@ -3,10 +3,12 @@ import { useMenuStore } from "@/stores/menuStores";
 import { storeToRefs } from "pinia";
 import { useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
+import { useAuthStore } from '@/stores/authStores'
 
 const menuStore = useMenuStore();
 const router = useRouter();
 const drawer = ref(false);
+const authStore = useAuthStore()
 
 const { menuItems } = storeToRefs(menuStore);
 
@@ -31,6 +33,16 @@ const goToSignup = () => {
 const goToMyPage = () => {
   router.push({ name: 'user-mypage' });
 };
+
+const handleLogout = async () => {
+  const { success } = await authStore.logout()
+  if (success) {
+    menuStore.changeMenuState(false)  // 메뉴 상태 변경
+    router.push({ name: 'main' })     // 메인 페이지로 이동
+  } else {
+    alert('로그아웃 중 오류가 발생했습니다.')
+  }
+}
 
 </script>
 
@@ -67,15 +79,20 @@ const goToMyPage = () => {
           v-for="item in menuItems"
           :key="item.title"
           variant="text"
+          :ripple="false"
           class="menu-item"
+          :active-class="'active-menu-item'"
+          :class="{ 'v-btn--active': $route.name === item.route }"
           @click="handleMenuClick(item.route)"
+          density="comfortable"
+          min-height="82px"
         >
-          {{ item.title }}
+          <span class="menu-text">{{ item.title }}</span>
         </v-btn>
       </div>
       <v-spacer></v-spacer>
 
-      <!-- 로그인/회원가입 버튼 -->
+      <!-- 로그인/회원가입/마이페이지 버튼 -->
       <div class="auth-buttons hidden-sm-and-down">
         <template v-if="!menuStore.isLoggedIn">
           <v-btn
@@ -97,8 +114,14 @@ const goToMyPage = () => {
             class="mypage-btn"
             @click="goToMyPage"
           >
-          마이페이지
-            <!-- <v-icon size="14">{{ userInitial }}</v-icon> -->
+            마이페이지
+          </v-btn>
+          <v-btn
+            class="logout-btn"
+            variant="outlined"
+            @click="handleLogout"
+          >
+            로그아웃
           </v-btn>
         </template>
       </div>
@@ -143,6 +166,12 @@ const goToMyPage = () => {
           </template>
           <v-list-item-title>마이페이지</v-list-item-title>
         </v-list-item>
+        <v-list-item @click="handleLogout">
+          <template v-slot:prepend>
+            <v-icon>mdi-logout</v-icon>
+          </template>
+          <v-list-item-title>로그아웃</v-list-item-title>
+        </v-list-item>
       </template>
       </v-list>
     </v-navigation-drawer>
@@ -179,20 +208,63 @@ const goToMyPage = () => {
 .menu-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 32px;
-  transition: gap 0.3s ease;
+  height: 82px;
 }
 
 .menu-item {
-  font-family: 'Roboto', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
-  color: rgba(0, 0, 0, 0.85);
-  text-transform: none;
-  letter-spacing: normal;
-  white-space: nowrap;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  opacity: 0.85;
+  height: 100%;
+  background: transparent !important; /* 배경색 제거 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* hover 시 배경색 변경 방지 */
+.menu-item:hover::before {
+  opacity: 0 !important;
+}
+
+/* 메뉴 텍스트 스타일링 */
+.menu-text {
+  position: relative;
+  padding: 6px 0;
+}
+
+/* 밑줄 효과 */
+.menu-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #1890FF;
+  transition: width 0.3s ease;
+}
+
+/* hover 시 텍스트 색상 변경 및 밑줄 표시 */
+.menu-item:hover .menu-text {
+  color: #1890FF;
+}
+
+.menu-item:hover .menu-text::after {
+  width: 100%;
+}
+
+/* active 상태 스타일 */
+.active-menu-item .menu-text,
+.v-btn--active .menu-text {
+  color: #1890FF;
+}
+
+.active-menu-item .menu-text::after,
+.v-btn--active .menu-text::after {
+  width: 100%;
 }
 
 .auth-buttons {
@@ -225,6 +297,21 @@ const goToMyPage = () => {
   color: rgba(0, 0, 0, 0.85);
   border: 1px solid #D9D9D9;
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.016);
+}
+
+.logout-btn {
+  background: white;
+  color: rgba(0, 0, 0, 0.85);
+  border: 1px solid #D9D9D9;
+  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.016);
+  height: 32px;
+  padding: 4px 15px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  border-radius: 2px;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 @media (max-width: 1400px) {
@@ -289,5 +376,13 @@ const goToMyPage = () => {
     line-height: 22px;
     color: rgba(0, 0, 0, 0.85);
   }
+}
+
+/* v-btn의 기본 스타일 오버라이드 */
+:deep(.v-btn__content) {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

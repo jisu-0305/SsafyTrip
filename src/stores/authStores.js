@@ -1,6 +1,6 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { loginAPI } from '@/api/authApi'
+import authApi from '@/api/authApi'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
@@ -9,6 +9,11 @@ export const useAuthStore = defineStore('auth', () => {
   const loginAttempts = ref(parseInt(sessionStorage.getItem('loginAttempts') || '0'))
   const MAX_LOGIN_ATTEMPTS = 5
 
+  // Computed
+  const isAdmin = computed(() => user.value?.role === 'ROLE_ADMIN')
+  const isLoggedIn = computed(() => !!user.value)
+
+  // Actions
   const login = async (credentials) => {
     if (loginAttempts.value >= MAX_LOGIN_ATTEMPTS) {
       loginError.value = '로그인 시도 횟수를 초과했습니다. 잠시 후 다시 시도해주세요.'
@@ -19,11 +24,13 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = true
       loginError.value = ''
       
-      const response = await loginAPI.login(credentials)
+      const response = await authApi.login(credentials)
       user.value = response.data
       loginAttempts.value = 0
       sessionStorage.removeItem('loginAttempts')
       
+      // 로그인 성공 시 세션 체크 시작
+      startSessionCheck()
       return { success: true }
 
     } catch (error) {
@@ -48,14 +55,48 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = () => {
-    user.value = null
+  const logout = async () => {
+    try {
+      await authApi.logout()
+      user.value = null
+      stopSessionCheck()
+      return { success: true }
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+      return { success: false }
+    }
+  }
+
+  // 세션 체크 관련
+  let sessionCheckInterval = null
+
+  const startSessionCheck = () => {
+    // 5분마다 세션 체크
+    sessionCheckInterval = setInterval(async () => {
+      try {
+        const response = await authApi.checkSession()
+        if (!response.data.isValid) {
+          await logout()
+        }
+      } catch (error) {
+        await logout()
+      }
+    }, 5 * 60 * 1000)
+  }
+
+  const stopSessionCheck = () => {
+    if (sessionCheckInterval) {
+      clearInterval(sessionCheckInterval)
+      sessionCheckInterval = null
+    }
   }
 
   return {
     user,
     loginError,
     isLoading,
+    isAdmin,
+    isLoggedIn,
     login,
     logout
   }

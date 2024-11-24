@@ -185,3 +185,4 @@ fabric.properties
 
 # JetBrains IDE setting
 .idea/
+.vscode/settings.json

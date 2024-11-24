@@ -10,6 +10,7 @@ import AttractionPlan from "@/views/plan/AttractionPlan.vue";
     <v-main>
       <RouterView />
     </v-main>
+    <TheFooter />
   </v-app>
 </template>
 

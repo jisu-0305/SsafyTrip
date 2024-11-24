@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed,reactive } from "vue";
-import { checkEmailDuplicationAxios, registerAxios } from "@/api/authApi";
+import { ref, computed, reactive } from "vue";
+import authApi from "@/api/authApi";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -60,7 +60,7 @@ const checkEmailDuplicateListener = () => {
     return
   }
 
-  checkEmailDuplicationAxios(form.value.email, ({data}) => {
+  authApi.checkEmailDuplication(form.value.email, ({data}) => {
     emailChecked.value = true
     if (data) {
       emailMessage.value = '중복된 이메일입니다.'

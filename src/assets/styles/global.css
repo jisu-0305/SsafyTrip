@@ -16,3 +16,31 @@ body,
 .v-card-subtitle {
   font-family: var(--font-family) !important;
 } 
+
+.v-application {
+  .text-h1,
+  .text-h2,
+  .text-h3,
+  .text-h4,
+  .text-h5,
+  .text-h6,
+  .text-subtitle-1,
+  .text-subtitle-2,
+  .text-body-1,
+  .text-body-2,
+  .text-button,
+  .text-caption,
+  .text-overline {
+    font-family: 'Noto Sans KR', sans-serif !important;
+  }
+  
+  /* Vuetify 컴포넌트들의 텍스트도 포함 */
+  .v-card-title,
+  .v-card-subtitle,
+  .v-card-text,
+  .v-btn,
+  .v-list-item-title,
+  .v-list-item-subtitle {
+    font-family: 'Noto Sans KR', sans-serif !important;
+  }
+}

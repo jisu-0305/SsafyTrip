@@ -1,161 +1,85 @@
 <template>
-  <v-container class="pa-4" max-width="600">
-    <v-card class="card-size1">
-      <v-card-title> 회원정보 수정 </v-card-title>
-      <v-card-text>
-        <v-form ref="form" v-model="valid">
-          <!-- 이메일 -->
-          <div class="form-group">
-            <label class="form-label" for="email">이메일</label>
-            <input
-              type="email"
-              id="email"
-              class="form-input"
-              value="user1@naver.com"
-              readonly
-            />
-          </div>
+  <div class="pa-8">
+    <v-card-title class="text-h5 font-weight-bold mb-8">회원정보 수정</v-card-title>
+    
+    <v-form ref="form" v-model="valid">
+      <v-row>
+        <v-col cols="12">
+          <v-text-field
+            label="이메일"
+            v-model="formData.email"
+            readonly
+            variant="outlined"
+            density="comfortable"
+          ></v-text-field>
+        </v-col>
 
-          <!-- 이름 -->
-          <div class="form-group">
-            <label class="form-label" for="name">이름</label>
-            <input
-              type="text"
-              id="name"
-              class="form-input"
-              value="홍길동"
-              readonly
-            />
-          </div>
+        <v-col cols="12">
+          <v-text-field
+            label="이름"
+            v-model="formData.name"
+            readonly
+            variant="outlined"
+            density="comfortable"
+          ></v-text-field>
+        </v-col>
 
-          <!-- 성별 -->
-          <div class="form-group">
-            <label class="form-label">성별</label>
-            <div class="form-radio-group">
-              <label>
-                <input type="radio" name="gender" value="male" />
-                남성
-              </label>
-              <label>
-                <input type="radio" name="gender" value="female" />
-                여성
-              </label>
-              <label>
-                <input type="radio" name="gender" value="private" />
-                비공개
-              </label>
-            </div>
-          </div>
+        <v-col cols="12">
+          <v-radio-group v-model="formData.gender" inline>
+            <label class="text-subtitle-1 mb-2">성별</label>
+            <v-radio label="남성" value="male"></v-radio>
+            <v-radio label="여성" value="female"></v-radio>
+            <v-radio label="비공개" value="private"></v-radio>
+          </v-radio-group>
+        </v-col>
 
-          <!-- 주소 -->
-          <div class="form-group">
-            <label class="form-label" for="address">주소지</label>
-            <input type="text" id="address" class="form-input" />
-          </div>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="grey" @click="cancelEdit" class="custom-btn"
-          >회원 탈퇴</v-btn
+        <v-col cols="12">
+          <v-text-field
+            label="주소지"
+            v-model="formData.address"
+            variant="outlined"
+            density="comfortable"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+    </v-form>
+
+    <v-row class="mt-4">
+      <v-col cols="12" class="d-flex justify-space-between">
+        <v-btn
+          color="grey-darken-1"
+          variant="outlined"
+          @click="cancelEdit"
         >
-        <v-spacer></v-spacer>
-        <v-btn color="grey" @click="saveChanges" class="custom-btn"
-          >저장하기</v-btn
+          회원 탈퇴
+        </v-btn>
+        <v-btn
+          color="primary"
+          @click="saveChanges"
         >
-      </v-card-actions>
-    </v-card>
-  </v-container>
+          저장하기
+        </v-btn>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
-<script></script>
+<script setup>
+import { ref } from 'vue';
 
-<style scoped>
-.v-container {
-  /* min-width: 300px;
-    min-height: 600px;
-    max-width: 300px;
-    max-height: 600px; */
-}
-.card-size1{
-  min-width: 500px;
-    min-height: 600px;
-    max-width: 500px;
-    max-height: 600px;
-}
-.pa-4 {
-    padding: 0px !important;
-}
-.v-btn {
-  margin-left: 10px;
-}
-.custom-input {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-}
+const valid = ref(false);
+const formData = ref({
+  email: 'user1@naver.com',
+  name: '홍길동',
+  gender: 'private',
+  address: ''
+});
 
-.form-container {
-  max-width: 400px;
-  margin: 0 auto;
-}
+const cancelEdit = () => {
+  alert('취소되었습니다.');
+};
 
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #333;
-}
-
-.form-input,
-.form-radio-group input {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.form-input[readonly] {
-  background-color: #f5f5f5;
-}
-
-.form-radio-group {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.form-radio-group label {
-  margin-left: 5px;
-  font-size: 14px;
-}
-
-.form-radio-group input {
-  width: auto;
-}
-
-.button-container {
-  display: flex;
-  gap: 10px; /* 버튼 간 간격 */
-}
-
-.custom-btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: 1px solid #ccc; /* 기본 테두리 */
-  background-color: transparent !important; /* Vuetify의 기본 배경색 덮어쓰기 */
-  color: #131212 !important; /* Vuetify의 기본 텍스트 색 덮어쓰기 */
-  cursor: pointer;
-  transition: all 0.3s ease; /* 호버 시 애니메이션 */
-}
-
-.custom-btn:hover {
-  background-color: #000 !important; /* 검정 배경 */
-  color: #fff !important; /* 흰색 텍스트 */
-}
-</style>
+const saveChanges = () => {
+  alert('저장되었습니다.');
+};
+</script>
