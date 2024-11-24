@@ -171,3 +171,62 @@ VALUES (1, 'How to learn Java effectively?', 'I am trying to learn Java but need
 
 INSERT INTO answers (question_id, user_id, content)
 VALUES (1, 2, 'You can learn Java effectively by practicing coding on platforms like LeetCode and reading books like Effective Java.');
+
+
+DROP TABLE IF EXISTS schedule_places;
+DROP TABLE IF EXISTS schedules;
+-- schedules 테이블 생성
+CREATE TABLE schedules (
+                           schedule_id INT AUTO_INCREMENT PRIMARY KEY,
+                           user_id INT NOT NULL,
+                           title VARCHAR(255) NOT NULL,
+                           memo TEXT,
+                           total_cost INT DEFAULT 0,
+                           start_date DATE NOT NULL,
+                           end_date DATE NOT NULL,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                           CONSTRAINT fk_member_schedule FOREIGN KEY (user_id) REFERENCES members(user_id) ON DELETE CASCADE
+);
+
+-- schedule_places 테이블 생성
+CREATE TABLE schedule_places (
+                                 place_id INT AUTO_INCREMENT PRIMARY KEY,
+                                 schedule_id INT NOT NULL,
+                                 attraction_id INT NOT NULL,
+                                 visit_time TIMESTAMP NOT NULL,
+                                 memo TEXT,
+                                 cost INT DEFAULT 0,
+                                 visit_order INT NOT NULL,
+                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                 CONSTRAINT fk_schedule FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_id) ON DELETE CASCADE
+);
+
+-- schedules 데이터 삽입
+INSERT INTO schedules (user_id, title, memo, total_cost, start_date, end_date)
+VALUES
+    (1, '부산 2박 3일 여행', '부산에서의 힐링 여행 일정', 500000, '2024-12-01', '2024-12-03');
+
+-- 첫째 날 일정
+INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order)
+VALUES
+    (1, 17710, '2024-12-01 09:00:00', '힐사이드호텔에서 숙소 체크인', 100000, 1),
+    (1, 17709, '2024-12-01 12:00:00', '힐 사이드 관광호텔 주변에서 점심', 50000, 2),
+    (1, 17082, '2024-12-01 15:00:00', '히어로테마파크에서 즐거운 시간', 80000, 3);
+
+-- 둘째 날 일정
+INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order)
+VALUES
+    (1, 17081, '2024-12-02 09:00:00', '흰여울문화마을 산책', 0, 1),
+    (1, 19364, '2024-12-02 11:00:00', '희와제과에서 맛있는 디저트 즐기기', 20000, 2),
+    (1, 19363, '2024-12-02 14:00:00', '흑송에서 커피 한잔의 여유', 15000, 3),
+    (1, 19362, '2024-12-02 17:00:00', '흑기와에서 저녁 식사', 30000, 4);
+
+-- 셋째 날 일정
+INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order)
+VALUES
+    (1, 18498, '2024-12-03 09:00:00', '휴고보스코리아 매장에서 쇼핑', 100000, 1),
+    (1, 18497, '2024-12-03 11:00:00', '휴고보스 신세계 센텀시티점 방문', 50000, 2),
+    (1, 18496, '2024-12-03 15:00:00', '휴고보스 롯데아울렛 부산점 방문 후 공항으로 이동', 0, 3);
+
