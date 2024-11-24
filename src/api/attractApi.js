@@ -24,38 +24,26 @@ function getGugunList(sidoId) {
   return myaxios.get(`/attractions/guguns/${sidoId}`);
 }
 
-// 관광지 댓글 작성 API
-function createComment(contentId, commentData) {
-  return myaxios.post(`/attractions/${contentId}/comments`, commentData);
-}
-
-// 관광지 댓글 삭제 API
-function deleteComment(contentId, commentId) {
-  return myaxios.delete(`/attractions/${contentId}/comments/${commentId}`);
-}
-
-// 관광지 좋아요 추가 API
-function addFavorite(contentId) {
-  return myaxios.post(`/attractions/${contentId}/favorite`);
-}
-
-// 관광지 좋아요 취소 API
-function removeFavorite(contentId) {
-  return myaxios.delete(`/attractions/${contentId}/favorite`);
-}
-
 // 관광지 초기 데이터 로드 API
 function getInitialAttractions() {
   return myaxios.get('/attractions/init');
+}
+
+// 관광지 좋아요 추가 API
+function addFavorite(attractionId) {
+  return myaxios.post(`/favorite/${attractionId}`);
+}
+
+// 관광지 좋아요 취소 API
+function deleteFavorite(attractionId) {
+  return myaxios.delete(`/favorite/${attractionId}`);
 }
 
 export {
   listAttractions,
   getAttractionDetail,
   getGugunList,
-  createComment,
-  deleteComment,
   addFavorite,
-  removeFavorite,
+  deleteFavorite,
   getInitialAttractions
 }; 
