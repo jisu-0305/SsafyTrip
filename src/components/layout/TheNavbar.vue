@@ -52,6 +52,7 @@ const handleLogout = async () => {
       color="white"
       height="82"
       class="nav-container"
+      elevation="0"
     >
       <!-- 모바일 메뉴 토글 버튼 -->
       <v-app-bar-nav-icon
@@ -191,7 +192,7 @@ const handleLogout = async () => {
   left: -18px;
   top: 14px;
   background: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #D9D9D9;
 }
 
 .logo-link {
@@ -222,11 +223,6 @@ const handleLogout = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* hover 시 배경색 변경 방지 */
-.menu-item:hover::before {
-  opacity: 0 !important;
 }
 
 /* 메뉴 텍스트 스타일링 */
@@ -371,7 +367,6 @@ const handleLogout = async () => {
 
 .v-navigation-drawer {
   .v-list-item {
-    font-family: 'Roboto', sans-serif;
     font-size: 14px;
     line-height: 22px;
     color: rgba(0, 0, 0, 0.85);

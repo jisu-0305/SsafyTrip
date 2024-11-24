@@ -48,35 +48,17 @@ const columns = [
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid class="page-container">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <div class="page-wrapper">
-          <PageHeader 
-            title="공지사항" 
-            icon="mdi-bell-outline"
-          />
-          <div class="content-wrapper">
-          <div class="d-flex align-center justify-space-between py-4">
-            <v-btn
-              v-if="authStore.isAdmin"
-              color="primary"
-              @click="goToWrite"
-              prepend-icon="mdi-plus"
-              class="ms-auto"
-              :disabled="!authStore.isAdmin"
-              :title="!authStore.isAdmin ? '관리자만 작성할 수 있습니다' : ''"
-            >
-              작성
-            </v-btn>
-          </div>
-            
-            <v-divider class="mb-6"></v-divider>
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
+          <PageHeader title="공지사항" icon="mdi-clipboard-text" />
+          <div class="content-area">
             
             <!-- 검색 영역 -->
             <div class="search-area mb-6">
               <v-row>
-                <v-col cols="10">
+                <v-col :cols="authStore.isAdmin ? 8 : 10">
                   <v-text-field
                     v-model="searchKeyword"
                     label="검색어"
@@ -86,8 +68,25 @@ const columns = [
                   ></v-text-field>
                 </v-col>
                 <v-col cols="2">
-                  <v-btn color="primary" @click="handleSearch" block>
+                  <v-btn 
+                    color="primary" 
+                    @click="handleSearch" 
+                    block
+                    height="40"
+                  >
                     검색
+                  </v-btn>
+                </v-col>
+                <v-col v-if="authStore.isAdmin" cols="2">
+                  <v-btn
+                    color="blue-darken-3"
+                    @click="goToWrite"
+                    prepend-icon="mdi-plus"
+                    block
+                    height="40"
+                    :title="!authStore.isAdmin ? '관리자만 작성할 수 있습니다' : ''"
+                  >
+                    작성
                   </v-btn>
                 </v-col>
               </v-row>
@@ -119,14 +118,6 @@ const columns = [
 </template>
 
 <style scoped>
-.page-wrapper {
-  width: 100%;
-}
-
-.content-wrapper {
-  margin-top: 24px;
-}
-
 .search-area {
   margin-bottom: 32px;
 }

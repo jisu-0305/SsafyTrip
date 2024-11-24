@@ -75,13 +75,13 @@ const contentTypes = {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid class="page-container">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <div class="page-wrapper">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
           <PageHeader title="관광지 상세" icon="mdi-map-marker-detail" />
           
-          <div class="content-wrapper">
+          <div class="content-area">
             <v-row v-if="!loading">
               <v-col cols="12">
                 <v-card>
@@ -200,12 +200,5 @@ const contentTypes = {
 </template>
 
 <style scoped>
-.page-wrapper {
-  max-width: 100%;
-  margin: 0 auto;
-}
 
-.content-wrapper {
-  padding: 16px 0;
-}
 </style>
