@@ -1,7 +1,9 @@
 <template>
   <div class="pa-8">
-    <v-card-title class="text-h5 font-weight-bold mb-8">회원정보 수정</v-card-title>
-    
+    <v-card-title class="text-h5 font-weight-bold mb-8"
+      >회원정보 수정</v-card-title
+    >
+
     <v-form ref="form" v-model="valid">
       <v-row>
         <v-col cols="12">
@@ -29,7 +31,6 @@
             <label class="text-subtitle-1 mb-2">성별</label>
             <v-radio label="남성" value="male"></v-radio>
             <v-radio label="여성" value="female"></v-radio>
-            <v-radio label="비공개" value="private"></v-radio>
           </v-radio-group>
         </v-col>
 
@@ -46,40 +47,31 @@
 
     <v-row class="mt-4">
       <v-col cols="12" class="d-flex justify-space-between">
-        <v-btn
-          color="grey-darken-1"
-          variant="outlined"
-          @click="cancelEdit"
-        >
+        <v-btn color="grey-darken-1" variant="outlined" @click="cancelEdit">
           회원 탈퇴
         </v-btn>
-        <v-btn
-          color="primary"
-          @click="saveChanges"
-        >
-          저장하기
-        </v-btn>
+        <v-btn color="primary" @click="saveChanges"> 저장하기 </v-btn>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 const valid = ref(false);
 const formData = ref({
-  email: 'user1@naver.com',
-  name: '홍길동',
-  gender: 'private',
-  address: ''
+  email: "user1@naver.com",
+  name: "홍길동",
+  gender: "private",
+  address: "",
 });
 
 const cancelEdit = () => {
-  alert('취소되었습니다.');
+  alert("취소되었습니다.");
 };
 
 const saveChanges = () => {
-  alert('저장되었습니다.');
+  alert("저장되었습니다.");
 };
 </script>
