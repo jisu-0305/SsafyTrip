@@ -7,7 +7,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "main",
+      name: "main", 
       component: TheMainView,
     },
     {
@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: "/join",
-      name: "user-join",
+      name: "user-join", 
       component: () => import("@/views/auth/AuthRegisterView.vue"),
     },
     {
@@ -26,12 +26,12 @@ const router = createRouter({
       component: () => import("@/views/users/MyPageView.vue"),
     },
     {
-      path: "/attract/search", 
-      name: "attract-search", 
-      component: () => import("@/views/attracts/SerchMapView.vue"),
+      path: "/attract/search",
+      name: "attract-search",
+      component: () => import("@/views/attracts/SearchMapView.vue"),
     },
     {
-      path: "/plan",
+      path: "/plan", 
       name: "travel-plan",
       component: () => import("@/views/plan/AttractionPlan.vue"),
     },
@@ -53,9 +53,14 @@ const router = createRouter({
     },
     {
       path: "/notice/:id/edit",
-      name: "notice-edit",
-      component: () => import("@/views/notices/NoticeEditView.vue"), // 수정 페이지 컴포넌트
+      name: "notice-edit", 
+      component: () => import("@/views/notices/NoticeEditView.vue"),
       props: true,
+    },
+    {
+      path: '/attraction/:id',
+      name: 'AttractionDetail',
+      component: () => import('@/views/attracts/AttractDetailView.vue')
     }
   ],
 });
