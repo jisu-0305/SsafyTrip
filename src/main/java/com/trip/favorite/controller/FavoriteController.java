@@ -1,6 +1,5 @@
 package com.trip.favorite.controller;
 
-import com.trip.attraction.dto.AttractionDto;
 import com.trip.attraction.dto.PagedAttractionResponseDto;
 import com.trip.common.ResponseDto;
 import com.trip.favorite.service.FavoriteService;
@@ -11,8 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/favorite")

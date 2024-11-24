@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper file: 실행시킬 query를 가지고 있는 파일 -->
+<mapper namespace="com.trip.schedule.mapper.ScheduleMapper">
+
+    <!-- 생성된 key -> dto의 set 활용해서 id 대입-->
+    <insert id="insertSchedule" useGeneratedKeys="true" keyProperty="schedule.scheduleId">
+        INSERT INTO schedules (user_id, title, memo, total_cost, start_date, end_date)
+        VALUES (#{userId}, #{schedule.title}, #{schedule.memo}, #{schedule.totalCost}, #{schedule.startDate}, #{schedule.endDate});
+    </insert>
+
+    <insert id="insertSchedulePlace">
+        INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order)
+        VALUES (#{scheduleId}, #{place.attractionId}, #{place.visitTime}, #{place.memo}, #{place.cost}, #{place.visitOrder});
+    </insert>
+
+    <delete id="deleteSchedule">
+        DELETE FROM schedules WHERE user_id = #{userId} AND schedule_id = #{scheduleId};
+    </delete>
+
+    <select id="selectAllSchedules" resultType="ScheduleInformationResponseDto">
+        SELECT
+            schedule_id AS scheduleId, title, memo, start_date AS startDate, end_date AS endDate
+        FROM schedules
+        WHERE user_id = #{userId};
+        ORDER BY start_date ASC;
+    </select>
+
+    <select id="selectScheduleById" resultType="ScheduleInformationDto">
+        SELECT schedule_id AS scheduleId, title, memo, total_cost AS totalCost, start_date AS startDate, end_date AS endDate
+        FROM schedules
+        WHERE user_id = #{userId} AND schedule_id = #{scheduleId};
+    </select>
+
+    <select id="selectSchedulePlaces" resultType="SchedulePlaceDto">
+        SELECT attraction_id AS attractionId, visit_time AS visitTime, memo, cost, visit_order AS visitOrder
+        FROM schedule_places
+        WHERE schedule_id = #{scheduleId}
+        ORDER BY visit_time ASC, visit_order ASC;
+    </select>
+</mapper>
