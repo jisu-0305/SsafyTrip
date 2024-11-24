@@ -91,6 +91,24 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const clearAuthState = () => {
+    isLoggedIn.value = false;
+    isAdmin.value = false;
+    user.value = null;
+    // 로컬 스토리지의 토큰도 제거
+    localStorage.removeItem('accessToken');
+  };
+
+  // API 요청 실패 시 세션 체크 함수
+  const checkSessionAndLogout = (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      clearAuthState();
+      // 로그인 페이지로 리다이렉트
+      router.push('/login');
+    }
+    throw error;
+  };
+
   return {
     user,
     loginError,
