@@ -39,7 +39,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleInformationListResponseDto> getAllSchedules(Long userId) {
+    public List<ScheduleInformationResponseDto> getAllSchedules(Long userId) {
         return scheduleMapper.selectAllSchedules(userId);
     }
 

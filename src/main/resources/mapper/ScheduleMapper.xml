@@ -20,19 +20,21 @@
         DELETE FROM schedules WHERE user_id = #{userId} AND schedule_id = #{scheduleId};
     </delete>
 
-    <select id="selectAllSchedules" resultType="com.trip.schedule.dto.ScheduleInformationListResponseDto">
-        SELECT schedule_id AS scheduleId, title, memo
+    <select id="selectAllSchedules" resultType="ScheduleInformationResponseDto">
+        SELECT
+            schedule_id AS scheduleId, title, memo, start_date AS startDate, end_date AS endDate
         FROM schedules
         WHERE user_id = #{userId};
+        ORDER BY start_date ASC;
     </select>
 
-    <select id="selectScheduleById" resultType="com.trip.schedule.dto.ScheduleInformationDto">
+    <select id="selectScheduleById" resultType="ScheduleInformationDto">
         SELECT schedule_id AS scheduleId, title, memo, total_cost AS totalCost, start_date AS startDate, end_date AS endDate
         FROM schedules
         WHERE user_id = #{userId} AND schedule_id = #{scheduleId};
     </select>
 
-    <select id="selectSchedulePlaces" resultType="com.trip.schedule.dto.SchedulePlaceDto">
+    <select id="selectSchedulePlaces" resultType="SchedulePlaceDto">
         SELECT attraction_id AS attractionId, visit_time AS visitTime, memo, cost, visit_order AS visitOrder
         FROM schedule_places
         WHERE schedule_id = #{scheduleId}

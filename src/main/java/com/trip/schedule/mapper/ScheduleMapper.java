@@ -1,7 +1,7 @@
 package com.trip.schedule.mapper;
 
 import com.trip.schedule.dto.ScheduleInformationDto;
-import com.trip.schedule.dto.ScheduleInformationListResponseDto;
+import com.trip.schedule.dto.ScheduleInformationResponseDto;
 import com.trip.schedule.dto.SchedulePlaceDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,7 +16,7 @@ public interface ScheduleMapper {
 
     void deleteSchedule(@Param("userId") Long userId, @Param("scheduleId") int scheduleId);
 
-    List<ScheduleInformationListResponseDto> selectAllSchedules(@Param("userId") Long userId);
+    List<ScheduleInformationResponseDto> selectAllSchedules(@Param("userId") Long userId);
 
     ScheduleInformationDto selectScheduleById(@Param("userId") Long userId, @Param("scheduleId") int scheduleId);
 

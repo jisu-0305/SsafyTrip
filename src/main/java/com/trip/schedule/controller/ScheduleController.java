@@ -4,7 +4,7 @@ import com.trip.common.ResponseDto;
 import com.trip.global.UnauthorizedException;
 import com.trip.schedule.dto.ScheduleCreateRequestDto;
 import com.trip.schedule.dto.ScheduleDetailResponseDto;
-import com.trip.schedule.dto.ScheduleInformationListResponseDto;
+import com.trip.schedule.dto.ScheduleInformationResponseDto;
 import com.trip.schedule.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,13 +54,13 @@ public class ScheduleController {
 
     @GetMapping
     @Operation(summary = "사용자 여행 일정 목록 조회", description = "사용자가 등록한 모든 여행 일정의 제목과 메모를 반환합니다.")
-    public ResponseEntity<List<ScheduleInformationListResponseDto>> getAllSchedules(HttpSession session) {
+    public ResponseEntity<List<ScheduleInformationResponseDto>> getAllSchedules(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        List<ScheduleInformationListResponseDto> schedules = scheduleService.getAllSchedules(userId);
+        List<ScheduleInformationResponseDto> schedules = scheduleService.getAllSchedules(userId);
         return ResponseEntity.ok(schedules);
     }
 
