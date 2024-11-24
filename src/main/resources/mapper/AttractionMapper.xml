@@ -13,6 +13,7 @@
 			title,
 			latitude,
 			longitude,
+			addr1 AS address,
 			first_image1 AS firstImage1,
 			hit,
 			views
@@ -28,6 +29,7 @@
 			title,
 			latitude,
 			longitude,
+			addr1 AS address,
 			first_image1 AS firstImage1,
 			hit,
 			views

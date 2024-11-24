@@ -40,6 +40,7 @@
         a.title,
         a.latitude,
         a.longitude,
+        a.addr1 AS address,
         a.first_image1 AS firstImage1,
         a.hit,
         a.views

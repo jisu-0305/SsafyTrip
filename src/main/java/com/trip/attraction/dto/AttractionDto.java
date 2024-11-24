@@ -15,6 +15,7 @@ public class AttractionDto {
     private String title;
     private double latitude;
     private double longitude;
+    private String address;
     private String firstImage1;
     private int hit;
     private int views;

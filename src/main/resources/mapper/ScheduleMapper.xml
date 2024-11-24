@@ -24,7 +24,7 @@
         SELECT
             schedule_id AS scheduleId, title, memo, start_date AS startDate, end_date AS endDate
         FROM schedules
-        WHERE user_id = #{userId};
+        WHERE user_id = #{userId}
         ORDER BY start_date ASC;
     </select>
 
