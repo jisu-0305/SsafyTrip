@@ -17,11 +17,12 @@ public class MypageServiceImpl {
     private final MypageMapper mypageMapper;
 
     public Boolean deleteUser(DeleteRequestDTO request) {
+        System.out.println("MypageServiceImpl.deleteUser");
         String memberEmail = request.getEmail();
-
         String storedPassWord= mypageMapper.findPasswordByEmail(memberEmail);
 
-        if(storedPassWord!=null && storedPassWord.equals(request.getPassWord())){
+
+        if(storedPassWord!=null && storedPassWord.equals(request.getPassword())){
             mypageMapper.deleteMember(memberEmail);
             return true;
         }else{
