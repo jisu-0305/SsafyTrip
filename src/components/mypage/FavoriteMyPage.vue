@@ -19,6 +19,7 @@ const attractionList = ref([]); // 전체 데이터
 const filteredItems = ref([]); // 현재 페이지 데이터
 const page = ref(1); // 현재 페이지
 const pages = ref(1); // 전체 페이지 수
+const totalPages = ref(1);
 
 // Fetch Data
 const fetchAttractions = async () => {
@@ -29,12 +30,14 @@ const fetchAttractions = async () => {
     attractionList.value = response.data.attractionList || [];
     pages.value = response.data.totalPages || 1; // 전체 페이지 수 설정
     filteredItems.value = attractionList.value; // 현재 페이지 항목
+    totalPages.value = response.data.totalPages;
   } catch (error) {
     console.error("Error fetching attractions:", error);
   }
 };
 
 const onSearch = () => {
+  page.value = 1;
   fetchAttractions();
 };
 
@@ -167,7 +170,7 @@ onMounted(() => {
       <v-col cols="12" class="d-flex justify-center">
         <v-pagination
           v-model="page"
-          :length="10"
+          :length="totalPages"
           :total-visible="5"
           @click="onPageChange(page)"
         ></v-pagination>
