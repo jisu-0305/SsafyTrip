@@ -10,10 +10,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class ApiDetailVo {
-    String name;
-    String text;
-    public ApiDetailVo(String name, String text) {
-        this.name = name;
-        this.text = text;
+    String title;
+    String content;
+    public ApiDetailVo(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }

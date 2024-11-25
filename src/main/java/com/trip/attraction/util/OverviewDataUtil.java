@@ -2,10 +2,6 @@ package com.trip.attraction.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trip.mypg.dto.ApiDTO;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -29,7 +25,6 @@ public class OverviewDataUtil {
             urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + URLEncoder.encode(contentId, "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=" + URLEncoder.encode(contentTypeId, "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("serviceKey", "UTF-8")+ "=" + URLEncoder.encode("3MeOfwmipzVM6lTM3AY/EJDcig4NoENXlzhqBrF5EH0+T1uT0vaQjh3l8axfWUW2b9AINhom/jP0GVGUW7N8bQ==", "UTF-8"));
-
             
 
             // connect
@@ -39,7 +34,6 @@ public class OverviewDataUtil {
             conn.setRequestProperty("Content-type", "application/json");
 
 
-
             // 응답 데이터
             BufferedReader rd;
             if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
@@ -47,11 +41,14 @@ public class OverviewDataUtil {
             } else {
                 rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
+
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = rd.readLine()) != null) {
                 sb.append(line+"\n");
+
             }
+
 
             // 매퍼를 통해 필요한 데이터만 구하기
             ObjectMapper objectMapper = new ObjectMapper();
@@ -62,17 +59,19 @@ public class OverviewDataUtil {
 
 
             // overview에 저장할 데이터 추출
-            List<ApiDTO> tourismInfoList = new ArrayList<>();
+            List<ApiDetailVo> tourismInfoList = new ArrayList<>();
             for (Map<String, Object> item : itemList) {
                 String infoname = (String) item.get("infoname");
                 String infotext = (String) item.get("infotext");
-                tourismInfoList.add(new ApiDTO(infoname, infotext));
+                tourismInfoList.add(new ApiDetailVo(infoname, infotext));
+
             }
 
+
             // overview에 데이터 저장하기
-            for(ApiDTO apiDTO : tourismInfoList){
-//                System.out.println(apiDTO.getTitle() + ":" + apiDTO.getContent());
-                result += apiDTO.getTitle() + ": " + apiDTO.getContent() + "\n";
+            for(ApiDetailVo apiVo : tourismInfoList){
+                result += apiVo.getTitle() + ": " + apiVo.getContent() + "\n";
+
             }
 
         } catch (Exception e) {
