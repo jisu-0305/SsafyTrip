@@ -8,38 +8,42 @@
 	<!-- 페이징 처리된 관광지 리스트 조회 -->
 	<select id="getAttractions" resultType="AttractionDto">
 		SELECT
-			no,
-			content_id AS contentId,
-			title,
-			latitude,
-			longitude,
-			addr1 AS address,
-			first_image1 AS firstImage1,
-			hit,
-			views
-		FROM attractions
+			a.no,
+			a.content_id AS contentId,
+			a.title,
+			ct.content_type_name AS contentType,
+			a.latitude,
+			a.longitude,
+			a.addr1 AS address,
+			a.first_image1 AS firstImage1,
+			a.hit,
+			a.views
+		FROM attractions a
+				 LEFT JOIN contenttypes ct ON a.content_type_id = ct.content_type_id
 			LIMIT #{offset}, #{size}
 	</select>
 
 	<!-- 조건에 맞는 관광지 리스트 조회 -->
 	<select id="searchAttractions" resultType="AttractionDto">
 		SELECT
-			no,
-			content_id AS contentId,
-			title,
-			latitude,
-			longitude,
-			addr1 AS address,
-			first_image1 AS firstImage1,
-			hit,
-			views
-		FROM attractions
-		WHERE (#{sidoCode} IS NULL OR area_code = #{sidoCode})
-		  AND (#{gugunCode} IS NULL OR si_gun_gu_code = #{gugunCode})
-		  AND (#{type} IS NULL OR content_type_id = #{type})
-		  AND (#{word} IS NULL OR title LIKE CONCAT('%', #{word}, '%'))
+			a.no,
+			a.content_id AS contentId,
+			a.title,
+			ct.content_type_name AS contentType,
+			a.latitude,
+			a.longitude,
+			a.addr1 AS address,
+			a.first_image1 AS firstImage1,
+			a.hit,
+			a.views
+		FROM attractions a
+				 LEFT JOIN contenttypes ct ON a.content_type_id = ct.content_type_id
+		WHERE (#{sidoCode} IS NULL OR a.area_code = #{sidoCode})
+		  AND (#{gugunCode} IS NULL OR a.si_gun_gu_code = #{gugunCode})
+		  AND (#{type} IS NULL OR a.content_type_id = #{type})
+		  AND (#{word} IS NULL OR a.title LIKE CONCAT('%', #{word}, '%'))
 		ORDER BY ${sortColumn} ${sortDirection}
-        LIMIT #{offset}, #{limit}
+    LIMIT #{offset}, #{limit}
 	</select>
 
 	<!-- 조건에 맞는 관광지의 총 갯수 조회 -->
