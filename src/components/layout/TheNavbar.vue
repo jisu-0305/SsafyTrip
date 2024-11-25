@@ -40,6 +40,7 @@ const handleLogout = async () => {
     menuStore.changeMenuState(false)  // 메뉴 상태 변경
     router.push({ name: 'main' })     // 메인 페이지로 이동
   } else {
+    menuStore.changeMenuState(false)
     alert('로그아웃 중 오류가 발생했습니다.')
   }
 }
@@ -55,10 +56,7 @@ const handleLogout = async () => {
       elevation="0"
     >
       <!-- 모바일 메뉴 토글 버튼 -->
-      <v-app-bar-nav-icon
-        @click="drawer = !drawer"
-        class="hidden-md-and-up"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
 
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
@@ -76,18 +74,9 @@ const handleLogout = async () => {
       <!-- 데스크톱 메뉴 -->
       <v-spacer></v-spacer>
       <div class="hidden-sm-and-down menu-container">
-        <v-btn
-          v-for="item in menuItems"
-          :key="item.title"
-          variant="text"
-          :ripple="false"
-          class="menu-item"
-          :active-class="'active-menu-item'"
-          :class="{ 'v-btn--active': $route.name === item.route }"
-          @click="handleMenuClick(item.route)"
-          density="comfortable"
-          min-height="82px"
-        >
+        <v-btn v-for="item in menuItems" :key="item.title" variant="text" :ripple="false" class="menu-item"
+          :active-class="'active-menu-item'" :class="{ 'v-btn--active': $route.name === item.route }"
+          @click="handleMenuClick(item.route)" density="comfortable" min-height="82px">
           <span class="menu-text">{{ item.title }}</span>
         </v-btn>
       </div>
@@ -96,32 +85,18 @@ const handleLogout = async () => {
       <!-- 로그인/회원가입/마이페이지 버튼 -->
       <div class="auth-buttons hidden-sm-and-down">
         <template v-if="!menuStore.isLoggedIn">
-          <v-btn
-            class="signup-btn"
-            @click="goToSignup"
-          >
+          <v-btn class="signup-btn" @click="goToSignup">
             회원가입
           </v-btn>
-          <v-btn
-            class="login-btn"
-            variant="outlined"
-            @click="goToLogin"
-          >
+          <v-btn class="login-btn" variant="outlined" @click="goToLogin">
             로그인
           </v-btn>
         </template>
         <template v-else>
-          <v-btn
-            class="mypage-btn"
-            @click="goToMyPage"
-          >
+          <v-btn class="mypage-btn" @click="goToMyPage">
             마이페이지
           </v-btn>
-          <v-btn
-            class="logout-btn"
-            variant="outlined"
-            @click="handleLogout"
-          >
+          <v-btn class="logout-btn" variant="outlined" @click="handleLogout">
             로그아웃
           </v-btn>
         </template>
@@ -131,11 +106,7 @@ const handleLogout = async () => {
     <!-- 모바일 네비게이션 드로어 -->
     <v-navigation-drawer v-model="drawer" temporary location="left">
       <v-list>
-        <v-list-item
-          v-for="item in menuItems"
-          :key="item.title"
-          @click="handleMenuClick(item.route)"
-        >
+        <v-list-item v-for="item in menuItems" :key="item.title" @click="handleMenuClick(item.route)">
           <template v-slot:prepend>
             <v-icon>{{ item.icon }}</v-icon>
           </template>
@@ -146,34 +117,34 @@ const handleLogout = async () => {
 
         <!-- 모바일에서만 보이는 로그인/회원가입 버튼 -->
         <template v-if="!menuStore.isLoggedIn">
-        <v-list-item @click="goToLogin">
-          <template v-slot:prepend>
-            <v-icon>mdi-login</v-icon>
-          </template>
-          <v-list-item-title>로그인</v-list-item-title>
-        </v-list-item>
+          <v-list-item @click="goToLogin">
+            <template v-slot:prepend>
+              <v-icon>mdi-login</v-icon>
+            </template>
+            <v-list-item-title>로그인</v-list-item-title>
+          </v-list-item>
 
-        <v-list-item @click="goToSignup">
-          <template v-slot:prepend>
-            <v-icon>mdi-account-plus</v-icon>
-          </template>
-          <v-list-item-title>회원가입</v-list-item-title>
-        </v-list-item>
-      </template>
-      <template v-else>
-        <v-list-item @click="goToMyPage">
-          <template v-slot:prepend>
-            <v-icon>mdi-account-plus</v-icon>
-          </template>
-          <v-list-item-title>마이페이지</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="handleLogout">
-          <template v-slot:prepend>
-            <v-icon>mdi-logout</v-icon>
-          </template>
-          <v-list-item-title>로그아웃</v-list-item-title>
-        </v-list-item>
-      </template>
+          <v-list-item @click="goToSignup">
+            <template v-slot:prepend>
+              <v-icon>mdi-account-plus</v-icon>
+            </template>
+            <v-list-item-title>회원가입</v-list-item-title>
+          </v-list-item>
+        </template>
+        <template v-else>
+          <v-list-item @click="goToMyPage">
+            <template v-slot:prepend>
+              <v-icon>mdi-account-plus</v-icon>
+            </template>
+            <v-list-item-title>마이페이지</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="handleLogout">
+            <template v-slot:prepend>
+              <v-icon>mdi-logout</v-icon>
+            </template>
+            <v-list-item-title>로그아웃</v-list-item-title>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
   </div>
@@ -225,7 +196,8 @@ const handleLogout = async () => {
   font-size: 16px;
   opacity: 0.85;
   height: 100%;
-  background: transparent !important; /* 배경색 제거 */
+  background: transparent !important;
+  /* 배경색 제거 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -276,7 +248,8 @@ const handleLogout = async () => {
   white-space: nowrap;
 }
 
-.signup-btn, .login-btn {
+.signup-btn,
+.login-btn {
   height: 32px;
   padding: 4px 15px;
   font-family: 'Roboto', sans-serif;
@@ -321,11 +294,11 @@ const handleLogout = async () => {
     width: 100%;
     left: 0;
   }
-  
+
   .menu-container {
     gap: 24px;
   }
-  
+
   .auth-buttons {
     margin-right: 40px;
   }
@@ -335,7 +308,7 @@ const handleLogout = async () => {
   .menu-container {
     gap: 16px;
   }
-  
+
   .auth-buttons {
     margin-right: 20px;
   }
@@ -345,7 +318,7 @@ const handleLogout = async () => {
   .menu-container {
     gap: 8px;
   }
-  
+
   .menu-item {
     padding: 0 8px;
   }
@@ -356,16 +329,17 @@ const handleLogout = async () => {
     top: 0;
   }
 
-  .menu-container, .auth-buttons {
+  .menu-container,
+  .auth-buttons {
     display: none;
   }
-  
+
   .logo-link {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
-  
+
   .logo {
     margin-left: 0;
   }
