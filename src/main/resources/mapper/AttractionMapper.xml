@@ -13,6 +13,7 @@
 			title,
 			latitude,
 			longitude,
+			addr1 AS address,
 			first_image1 AS firstImage1,
 			hit,
 			views
@@ -28,6 +29,7 @@
 			title,
 			latitude,
 			longitude,
+			addr1 AS address,
 			first_image1 AS firstImage1,
 			hit,
 			views
@@ -36,13 +38,7 @@
 		  AND (#{gugunCode} IS NULL OR si_gun_gu_code = #{gugunCode})
 		  AND (#{type} IS NULL OR content_type_id = #{type})
 		  AND (#{word} IS NULL OR title LIKE CONCAT('%', #{word}, '%'))
-		ORDER BY
-			CASE
-			WHEN #{sortBy} = 'name' THEN title
-			WHEN #{sortBy} = 'likes' THEN hit
-			WHEN #{sortBy} = 'views' THEN views
-			ELSE no
-		END DESC
+		ORDER BY ${sortColumn} ${sortDirection}
         LIMIT #{offset}, #{limit}
 	</select>
 

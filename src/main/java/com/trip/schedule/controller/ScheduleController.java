@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 @Tag(name = "Schedule Controller", description = "여행 일정 관리 API를 제공합니다.")
 public class ScheduleController {
