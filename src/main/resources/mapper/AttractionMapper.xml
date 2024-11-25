@@ -90,12 +90,6 @@
 		SET views = views + 1
 		WHERE no = #{attractionId}
 	</update>
-
-	<update id="updateHit">
-		UPDATE attractions
-		SET hit = hit + #{amount}
-		WHERE no = #{attractionId}
-	</update>
 </mapper>
 
 

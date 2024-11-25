@@ -62,6 +62,8 @@ public class FavoriteController {
 
         PagedAttractionResponseDto pagedAttractionResponseDto = favoriteService.getFavoriteAttractions(userId, page, size, word);
 
+        pagedAttractionResponseDto.getAttractionList().forEach(attraction -> attraction.setIsLike(true));
+
         return ResponseEntity.ok(pagedAttractionResponseDto);
     }
 }

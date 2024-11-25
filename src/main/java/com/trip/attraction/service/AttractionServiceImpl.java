@@ -6,10 +6,12 @@ import com.trip.attraction.mapper.ContentTypeMapper;
 import com.trip.attraction.mapper.SidoGunMapper;
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
+import com.trip.favorite.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class AttractionServiceImpl implements AttractionService {
     private final SidoGunMapper sidoGunMapper;
     private final ContentTypeMapper contentTypeMapper;
     private final CommentService commentService;
+    private final FavoriteService favoriteService;
 
     @Override
     public AttractionInitDataResponseDto getAttractionInitialData(int page, int size) {
@@ -94,13 +97,15 @@ public class AttractionServiceImpl implements AttractionService {
                 .build();
     }
 
-    @Override
-    public void incrementHit(int attractionId) {
-        attractionMapper.updateHit(attractionId, 1); // hit +1
+    public AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId) {
+        boolean isLike = favoriteService.isLikedByUser(userId, attraction.getNo());
+        attraction.setIsLike(isLike);
+        return attraction;
     }
 
-    @Override
-    public void decrementHit(int attractionId) {
-        attractionMapper.updateHit(attractionId, -1); // hit -1
+    public List<AttractionDto> enrichWithLikeStatus(List<AttractionDto> attractions, Long userId) {
+        return attractions.stream()
+                .map(attraction -> enrichWithLikeStatus(attraction, userId))
+                .collect(Collectors.toList());
     }
 }

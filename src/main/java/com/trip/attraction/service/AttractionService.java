@@ -14,7 +14,7 @@ public interface AttractionService {
 
     AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId);
 
-    void incrementHit(int attractionId);
+    AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId);
 
-    void decrementHit(int attractionId);
+    List<AttractionDto> enrichWithLikeStatus(List<AttractionDto> attractions, Long userId);
 }
