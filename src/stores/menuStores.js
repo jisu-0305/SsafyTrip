@@ -20,5 +20,15 @@ export const useMenuStore = defineStore('menu', {
     setUserInfo(info) {
       this.userInfo = info;
     }
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'menu-store',
+        storage: localStorage, // 또는 sessionStorage
+        paths: ['isLoggedIn'] // 영속성을 적용할 필드만 지정
+      }
+    ]
   }
 });
