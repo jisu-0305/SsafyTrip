@@ -12,7 +12,7 @@ public interface AttractionService {
 
     List<GuGunDto> getGuGunList(int sidoCode);
 
-    AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId);
+    AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId, Long userId);
 
     AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId);
 

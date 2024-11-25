@@ -85,9 +85,12 @@ public class AttractionServiceImpl implements AttractionService {
     }
 
     @Override
-    public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId) {
+    public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId, Long userId) {
         attractionMapper.updateAttractionViews(attractionId);
         AttractionDetailDto attractionDetailDto = attractionMapper.getAttractionDetail(attractionId);
+
+        boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attractionId);
+        attractionDetailDto.setIsLike(isLike);
 
         List<CommentDto> comments = commentService.getCommentsByAttractionId(attractionId);
 
