@@ -122,7 +122,7 @@ const formatValue = (value, field) => {
         <template v-if="isAdmin && buttons.includes('edit')">
           <v-btn
             color="primary"
-            variant="outlined"
+            variant="tonal"
             class="mx-2"
             @click="emit('edit')"
             prepend-icon="mdi-pencil"
@@ -133,7 +133,7 @@ const formatValue = (value, field) => {
         <template v-if="isAdmin && buttons.includes('delete')">
           <v-btn
             color="error"
-            variant="outlined"
+            variant="tonal"
             class="mx-2"
             @click="emit('delete')"
             prepend-icon="mdi-delete"
@@ -143,7 +143,7 @@ const formatValue = (value, field) => {
         </template>
         <template v-if="buttons.includes('list')">
           <v-btn
-            color="grey"
+            color="black"
             variant="outlined"
             class="mx-2"
             @click="emit('list')"

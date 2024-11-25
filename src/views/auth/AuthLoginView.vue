@@ -183,9 +183,9 @@ const login = async () => {
               </v-btn>
             </div>
 
-              <v-divider class="mb-4"></v-divider>
+              <!-- <v-divider class="mb-4"></v-divider> -->
 
-              <v-btn
+              <!-- <v-btn
                 block
                 color="#FEE500"
                 size="large"
@@ -194,7 +194,7 @@ const login = async () => {
               >
                 <v-icon icon="mdi-chat" size="18" class="mr-2"></v-icon>
                 카카오 로그인
-              </v-btn>
+              </v-btn> -->
             </v-form>
           </v-card-text>
         </v-card>

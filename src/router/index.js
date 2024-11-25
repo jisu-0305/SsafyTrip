@@ -61,7 +61,29 @@ const router = createRouter({
       path: '/attraction/:id',
       name: 'AttractionDetail',
       component: () => import('@/views/attracts/AttractDetailView.vue')
-    }
+    },
+    {
+      path: "/question",
+      name: "question",
+      component: () => import("@/views/questions/QuestionListView.vue"),
+    },
+    {
+      path: "/question/write",
+      name: "question-write",
+      component: () => import("@/views/questions/QuestionWriteView.vue"),
+    },
+    {
+      path: "/question/:id",
+      name: "question-detail",
+      component: () => import("@/views/questions/QuestionDetailView.vue"),
+      props: true
+    },
+    {
+      path: "/question/:id/edit",
+      name: "question-edit",
+      component: () => import("@/views/questions/QuestionEditView.vue"),
+      props: true,
+    },
   ],
 });
 

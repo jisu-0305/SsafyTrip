@@ -63,7 +63,7 @@ const handleLogout = async () => {
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
         <v-img
-          src="src/assets/logo2.png"
+          src="/img/logo2.png"
           alt="Logo"
           :width="180"
           :height="64.13"
@@ -186,13 +186,19 @@ const handleLogout = async () => {
 }
 
 .nav-container {
-  position: absolute;
-  width: 1440px;
+  width: 100%;
   height: 82px;
-  left: -18px;
-  top: 14px;
   background: white;
   border-bottom: 1px solid #D9D9D9;
+}
+
+@media (min-width: 960px) {
+  .nav-container {
+    position: absolute;
+    width: 1440px;
+    left: -18px;
+    top: 14px;
+  }
 }
 
 .logo-link {

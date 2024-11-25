@@ -2,7 +2,6 @@
 import { ref, watch, onMounted } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAttractionStore } from '@/stores/attractionStore';
-import SquareBox from './SquareBox.vue';
 
 const emit = defineEmits(['hover-marker', 'click-marker']);
 const attractionStore = useAttractionStore();
@@ -64,17 +63,12 @@ const loadMarkers = () => {
       selectedMarker.value = marker;
       emit('click-marker', attractions.value[index].contentId);
       
-      const content = document.createElement('div');
-      content.className = 'custom-overlay';
-      const app = createApp(SquareBox, {
-        title: attractions.value[index].title,
-        firstImage1: attractions.value[index].firstImage1,
-        views: attractions.value[index].views,
-        latitude: attractions.value[index].latitude,
-        longitude: attractions.value[index].longitude,
-        contentId: attractions.value[index].contentId
-      });
-      app.mount(content);
+      const content = `
+        <div class="custom-overlay">
+          <h3>${attractions.value[index].title}</h3>
+          <p>조회수: ${attractions.value[index].views}</p>
+        </div>
+      `;
 
       infowindow.value.setContent(content);
       infowindow.value.open(map, marker);
@@ -111,12 +105,24 @@ onMounted(() => {
 <style scoped>
 #map {
   width: 100%;
-  height: 700px;
+  height: 850px;
   position: relative;
 }
 
 :deep(.custom-overlay) {
-  position: relative;
-  z-index: 1000;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+:deep(.custom-overlay h3) {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+:deep(.custom-overlay p) {
+  margin: 0;
+  font-size: 14px;
 }
 </style>

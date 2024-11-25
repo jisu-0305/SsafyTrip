@@ -1,4 +1,8 @@
 <script setup>
+import { computed } from 'vue';
+import { useAuthStore } from '@/stores/authStores';
+import { getInitials, getProfileColor } from '@/utils/profileUtils';
+
 const props = defineProps({
   currentFlag: {
     type: Number,
@@ -7,6 +11,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['updateFlag']);
+const authStore = useAuthStore();
+
+const userEmail = computed(() => authStore.user?.email || '');
+const userInitials = computed(() => getInitials(userEmail.value));
+const avatarColor = computed(() => getProfileColor(userEmail.value));
 
 const menuItems = [
   { id: 1, title: '나의 활동', icon: 'mdi-account-circle' },
@@ -17,11 +26,19 @@ const menuItems = [
 
 <template>
   <div class="d-flex flex-column align-center pa-8">
-    <v-avatar size="120" class="mb-6">
-      <v-img src="https://via.placeholder.com/100" cover />
+    <v-avatar 
+      size="120" 
+      class="mb-6"
+      :color="avatarColor"
+    >
+      <span class="text-h3 font-weight-bold white--text">
+        {{ userInitials }}
+      </span>
     </v-avatar>
     
-    <div class="text-h5 text-white font-weight-bold mb-8">홍길동</div>
+    <div class="text-h5 text-white font-weight-bold mb-8">
+      {{ userEmail }}
+    </div>
     
     <v-list 
       nav 

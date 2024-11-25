@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAttractionDetailStore } from '@/stores/attractionDetailStore';
 import PageHeader from "@/components/common/PageHeader.vue";
@@ -8,8 +8,10 @@ import { useAuthStore } from '@/stores/authStores';
 import axios from 'axios';
 import AttractComment from '@/components/attract/AttractComment.vue';
 import { useFavoriteStore } from '@/stores/favoriteStore';
+import { useAttractionStore } from '@/stores/attractionStore';
 
 const route = useRoute();
+const router = useRouter();
 const attractionDetailStore = useAttractionDetailStore();
 const { attraction, comments, loading } = storeToRefs(attractionDetailStore);
 const map = ref(null);
@@ -19,6 +21,8 @@ const newComment = ref('');
 
 const favoriteStore = useFavoriteStore();
 const { favoriteAttractions } = storeToRefs(favoriteStore);
+
+const attractionStore = useAttractionStore();
 
 const initMap = () => {
   if (!window.kakao?.maps || !attraction.value) return;
@@ -69,6 +73,9 @@ watch([loading, attraction], ([newLoading, newAttraction]) => {
 });
 
 onMounted(async () => {
+  // 상세 페이지 진입 시 현재 상태 저장
+  attractionStore.saveState();
+  
   const attractId = parseInt(route.params.id);
   await attractionDetailStore.fetchAttractionDetail(attractId);
   if (attraction.value?.isFavorite) {
@@ -111,6 +118,17 @@ const toggleFavorite = async () => {
     return;
   }
   await favoriteStore.toggleFavorite(parseInt(route.params.id));
+};
+
+const goBack = async () => {
+  const success = attractionStore.restoreState();
+  if (success) {
+    // 상태 복원 후 API 호출하여 데이터 동기화
+    await attractionStore.fetchAttractions(attractionStore.searchParams, false);
+    router.go(-1);
+  } else {
+    router.push('/search');
+  }
 };
 </script>
 
@@ -210,11 +228,11 @@ const toggleFavorite = async () => {
               <v-col cols="12" class="d-flex justify-end my-4">
                 <v-btn
                   color="primary"
-                  variant="outlined"
-                  @click="$router.push('/attract/search')"
-                  prepend-icon="mdi-format-list-bulleted"
+                  variant="tonal"
+                  @click="goBack"
+                  prepend-icon="mdi-arrow-left"
                 >
-                  목록으로 돌아가기
+                  뒤로가기
                 </v-btn>
               </v-col>
 

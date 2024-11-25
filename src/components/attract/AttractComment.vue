@@ -4,6 +4,7 @@ import { useCommentStore } from '@/stores/commentStore';
 import { useAuthStore } from '@/stores/authStores';
 import { useAttractionDetailStore } from '@/stores/attractionDetailStore';
 import { storeToRefs } from 'pinia';
+import { getInitials, getProfileColor } from '@/utils/profileUtils';
 
 const props = defineProps({
   attractionId: {
@@ -93,8 +94,8 @@ const isCommentOwner = (commentEmail) => {
         class="py-4"
       >
         <template v-slot:prepend>
-          <v-avatar color="primary">
-            {{ comment.email.charAt(0).toUpperCase() }}
+          <v-avatar :color="getProfileColor(comment.email)">
+            {{ getInitials(comment.email) }}
           </v-avatar>
         </template>
         

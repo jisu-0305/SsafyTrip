@@ -11,15 +11,40 @@ export const useAttractionStore = defineStore('attraction', () => {
   const mapPositions = ref([]);
   const sidoList = ref([]);
   const contentTypeList = ref([]);
+  const searchParams = ref({
+    sidoCode: null,
+    gugunCode: null,
+    contentTypeId: null,
+    keyword: '',
+    sortBy: 'name'
+  });
+  const isInitialized = ref(localStorage.getItem('attraction-initialized') === 'true');
 
-  const fetchAttractions = async (params) => {
+  const fetchAttractions = async (params = {}, resetPage = false) => {
     try {
       loading.value = true;
-      const response = await listAttractions({
-        page: currentPage.value,
-        size: 5,
+      
+      if (resetPage) {
+        currentPage.value = 1;
+        params = {
+          ...params,
+          page: 1
+        };
+      } else {
+        params = {
+          ...params,
+          page: params.page || currentPage.value
+        };
+      }
+      
+      const mergedParams = {
+        ...searchParams.value,
         ...params
-      });
+      };
+      
+      searchParams.value = mergedParams;
+      
+      const response = await listAttractions(mergedParams);
       
       attractions.value = response.data.attractionList || [];
       totalPages.value = response.data.totalPages || 0;
@@ -52,9 +77,11 @@ export const useAttractionStore = defineStore('attraction', () => {
       loading.value = true;
       const response = await getInitialAttractions();
       
-      // 시도 목록과 컨텐츠 타입 목록 저장
       sidoList.value = response.data.sidoList || [];
       contentTypeList.value = response.data.contentTypeList || [];
+      
+      localStorage.setItem('sido-list', JSON.stringify(sidoList.value));
+      localStorage.setItem('content-type-list', JSON.stringify(contentTypeList.value));
       
       attractions.value = response.data.attractList || [];
       totalPages.value = response.data.totalPages || 0;
@@ -69,14 +96,59 @@ export const useAttractionStore = defineStore('attraction', () => {
           )
         }));
       }
+      
+      isInitialized.value = true;
+      localStorage.setItem('attraction-initialized', 'true');
     } catch (error) {
       console.error('초기 관광지 목록 조회 실패:', error);
-      attractions.value = [];
-      mapPositions.value = [];
-      totalPages.value = 0;
-      totalCount.value = 0;
     } finally {
       loading.value = false;
+    }
+  };
+
+  const saveState = () => {
+    const state = {
+      attractions: attractions.value,
+      totalPages: totalPages.value,
+      currentPage: currentPage.value,
+      searchParams: searchParams.value,
+      totalCount: totalCount.value,
+      mapPositions: mapPositions.value
+    };
+    sessionStorage.setItem('attraction-state', JSON.stringify(state));
+  };
+
+  const restoreState = () => {
+    const savedState = sessionStorage.getItem('attraction-state');
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        attractions.value = state.attractions || [];
+        totalPages.value = state.totalPages || 0;
+        currentPage.value = state.currentPage || 1;
+        searchParams.value = state.searchParams || {};
+        totalCount.value = state.totalCount || 0;
+        mapPositions.value = state.mapPositions || [];
+        
+        return true;
+      } catch (error) {
+        console.error('상태 복원 실패:', error);
+        return false;
+      }
+    }
+    return false;
+  };
+
+  const initializeStore = () => {
+    const savedSidoList = localStorage.getItem('sido-list');
+    const savedContentTypeList = localStorage.getItem('content-type-list');
+    
+    if (savedSidoList) {
+      sidoList.value = JSON.parse(savedSidoList);
+    }
+    
+    if (savedContentTypeList) {
+      contentTypeList.value = JSON.parse(savedContentTypeList);
     }
   };
 
@@ -89,7 +161,12 @@ export const useAttractionStore = defineStore('attraction', () => {
     mapPositions,
     sidoList,
     contentTypeList,
+    searchParams,
+    isInitialized,
     fetchAttractions,
-    fetchInitialAttractions
+    fetchInitialAttractions,
+    initializeStore,
+    saveState,
+    restoreState
   };
 }); 

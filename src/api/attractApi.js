@@ -9,7 +9,8 @@ function listAttractions(params) {
       type: params.contentTypeId,  
       word: params.keyword,        
       page: params.page || 1,
-      size: params.size || 10
+      size: 5,
+      sortBy: params.sortBy || 'name',
     }
   });
 }
@@ -31,12 +32,12 @@ function getInitialAttractions() {
 
 // 관광지 좋아요 추가 API
 function addFavorite(attractionId) {
-  return myaxios.post(`/favorite/${attractionId}`);
+  return myaxios.post(`/favorites/${attractionId}`);
 }
 
 // 관광지 좋아요 취소 API
 function deleteFavorite(attractionId) {
-  return myaxios.delete(`/favorite/${attractionId}`);
+  return myaxios.delete(`/favorites/${attractionId}`);
 }
 
 export {
