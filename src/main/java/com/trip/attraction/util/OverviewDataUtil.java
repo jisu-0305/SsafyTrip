@@ -2,6 +2,9 @@ package com.trip.attraction.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -11,11 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Configuration
 public class OverviewDataUtil {
-    public static String getOverview(String contentId, String contentTypeId){
+    @Value("${service.key}")
+    private String serviceKey;
+
+    public String getOverview(String contentId, String contentTypeId){
         String result="";
         HttpURLConnection conn = null;
-        
+
         try {
             // url
             StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/detailInfo1");
@@ -24,7 +31,7 @@ public class OverviewDataUtil {
             urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + URLEncoder.encode(contentId, "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=" + URLEncoder.encode(contentTypeId, "UTF-8"));
-            urlBuilder.append("&" + URLEncoder.encode("serviceKey", "UTF-8")+ "=" + URLEncoder.encode("3MeOfwmipzVM6lTM3AY/EJDcig4NoENXlzhqBrF5EH0+T1uT0vaQjh3l8axfWUW2b9AINhom/jP0GVGUW7N8bQ==", "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode(serviceKey, "UTF-8")+ "=" + URLEncoder.encode(serviceKey, "UTF-8"));
             
 
             // connect

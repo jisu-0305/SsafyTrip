@@ -23,6 +23,7 @@ public class AttractionServiceImpl implements AttractionService {
     private final ContentTypeMapper contentTypeMapper;
     private final CommentService commentService;
     private final FavoriteService favoriteService;
+    private final OverviewDataUtil overviewDataUtil;
 
     @Override
     public AttractionInitDataResponseDto getAttractionInitialData(int page, int size) {
@@ -93,7 +94,7 @@ public class AttractionServiceImpl implements AttractionService {
         boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attractionId);
         attractionDetailDto.setIsLike(isLike);
 
-        String overview = OverviewDataUtil.getOverview(String.valueOf(attractionDetailDto.getContentId()), String.valueOf(attractionDetailDto.getContentTypeId()));
+        String overview = overviewDataUtil.getOverview(String.valueOf(attractionDetailDto.getContentId()), String.valueOf(attractionDetailDto.getContentTypeId()));
         attractionDetailDto.setOverview(overview);
 
         List<CommentDto> comments = commentService.getCommentsByAttractionId(attractionId);
