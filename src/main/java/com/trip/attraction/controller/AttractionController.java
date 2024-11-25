@@ -23,9 +23,11 @@ public class AttractionController {
 
     @GetMapping("/init")
     @Operation(summary = "관광지 초기 데이터 로드", description = "관광지 초기 화면 접근 시 필요한 데이터를 로드합니다.")
-    public ResponseEntity<AttractionInitDataResponseDto> getInitialData() {
-
-        AttractionInitDataResponseDto response = attractionService.getAttractionInitialData(1, 5);
+    public ResponseEntity<AttractionInitDataResponseDto> getInitialData(
+            @Parameter(description = "페이지 번호", example = "1") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "페이지 크기", example = "5") @RequestParam(defaultValue = "5") int size
+    ) {
+        AttractionInitDataResponseDto response = attractionService.getAttractionInitialData(page, size);
         return ResponseEntity.ok(response);
     }
     
