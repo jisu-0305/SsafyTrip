@@ -71,96 +71,90 @@ const formatValue = (value, field) => {
 </script>
 
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12" md="8">
-        <v-card elevation="3" class="article-card">
-          <template v-if="isComponentLoading(`${type}-detail`)">
-            <v-card-text class="d-flex justify-center align-center" style="min-height: 400px">
-              <v-progress-circular
-                indeterminate
-                color="primary"
-                size="64"
-              ></v-progress-circular>
-            </v-card-text>
-          </template>
-          <template v-else>
-            <!-- 제목 영역 -->
-            <v-card-title class="text-h4 pa-6 title-area">
-              <div class="title-wrapper">
-                {{ article?.title }}
-              </div>
-              <!-- 추가 필드 표시 -->
-              <div class="additional-fields mt-2">
-                <div 
-                  v-for="field in additionalFields" 
-                  :key="field.key"
-                  class="text-caption d-inline-block me-4"
-                >
-                  {{ field.label }}: {{ formatValue(article[field.key], field) }}
-                </div>
-                <div class="text-caption d-inline-block">
-                  작성일: {{ formattedDate }}
-                </div>
-              </div>
-            </v-card-title>
-            
-            <v-divider></v-divider>
-            
-            <!-- 본문 영역 -->
-            <v-card-text class="pa-6">
-              <div class="ql-snow">
-                <div 
-                  class="ql-editor content-area"
-                  v-html="sanitizedContent"
-                ></div>
-              </div>
-            </v-card-text>
-            
-            <v-divider></v-divider>
-            
-            <!-- 버튼 영역 -->
-            <v-card-actions class="pa-4">
-              <v-spacer></v-spacer>
-              <template v-if="isAdmin && buttons.includes('edit')">
-                <v-btn
-                  color="primary"
-                  variant="outlined"
-                  class="mx-2"
-                  @click="emit('edit')"
-                  prepend-icon="mdi-pencil"
-                >
-                  {{ buttonLabels.edit }}
-                </v-btn>
-              </template>
-              <template v-if="isAdmin && buttons.includes('delete')">
-                <v-btn
-                  color="error"
-                  variant="outlined"
-                  class="mx-2"
-                  @click="emit('delete')"
-                  prepend-icon="mdi-delete"
-                >
-                  {{ buttonLabels.delete }}
-                </v-btn>
-              </template>
-              <template v-if="buttons.includes('list')">
-                <v-btn
-                  color="grey"
-                  variant="outlined"
-                  class="mx-2"
-                  @click="emit('list')"
-                  prepend-icon="mdi-format-list-bulleted"
-                >
-                  {{ buttonLabels.list }}
-                </v-btn>
-              </template>
-            </v-card-actions>
-          </template>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card elevation="3" class="article-card">
+    <template v-if="isComponentLoading(`${type}-detail`)">
+      <v-card-text class="d-flex justify-center align-center" style="min-height: 400px">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          size="64"
+        ></v-progress-circular>
+      </v-card-text>
+    </template>
+    <template v-else>
+      <!-- 제목 영역 -->
+      <v-card-title class="text-h4 pa-6 title-area">
+        <div class="title-wrapper">
+          {{ article?.title }}
+        </div>
+        <!-- 추가 필드 표시 -->
+        <div class="additional-fields mt-2">
+          <div 
+            v-for="field in additionalFields" 
+            :key="field.key"
+            class="text-caption d-inline-block me-4"
+          >
+            {{ field.label }}: {{ formatValue(article[field.key], field) }}
+          </div>
+          <div class="text-caption d-inline-block">
+            작성일: {{ formattedDate }}
+          </div>
+        </div>
+      </v-card-title>
+      
+      <v-divider></v-divider>
+      
+      <!-- 본문 영역 -->
+      <v-card-text class="pa-6">
+        <div class="ql-snow">
+          <div 
+            class="ql-editor content-area"
+            v-html="sanitizedContent"
+          ></div>
+        </div>
+      </v-card-text>
+      
+      <v-divider></v-divider>
+      
+      <!-- 버튼 영역 -->
+      <v-card-actions class="pa-4">
+        <v-spacer></v-spacer>
+        <template v-if="isAdmin && buttons.includes('edit')">
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="mx-2"
+            @click="emit('edit')"
+            prepend-icon="mdi-pencil"
+          >
+            {{ buttonLabels.edit }}
+          </v-btn>
+        </template>
+        <template v-if="isAdmin && buttons.includes('delete')">
+          <v-btn
+            color="error"
+            variant="tonal"
+            class="mx-2"
+            @click="emit('delete')"
+            prepend-icon="mdi-delete"
+          >
+            {{ buttonLabels.delete }}
+          </v-btn>
+        </template>
+        <template v-if="buttons.includes('list')">
+          <v-btn
+            color="black"
+            variant="outlined"
+            class="mx-2"
+            @click="emit('list')"
+            prepend-icon="mdi-format-list-bulleted"
+          >
+            {{ buttonLabels.list }}
+          </v-btn>
+        </template>
+      </v-card-actions>
+    </template>
+  </v-card>
 </template>
 
 <style scoped>

@@ -1,14 +1,28 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAttractionDetailStore } from '@/stores/attractionDetailStore';
 import PageHeader from "@/components/common/PageHeader.vue";
+import { useAuthStore } from '@/stores/authStores';
+import axios from 'axios';
+import AttractComment from '@/components/attract/AttractComment.vue';
+import { useFavoriteStore } from '@/stores/favoriteStore';
+import { useAttractionStore } from '@/stores/attractionStore';
 
 const route = useRoute();
+const router = useRouter();
 const attractionDetailStore = useAttractionDetailStore();
 const { attraction, comments, loading } = storeToRefs(attractionDetailStore);
 const map = ref(null);
+
+const authStore = useAuthStore();
+const newComment = ref('');
+
+const favoriteStore = useFavoriteStore();
+const { favoriteAttractions } = storeToRefs(favoriteStore);
+
+const attractionStore = useAttractionStore();
 
 const initMap = () => {
   if (!window.kakao?.maps || !attraction.value) return;
@@ -59,8 +73,14 @@ watch([loading, attraction], ([newLoading, newAttraction]) => {
 });
 
 onMounted(async () => {
+  // 상세 페이지 진입 시 현재 상태 저장
+  attractionStore.saveState();
+  
   const attractId = parseInt(route.params.id);
   await attractionDetailStore.fetchAttractionDetail(attractId);
+  if (attraction.value?.isFavorite) {
+    favoriteStore.setFavoriteStatus(attractId, true);
+  }
 });
 
 const contentTypes = {
@@ -72,16 +92,54 @@ const contentTypes = {
   32: '숙박',
   38: '쇼핑'
 };
+
+const submitComment = async () => {
+  if (!newComment.value.trim()) return;
+  
+  try {
+    await axios.post('/api/comments', {
+      attractionId: parseInt(route.params.id),
+      content: newComment.value
+    });
+    
+    // 댓글 작성 후 목록 새로고침
+    await attractionDetailStore.fetchAttractionDetail(parseInt(route.params.id));
+    newComment.value = ''; // 입력창 초기화
+    
+  } catch (error) {
+    console.error('댓글 작성 실패:', error);
+    alert('댓글 작성에 실패했습니다.');
+  }
+};
+
+const toggleFavorite = async () => {
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요한 서비스입니다.');
+    return;
+  }
+  await favoriteStore.toggleFavorite(parseInt(route.params.id));
+};
+
+const goBack = async () => {
+  const success = attractionStore.restoreState();
+  if (success) {
+    // 상태 복원 후 API 호출하여 데이터 동기화
+    await attractionStore.fetchAttractions(attractionStore.searchParams, false);
+    router.go(-1);
+  } else {
+    router.push('/search');
+  }
+};
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid class="page-container">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <div class="page-wrapper">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
           <PageHeader title="관광지 상세" icon="mdi-map-marker-detail" />
           
-          <div class="content-wrapper">
+          <div class="content-area">
             <v-row v-if="!loading">
               <v-col cols="12">
                 <v-card>
@@ -101,11 +159,26 @@ const contentTypes = {
                     </template>
                   </v-img>
                   
-                  <v-card-title class="text-h4 pa-4">
+                  <v-card-title class="text-h4 pa-4 d-flex align-center">
                     {{ attraction?.title }}
                     <v-chip class="ml-2" color="primary" size="small">
                       {{ contentTypes[attraction?.contentTypeId] }}
                     </v-chip>
+                    <v-btn
+                      icon
+                      variant="text"
+                      :color="favoriteAttractions.has(parseInt(route.params.id)) ? 'red' : ''"
+                      :loading="favoriteStore.loading"
+                      @click="toggleFavorite"
+                      class="ml-2"
+                    >
+                      <v-icon>
+                        {{ favoriteAttractions.has(parseInt(route.params.id)) 
+                          ? 'mdi-heart' 
+                          : 'mdi-heart-outline' 
+                        }}
+                      </v-icon>
+                    </v-btn>
                   </v-card-title>
 
                   <v-card-text>
@@ -130,9 +203,12 @@ const contentTypes = {
                             <v-icon start>mdi-eye</v-icon>
                             조회수 {{ attraction?.views }}
                           </v-chip>
-                          <v-chip variant="outlined">
-                            <v-icon start>mdi-thumb-up</v-icon>
-                            추천수 {{ attraction?.hit }}
+                          <v-chip 
+                            :color="favoriteAttractions.has(parseInt(route.params.id)) ? 'red' : ''"
+                            :variant="favoriteAttractions.has(parseInt(route.params.id)) ? 'tonal' : 'outlined'"
+                          >
+                            <v-icon start>mdi-heart</v-icon>
+                            좋아요 {{ attraction?.hit }}
                           </v-chip>
                         </div>
                       </v-col>
@@ -149,43 +225,21 @@ const contentTypes = {
                 </v-card>
               </v-col>
 
-              <v-col cols="12" class="mt-4">
-                <v-card>
-                  <v-card-title class="d-flex align-center">
-                    댓글 
-                    <v-chip class="ml-2" color="primary">{{ comments?.length || 0 }}</v-chip>
-                  </v-card-title>
-                  
-                  <v-divider></v-divider>
-                  
-                  <v-list v-if="comments?.length">
-                    <v-list-item
-                      v-for="comment in comments"
-                      :key="comment.id"
-                      class="py-4"
-                    >
-                      <template v-slot:prepend>
-                        <v-avatar color="primary">
-                          {{ comment.email.charAt(0).toUpperCase() }}
-                        </v-avatar>
-                      </template>
-                      
-                      <v-list-item-title class="font-weight-bold mb-1">
-                        {{ comment.email }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="text-body-1 mb-1">
-                        {{ comment.content }}
-                      </v-list-item-subtitle>
-                      <v-list-item-subtitle class="text-caption">
-                        {{ new Date(comment.createdAt).toLocaleString() }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list>
-                  
-                  <v-card-text v-else class="text-center py-4">
-                    작성된 댓글이 없습니다.
-                  </v-card-text>
-                </v-card>
+              <v-col cols="12" class="d-flex justify-end my-4">
+                <v-btn
+                  color="primary"
+                  variant="tonal"
+                  @click="goBack"
+                  prepend-icon="mdi-arrow-left"
+                >
+                  뒤로가기
+                </v-btn>
+              </v-col>
+
+              <v-col cols="12">
+                <AttractComment 
+                  :attraction-id="parseInt(route.params.id)"
+                />
               </v-col>
             </v-row>
 
@@ -200,12 +254,5 @@ const contentTypes = {
 </template>
 
 <style scoped>
-.page-wrapper {
-  max-width: 100%;
-  margin: 0 auto;
-}
 
-.content-wrapper {
-  padding: 16px 0;
-}
 </style>

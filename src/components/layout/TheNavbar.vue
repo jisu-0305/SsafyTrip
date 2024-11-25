@@ -49,14 +49,26 @@ const handleLogout = async () => {
 
 <template>
   <div class="nav-wrapper">
-    <v-app-bar color="white" height="82" class="nav-container">
+    <v-app-bar
+      color="white"
+      height="82"
+      class="nav-container"
+      elevation="0"
+    >
       <!-- 모바일 메뉴 토글 버튼 -->
       <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
 
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
-        <v-img src="src/assets/logo.png" alt="Logo" :width="200" :height="64.13" :aspect-ratio="200 / 64.13" contain
-          class="logo"></v-img>
+        <v-img
+          src="/img/logo2.png"
+          alt="Logo"
+          :width="180"
+          :height="64.13"
+          :aspect-ratio="200/64.13"
+          contain
+          class="logo"
+        ></v-img>
       </router-link>
 
       <!-- 데스크톱 메뉴 -->
@@ -145,13 +157,19 @@ const handleLogout = async () => {
 }
 
 .nav-container {
-  position: absolute;
-  width: 1440px;
+  width: 100%;
   height: 82px;
-  left: -18px;
-  top: 14px;
   background: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #D9D9D9;
+}
+
+@media (min-width: 960px) {
+  .nav-container {
+    position: absolute;
+    width: 1440px;
+    left: -18px;
+    top: 14px;
+  }
 }
 
 .logo-link {
@@ -183,11 +201,6 @@ const handleLogout = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* hover 시 배경색 변경 방지 */
-.menu-item:hover::before {
-  opacity: 0 !important;
 }
 
 /* 메뉴 텍스트 스타일링 */
@@ -334,7 +347,6 @@ const handleLogout = async () => {
 
 .v-navigation-drawer {
   .v-list-item {
-    font-family: 'Roboto', sans-serif;
     font-size: 14px;
     line-height: 22px;
     color: rgba(0, 0, 0, 0.85);

@@ -10,31 +10,46 @@ const props = defineProps({
   columns: {
     type: Array,
     required: true,
-    // [{ key: 'noticeId', label: '번호' }, { key: 'title', label: '제목' }, ...]
   },
   type: {
     type: String,
     required: true,
-    validator: (value) => ['notice', 'qna', 'review'].includes(value)
+    validator: (value) => ['notice', 'question', 'review'].includes(value)
   }
 });
 
 const router = useRouter();
 
-const moveToDetail = (id) => {
-  router.push({ name: `${props.type}-detail`, params: { id } });
+const moveToDetail = (article) => {
+  let id;
+  if (props.type === 'question') {
+    id = article.questionId;
+  } else if (props.type === 'notice') {
+    id = article.noticeId;
+  }
+  
+  if (id) {
+    router.push({ 
+      name: `${props.type}-detail`, 
+      params: { id: id.toString() } 
+    });
+  }
 };
 
 const formatValue = (item, column) => {
   if (column.formatter) {
-    return column.formatter(item[column.key]);
+    const formattedValue = column.formatter(item[column.key]);
+    if (typeof formattedValue === 'object') {
+      return formattedValue;
+    }
+    return { text: formattedValue };
   }
   
   if (column.key === 'createdAt') {
-    return new Date(item[column.key]).toLocaleDateString();
+    return { text: new Date(item[column.key]).toLocaleDateString() };
   }
   
-  return item[column.key];
+  return { text: item[column.key] };
 };
 </script>
 
@@ -55,8 +70,8 @@ const formatValue = (item, column) => {
     <tbody>
       <tr 
         v-for="article in articles" 
-        :key="article.id || article.noticeId" 
-        @click="moveToDetail(article.id || article.noticeId)"
+        :key="article.questionId || article.noticeId" 
+        @click="moveToDetail(article)"
         style="cursor: pointer"
       >
         <td 
@@ -65,7 +80,16 @@ const formatValue = (item, column) => {
           :class="column.class"
           :style="column.style"
         >
-          {{ formatValue(article, column) }}
+          <v-chip
+            v-if="column.key === 'status'"
+            :color="formatValue(article, column).color"
+            size="small"
+          >
+            {{ formatValue(article, column).text }}
+          </v-chip>
+          <template v-else>
+            {{ formatValue(article, column).text }}
+          </template>
         </td>
       </tr>
     </tbody>

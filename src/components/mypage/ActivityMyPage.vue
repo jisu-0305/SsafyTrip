@@ -27,14 +27,24 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const activityItems = [
-  { title: '찜목록', icon: 'mdi-bookmark-outline' },
-  { title: '여행톡', icon: 'mdi-chat-outline' },
-  { title: '여행코스', icon: 'mdi-map-outline' },
-  { title: '1:1문의', icon: 'mdi-help-circle-outline' }
+  { title: '찜목록', icon: 'mdi-bookmark-outline', route: 'favorites' },
+  { title: '여행톡', icon: 'mdi-chat-outline', route: 'reviews' },
+  { title: '여행코스', icon: 'mdi-map-outline', route: 'courses' },
+  { title: '1:1문의', icon: 'mdi-help-circle-outline', route: 'question' }
 ];
 
 const handleClick = (activity) => {
-  alert(`${activity} 버튼이 클릭되었습니다.`);
+  const item = activityItems.find(item => item.title === activity);
+  if (item) {
+    if (item.route === 'question') {
+      router.push({ name: 'question' });
+    } else {
+      alert(`${activity} 버튼이 클릭되었습니다.`);
+    }
+  }
 };
 </script>

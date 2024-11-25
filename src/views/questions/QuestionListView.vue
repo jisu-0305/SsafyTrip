@@ -1,43 +1,53 @@
 <script setup>
 import { onMounted } from "vue";
 import { storeToRefs } from 'pinia';
-import { useNoticeStore } from "@/stores/noticeStores";
+import { useQuestionStore } from "@/stores/questionStores";
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStores';
 import PageHeader from "@/components/common/PageHeader.vue";
 import BoardList from "@/components/board/BoardList.vue";
 import SearchResultInfo from "@/components/common/SearchResultInfo.vue";
-import { useAuthStore } from '@/stores/authStores'
 
 const router = useRouter();
-const noticeStore = useNoticeStore();
-const { notices, currentPage, totalPages, totalElements, searchKeyword } = storeToRefs(noticeStore);
-const authStore = useAuthStore()
+const questionStore = useQuestionStore();
+const { questions, currentPage, totalPages, totalElements, searchKeyword } = storeToRefs(questionStore);
+const authStore = useAuthStore();
 
 onMounted(() => {
-  noticeStore.fetchNotices();
+  questionStore.fetchQuestions();
 });
 
-const handlePageChange = (page) => {
-  noticeStore.fetchNotices(page, 10, searchKeyword.value);
+const handlePageChange = (questionId) => {
+  questionStore.fetchQuestionById(questionId);
 };
 
 const handleSearch = () => {
-  noticeStore.fetchNotices(1, 10, searchKeyword.value);
+  questionStore.fetchQuestions(1, 10, searchKeyword.value);
 };
 
 const goToWrite = () => {
-  router.push({ name: 'notice-write' });
+  router.push({ name: 'question-write' });
 };
 
 const columns = [
   { 
-    key: 'noticeId', 
+    key: 'questionId', 
     label: '번호',
     style: 'width: 100px'
   },
   { 
     key: 'title', 
     label: '제목' 
+  },
+  {
+    key: 'status',
+    label: '상태',
+    style: 'width: 100px',
+    formatter: (value) => ({
+      text: value === 'ANSWERED' ? '답변완료' : '답변대기',
+      color: value === 'ANSWERED' ? 'success' : 'error',
+      variant: 'flat'
+    })
   },
   { 
     key: 'createdAt', 
@@ -52,13 +62,11 @@ const columns = [
     <v-row justify="center">
       <v-col cols="12" class="content-wrapper">
         <div class="inner-content">
-          <PageHeader title="공지사항" icon="mdi-clipboard-text" />
+          <PageHeader title="1:1 문의" icon="mdi-help-circle" />
           <div class="content-area">
-            
-            <!-- 검색 영역 -->
             <div class="search-area mb-6">
               <v-row>
-                <v-col :cols="authStore.isAdmin ? 8 : 10">
+                <v-col :cols="8">
                   <v-text-field
                     v-model="searchKeyword"
                     label="검색어"
@@ -77,36 +85,33 @@ const columns = [
                     검색
                   </v-btn>
                 </v-col>
-                <v-col v-if="authStore.isAdmin" cols="2">
+                <v-col cols="2">
                   <v-btn
                     color="blue-darken-3"
                     @click="goToWrite"
                     prepend-icon="mdi-plus"
                     block
                     height="40"
-                    :title="!authStore.isAdmin ? '관리자만 작성할 수 있습니다' : ''"
                   >
-                    작성
+                    문의하기
                   </v-btn>
                 </v-col>
               </v-row>
             </div>
 
-            <!-- 게시글 리스트 영역 -->
             <div class="list-area">
               <SearchResultInfo :total-count="totalElements" />
               <BoardList 
-                :articles="notices" 
+                :articles="questions" 
                 :columns="columns"
-                type="notice"
+                type="question"
               />
               
-              <!-- 페이지네이션 -->
               <div class="text-center mt-6">
                 <v-pagination
                   v-model="currentPage"
                   :length="totalPages"
-                  @update:model-value="handlePageChange"
+                  @update:model-value="handlePageChange(columns.questionId)"
                 ></v-pagination>
               </div>
             </div>
@@ -115,14 +120,4 @@ const columns = [
       </v-col>
     </v-row>
   </v-container>
-</template>
-
-<style scoped>
-.search-area {
-  margin-bottom: 32px;
-}
-
-.list-area {
-  margin-top: 16px;
-}
-</style>
+</template> 

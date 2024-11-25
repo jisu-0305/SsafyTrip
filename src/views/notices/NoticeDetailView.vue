@@ -6,6 +6,7 @@ import { useNoticeStore } from "@/stores/noticeStores";
 import { useAuthStore } from '@/stores/authStores'
 import BoardDetail from "@/components/board/BoardDetail.vue";
 import { useLoadingStore } from '@/stores/loadingStore'
+import PageHeader from "@/components/common/PageHeader.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -14,7 +15,6 @@ const { currentNotice } = storeToRefs(noticeStore);
 const authStore = useAuthStore()
 const loadingStore = useLoadingStore()
 
-// 컴포넌트 마운트 해제 시 사용할 flag
 let isComponentMounted = true;
 
 onMounted(async () => {
@@ -60,12 +60,26 @@ const handleList = () => {
 </script>
 
 <template>
-  <BoardDetail
-    type="notice"
-    :article="currentNotice"
-    :isAdmin="authStore.isAdmin"
-    @edit="handleEdit"
-    @delete="handleDelete"
-    @list="handleList"
-  />
+  <v-container fluid class="page-container">
+    <v-row justify="center">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
+          <PageHeader title="공지사항 상세" icon="mdi-clipboard-text" />
+          <div class="content-area">
+            <BoardDetail
+              type="notice"
+              :article="currentNotice"
+              :isAdmin="authStore.isAdmin"
+              @edit="handleEdit"
+              @delete="handleDelete"
+              @list="handleList"
+            />
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
+<style scoped>
+</style>

@@ -44,3 +44,31 @@ body,
     font-family: 'Noto Sans KR', sans-serif !important;
   }
 }
+
+.page-container {
+  max-width: none;
+  padding: 0;
+}
+
+.content-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.inner-content {
+  width: 100%;
+  padding: 16px 0;
+}
+
+@media (max-width: 1100px) {
+  .content-wrapper {
+    padding: 0 24px;
+  }
+}
+
+hr.v-divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}

@@ -7,7 +7,7 @@ import PageHeader from "@/components/common/PageHeader.vue";
 import { useAttractionStore } from '@/stores/attractionStore';
 import { storeToRefs } from 'pinia';
 
-const attractionStore = useAttractionStore();
+const attractionStore = useAttractionStore(); 
 const { attractions, totalPages, currentPage, loading, totalCount } = storeToRefs(attractionStore);
 
 const handleSearch = async (params) => {
@@ -21,7 +21,7 @@ const handlePageChange = async (page) => {
 onMounted(async () => {
   await attractionStore.fetchInitialAttractions();
 });
-
+ 
 const hoveredMarkerId = ref(null);
 const selectedMarkerId = ref(null);
 
@@ -35,18 +35,18 @@ const handleMarkerClick = (contentId) => {
 </script>
 
 <template>
-  <v-container>
+  <v-container fluid class="page-container">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <div class="page-wrapper">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
           <PageHeader title="관광지 검색" icon="mdi-map-search" />
           
-          <div class="content-wrapper">
+          <div class="content-area">
             <AttractSearchFilter @search="handleSearch" class="mb-4" />
 
             <v-row>
               <v-col cols="12" md="6">
-                <v-card height="700" class="map-card">
+                <v-card height="600" class="map-card">
                   <AttractKakaoMap 
                     @hover-marker="handleMarkerHover"
                     @click-marker="handleMarkerClick"
@@ -75,14 +75,6 @@ const handleMarkerClick = (contentId) => {
 </template>
 
 <style scoped>
-.page-wrapper {
-  width: 100%;
-}
-
-.content-wrapper {
-  padding: 20px 0;
-}
-
 .map-card {
   overflow: visible !important;
   position: relative;
