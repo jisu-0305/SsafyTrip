@@ -70,16 +70,27 @@ export const useAuthStore = defineStore('auth', () => {
   // 세션 체크 관련
   let sessionCheckInterval = null
 
+  const checkSession = async () => {
+    try {
+      const response = await authApi.checkSession()
+      if (response.data.isValid) {
+        user.value = response.data.user
+        return true
+      } else {
+        user.value = null
+        return false
+      }
+    } catch (error) {
+      user.value = null
+      return false
+    }
+  }
+
   const startSessionCheck = () => {
-    // 5분마다 세션 체크
     sessionCheckInterval = setInterval(async () => {
-      try {
-        const response = await authApi.checkSession()
-        if (!response.data.isValid) {
-          await logout()
-        }
-      } catch (error) {
-        await logout()
+      const isValid = await checkSession()
+      if (!isValid) {
+        router.push('/login')
       }
     }, 5 * 60 * 1000)
   }
@@ -90,6 +101,24 @@ export const useAuthStore = defineStore('auth', () => {
       sessionCheckInterval = null
     }
   }
+
+  const clearAuthState = () => {
+    isLoggedIn.value = false;
+    isAdmin.value = false;
+    user.value = null;
+    // 로컬 스토리지의 토큰도 제거
+    localStorage.removeItem('accessToken');
+  };
+
+  // API 요청 실패 시 세션 체크 함수
+  const checkSessionAndLogout = (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      clearAuthState();
+      // 로그인 페이지로 리다이렉트
+      router.push('/login');
+    }
+    throw error;
+  };
 
   return {
     user,

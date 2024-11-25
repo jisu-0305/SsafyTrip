@@ -187,17 +187,17 @@ const validateForm = () => {
   <v-container class="fill-height">
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card class="pa-6" width="400" style="margin: 0 auto;">
-          <!-- Card Header -->
-          <v-card-title class="text-h5 font-weight-semibold pb-2" style="letter-spacing: -0.6px; color: #020617; font-family: Inter;">
+        <v-card width="400" style="margin: 0 auto;">
+          <v-card-item class="px-6 py-6">
+          <v-card-title class="text-h5 font-weight-bold mb-2">
             회원가입
           </v-card-title>
           <v-card-subtitle class="text-body-2" style="color: #64748B; font-family: Inter;">
             여행을 시작하기 위한 첫 걸음
           </v-card-subtitle>
-
+          </v-card-item>
           <!-- Form Content -->
-          <v-form @submit.prevent="submitForm" class="mt-4">
+          <v-form @submit.prevent="submitForm" class="px-6">
             <v-text-field
               v-model="form.name"
               label="이름"
@@ -288,18 +288,17 @@ const validateForm = () => {
 
             <!-- 주소 입력 -->
             <div class="mb-3">
-              <div class="d-flex mb-2">
+
                 <v-text-field
                   v-model="address.zipcode"
                   label="우편번호"
                   readonly
                   variant="outlined"
                   density="comfortable"
-                  class="mb-2"
+
                   append-inner-icon="mdi-magnify"
                   @click:append-inner="openPostcode"
                 ></v-text-field>
-              </div>
 
               <v-text-field
                 v-model="address.roadAddress"
@@ -307,7 +306,6 @@ const validateForm = () => {
                 readonly
                 variant="outlined"
                 density="comfortable"
-                class="mb-2"
               ></v-text-field>
 
               <v-text-field
@@ -316,7 +314,6 @@ const validateForm = () => {
                 label="상세 주소"
                 variant="outlined"
                 density="comfortable"
-                class="mb-2"
               ></v-text-field>
             </div>
 
@@ -339,17 +336,6 @@ const validateForm = () => {
               사용중인 메일로 인증 후 회원가입을 실시하여 주세요
             </div>
 
-            <!-- 카카오 회원가입 버튼 -->
-            <v-btn
-              block
-              color="#FEE500"
-              height="40"
-              style="border-radius: 6px; font-family: Roboto;"
-              class="d-flex align-center justify-center"
-            >
-              <v-icon class="mr-2">mdi-chat</v-icon>
-              카카오로 회원가입
-            </v-btn>
           </v-form>
         </v-card>
       </v-col>
@@ -358,22 +344,5 @@ const validateForm = () => {
 </template>
 
 <style scoped>
-.v-text-field :deep(.v-field__outline__start) {
-  border-radius: 6px 0 0 6px;
-}
 
-.v-text-field :deep(.v-field__outline__end) {
-  border-radius: 0 6px 6px 0;
-}
-
-.v-text-field :deep(.v-field--variant-outlined .v-field__outline) {
-  --v-field-border-width: 1px;
-  border-color: #E2E8F0;
-}
-
-.v-btn {
-  text-transform: none;
-  font-weight: 500;
-  letter-spacing: normal;
-}
 </style>

@@ -35,11 +35,22 @@ const handleSubmit = async (formData) => {
 </script>
 
 <template>
-  <BoardWrite
-    type="notice"
-    title="공지사항"
-    :initial-data="noticeStore.currentNotice"
-    :is-edit="true"
-    @submit="handleSubmit"
-  />
+  <v-container fluid class="page-container">
+    <v-row justify="center">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
+          <PageHeader title="공지사항 상세" icon="mdi-clipboard-text" />
+          <div class="content-area">
+          <BoardWrite
+            type="notice"
+            title="공지사항"
+            :initial-data="noticeStore.currentNotice"
+            :is-edit="true"
+            @submit="handleSubmit"
+          />
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

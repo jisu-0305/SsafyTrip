@@ -1,7 +1,7 @@
 <script setup>
 import TheNavbar from "@/components/layout/TheNavbar.vue";
-// import TheFooter from "@/components/layout/TheFooter.vue";
-import AttractionPlan from "@/views/plan/AttractionPlan.vue";
+import TheFooter from "@/components/layout/TheFooter.vue";
+
 </script>
 
 <template>

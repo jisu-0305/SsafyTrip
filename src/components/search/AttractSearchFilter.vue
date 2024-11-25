@@ -134,7 +134,7 @@ onMounted(async () => {
             color="primary" 
             block 
             @click="handleSearch"
-            height="56"
+            height="48"
           >
             검색
           </v-btn>

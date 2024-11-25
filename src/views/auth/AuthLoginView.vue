@@ -183,9 +183,9 @@ const login = async () => {
               </v-btn>
             </div>
 
-              <v-divider class="mb-4"></v-divider>
+              <!-- <v-divider class="mb-4"></v-divider> -->
 
-              <v-btn
+              <!-- <v-btn
                 block
                 color="#FEE500"
                 size="large"
@@ -194,7 +194,7 @@ const login = async () => {
               >
                 <v-icon icon="mdi-chat" size="18" class="mr-2"></v-icon>
                 카카오 로그인
-              </v-btn>
+              </v-btn> -->
             </v-form>
           </v-card-text>
         </v-card>
@@ -204,35 +204,9 @@ const login = async () => {
 </template>
 
 <style scoped>
-.login-card {
-  border: 1px solid #BFBFBF !important;
-  border-radius: 8px;
-}
 
 :deep(.v-btn) {
   text-transform: none;
   letter-spacing: normal;
-}
-
-:deep(.v-field) {
-  border-radius: 6px;
-}
-
-:deep(.v-text-field .v-field__input) {
-  font-size: 14px;
-  min-height: 40px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-:deep(.v-card-title) {
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -0.6px;
-}
-
-:deep(.v-card-subtitle) {
-  color: #64748B !important;
-  font-size: 14px;
-  line-height: 20px;
 }
 </style>
