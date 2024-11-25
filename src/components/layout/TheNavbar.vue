@@ -63,9 +63,9 @@ const handleLogout = async () => {
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
         <v-img
-          src="src/assets/logo2.png"
+          src="src/assets/logo.png"
           alt="Logo"
-          :width="180"
+          :width="200"
           :height="64.13"
           :aspect-ratio="200/64.13"
           contain

@@ -70,27 +70,16 @@ export const useAuthStore = defineStore('auth', () => {
   // 세션 체크 관련
   let sessionCheckInterval = null
 
-  const checkSession = async () => {
-    try {
-      const response = await authApi.checkSession()
-      if (response.data.isValid) {
-        user.value = response.data.user
-        return true
-      } else {
-        user.value = null
-        return false
-      }
-    } catch (error) {
-      user.value = null
-      return false
-    }
-  }
-
   const startSessionCheck = () => {
+    // 5분마다 세션 체크
     sessionCheckInterval = setInterval(async () => {
-      const isValid = await checkSession()
-      if (!isValid) {
-        router.push('/login')
+      try {
+        const response = await authApi.checkSession()
+        if (!response.data.isValid) {
+          await logout()
+        }
+      } catch (error) {
+        await logout()
       }
     }, 5 * 60 * 1000)
   }
