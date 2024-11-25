@@ -1,14 +1,15 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
+
 import com.trip.attraction.mapper.*;
 import com.trip.attraction.util.OverviewDataUtil;
+
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,7 +49,25 @@ public class AttractionServiceImpl implements AttractionService {
         int totalCount = attractionMapper.countFilteredAttractions(sidoCode, gugunCode, type, word);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
-        List<AttractionDto> attractionList = attractionMapper.searchAttractions(sidoCode, gugunCode, type, word, offset, size, sortBy);
+        String sortColumn;
+        String sortDirection = switch (sortBy) {
+            case "likes" -> {
+                sortColumn = "hit";
+                yield "DESC";
+            }
+            case "views" -> {
+                sortColumn = "views";
+                yield "DESC";
+            }
+            default -> {
+                sortColumn = "no";
+                yield "ASC";
+            }
+        };
+
+        List<AttractionDto> attractionList = attractionMapper.searchAttractions(
+                sidoCode, gugunCode, type, word, offset, size, sortColumn, sortDirection
+        );
         
         PagedAttractionResponseDto pagedAttractionResponseDto = new PagedAttractionResponseDto();
         pagedAttractionResponseDto.setAttractionList(attractionList);

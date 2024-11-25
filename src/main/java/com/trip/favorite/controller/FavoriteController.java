@@ -1,6 +1,5 @@
 package com.trip.favorite.controller;
 
-import com.trip.attraction.dto.AttractionDto;
 import com.trip.attraction.dto.PagedAttractionResponseDto;
 import com.trip.common.ResponseDto;
 import com.trip.favorite.service.FavoriteService;
@@ -12,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/favorite")
+@RequestMapping("/favorites")
 @RequiredArgsConstructor
 @Tag(name = "Favorite Controller", description = "관광지 좋아요 관련 API를 제공합니다.")
 public class FavoriteController {
