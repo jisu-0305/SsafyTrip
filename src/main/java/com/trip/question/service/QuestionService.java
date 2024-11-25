@@ -20,10 +20,20 @@ public class QuestionService {
         return true;
     }
 
-    public List<QuestionsDto> selectAllQuestions(int userId) {
-        List<QuestionsDto> questionsList = questionMapper.getQuestionsByUserId((int)userId);
+    public PagedQuestionResponseDto selectAllQuestions(int userId, int page, int size) {
+        int offset = (page - 1) * size;
 
-        return questionsList;
+        int totalCount = questionMapper.getCountQuestions(userId);
+        int totalPage = (int) Math.ceil((double) totalCount / size);
+
+        List<QuestionsDto> questionsList = questionMapper.getQuestionsByUserId((int)userId,offset,size);
+
+        PagedQuestionResponseDto pagedQuestionResponseDto = new PagedQuestionResponseDto();
+        pagedQuestionResponseDto.setQuestionsList(questionsList);
+        pagedQuestionResponseDto.setTotalPages(totalPage);
+        pagedQuestionResponseDto.setTotalCount(totalCount);
+
+        return pagedQuestionResponseDto;
     }
 
 

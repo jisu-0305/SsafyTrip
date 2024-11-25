@@ -12,5 +12,5 @@ import lombok.ToString;
 @ToString
 public class DeleteRequestDTO {
     private String email;
-    private String passWord;
+    private String password;
 }

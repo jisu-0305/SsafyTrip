@@ -1,9 +1,10 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
-import com.trip.attraction.mapper.AttractionMapper;
-import com.trip.attraction.mapper.ContentTypeMapper;
-import com.trip.attraction.mapper.SidoGunMapper;
+
+import com.trip.attraction.mapper.*;
+import com.trip.attraction.util.OverviewDataUtil;
+
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,10 @@ public class AttractionServiceImpl implements AttractionService {
     public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId) {
         attractionMapper.updateAttractionViews(attractionId);
         AttractionDetailDto attractionDetailDto = attractionMapper.getAttractionDetail(attractionId);
+
+        String overview = OverviewDataUtil.getOverview(String.valueOf(attractionDetailDto.getContentId()), String.valueOf(attractionDetailDto.getContentTypeId()));
+        attractionDetailDto.setOverview(overview);
+
 
         List<CommentDto> comments = commentService.getCommentsByAttractionId(attractionId);
 

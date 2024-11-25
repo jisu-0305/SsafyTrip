@@ -13,7 +13,7 @@ import java.util.List;
 public interface QuestionMapper {
     int insertQuestion(QuestionInsertDto questionInsertDto);
 
-    List<QuestionsDto> getQuestionsByUserId(int userId);
+    List<QuestionsDto> getQuestionsByUserId(@Param("userId") int userId, @Param("offset") int offset, @Param("size") int size);
 
     Boolean selectIsAnswered(@Param("userId") int userId, @Param("questionId") int questionId);
 
@@ -24,4 +24,6 @@ public interface QuestionMapper {
     int insertAnswer(QuestionAnswerReqDto questionAnswerReqDto);
 
     int updateQuestionIsAnswered(@Param("questionId") int questionId);
+
+    int getCountQuestions(@Param("userId") int userId);
 }
