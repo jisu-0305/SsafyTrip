@@ -1,81 +1,141 @@
 package com.trip.weather.service;
 
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trip.weather.dto.WeatherRequestDto;
+import com.trip.weather.dto.WeatherResponseDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class WeatherService {
+
     @Value("${service.key}")
     private String serviceKey;
 
-    public String getWeatherForecast(double latitude, double longitude) {
-        String response = "";
+    public List<WeatherResponseDto> getWeatherForecast(List<WeatherRequestDto> weatherRequests) {
+        List<WeatherResponseDto> responseList = new ArrayList<>();
+
         try {
-            // 위도/경도를 nx, ny로 변환하는 로직 (임시로 고정된 값 사용)
-            int[] grid = convertLatLonToGrid(latitude, longitude);
-            String nx = String.valueOf(grid[0]);
-            String ny = String.valueOf(grid[1]);
-            System.out.println("nx: "+nx+", ny: "+ny);
-            String pageUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
+            for (WeatherRequestDto request : weatherRequests) {
+                double latitude = request.getLatitude();
+                double longitude = request.getLongitude();
+                String date = request.getDate();
 
-            // 공공데이터포털 API 요청 URL 생성
-            StringBuilder urlBuilder = new StringBuilder(pageUrl);
-            urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" +  URLEncoder.encode(serviceKey, "UTF-8")); // Service Key
-            urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); // 페이지 번호
-            urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); // 한 페이지 결과 수
-            urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); // 응답 형식
-            urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(getTodayDate(), "UTF-8")); // 기준 날짜
-            urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode("0200", "UTF-8")); // 기준 시간
-            urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); // X 좌표
-            urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); // Y 좌표
+                // 위도와 경도를 격자 좌표로 변환
+                int[] grid = convertLatLonToGrid(latitude, longitude);
+                String nx = String.valueOf(grid[0]);
+                String ny = String.valueOf(grid[1]);
 
-            // HTTP 연결
-            URL url = new URL(urlBuilder.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-type", "application/json");
+                // API 호출
+                String response = fetchWeatherData(nx, ny, date);
 
-            // 응답 코드 출력
-            System.out.println("Response code: " + conn.getResponseCode());
+                // JSON 응답 파싱
+                List<WeatherResponseDto> parsedData = parseWeatherResponse(response, date);
 
-            // 응답 데이터 읽기
-            BufferedReader rd;
-            if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            } else {
-                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                // 결과 리스트에 추가
+                if (!parsedData.isEmpty()) {
+                    responseList.addAll(parsedData);
+                }
             }
-
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = rd.readLine()) != null) {
-                sb.append(line);
-            }
-            rd.close();
-            conn.disconnect();
-            response = sb.toString();
-
         } catch (Exception e) {
             e.printStackTrace();
-            response = "Error: " + e.getMessage();
         }
-        return response;
+
+        return responseList;
     }
 
-    private String getTodayDate() {
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        return today.format(formatter);
+    private String fetchWeatherData(String nx, String ny, String baseDate) throws Exception {
+        String pageUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
+        StringBuilder urlBuilder = new StringBuilder(pageUrl);
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + URLEncoder.encode(serviceKey, "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("100", "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("dataType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode("0200", "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("nx", "UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8"));
+        urlBuilder.append("&" + URLEncoder.encode("ny", "UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8"));
+
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+
+        BufferedReader rd;
+        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        return sb.toString();
+    }
+    private List<WeatherResponseDto> parseWeatherResponse(String response, String date) {
+        List<WeatherResponseDto> weatherList = new ArrayList<>();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(response);
+            JsonNode items = rootNode.path("response").path("body").path("items").path("item");
+
+            String weather = null;
+            String temperature = null;
+
+            for (JsonNode item : items) {
+                String category = item.path("category").asText();
+                String fcstValue = item.path("fcstValue").asText();
+                String fcstDate = item.path("fcstDate").asText();
+                String fcstTime = item.path("fcstTime").asText();
+
+                // 오전 6시 (0600) 데이터만 선택
+                if (fcstDate.equals(date) && fcstTime.equals("0600")) {
+                    if (category.equals("TMP")) { // 기온 데이터
+                        temperature = fcstValue + "°C";
+                    } else if (category.equals("SKY")) { // 하늘 상태 데이터
+                        weather = interpretSkyCondition(fcstValue);
+                    }
+                }
+            }
+
+            // 모든 데이터를 처리한 후, 결과가 있다면 추가
+            if (weather != null && temperature != null) {
+                weatherList.add(new WeatherResponseDto(date, weather, temperature));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return weatherList;
     }
 
+    private String interpretSkyCondition(String value) {
+        switch (value) {
+            case "1":
+                return "맑음";
+            case "3":
+                return "구름 많음";
+            case "4":
+                return "흐림";
+            default:
+                return "알 수 없음";
+        }
+    }
 
     private int[] convertLatLonToGrid(double lat, double lon) {
         final double RE = 6371.00877; // 지구 반경(km)
