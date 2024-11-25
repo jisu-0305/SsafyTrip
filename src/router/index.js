@@ -79,10 +79,10 @@ const router = createRouter({
       props: true
     },
     {
-      path: "/question/:id/edit",
-      name: "question-edit",
-      component: () => import("@/views/questions/QuestionEditView.vue"),
-      props: true,
+      path: "/question/:id/answer",
+      name: "question-answer",
+      component: () => import("@/views/questions/QuestionAnswerView.vue"),
+      props: true
     },
   ],
 });

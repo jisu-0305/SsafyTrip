@@ -152,6 +152,27 @@ export const useAttractionStore = defineStore('attraction', () => {
     }
   };
 
+  const fetchPopularAttractions = async (sidoCode = null) => {
+    try {
+      loading.value = true;
+      const params = {
+        sortBy: 'views',
+      };
+      
+      if (sidoCode) {
+        params.sidoCode = sidoCode;
+      }
+      
+      const response = await listAttractions(params);
+      return response.data.attractionList || [];
+    } catch (error) {
+      console.error('인기 관광지 조회 실패:', error);
+      return [];
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     attractions,
     totalPages,
@@ -167,6 +188,7 @@ export const useAttractionStore = defineStore('attraction', () => {
     fetchInitialAttractions,
     initializeStore,
     saveState,
-    restoreState
+    restoreState,
+    fetchPopularAttractions
   };
 }); 

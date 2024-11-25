@@ -29,6 +29,13 @@ const goToWrite = () => {
   router.push({ name: 'question-write' });
 };
 
+const handleRowClick = (article) => {
+  router.push({ 
+    name: 'question-detail', 
+    params: { id: article.questionId.toString() } 
+  });
+};
+
 const columns = [
   { 
     key: 'questionId', 
@@ -100,11 +107,10 @@ const columns = [
             </div>
 
             <div class="list-area">
-              <SearchResultInfo :total-count="totalElements" />
               <BoardList 
                 :articles="questions" 
                 :columns="columns"
-                type="question"
+                :on-row-click="handleRowClick"
               />
               
               <div class="text-center mt-6">

@@ -40,26 +40,93 @@ onUnmounted(() => {
 
 const formattedQuestion = computed(() => {
   if (!currentQuestion.value) return null;
-  return {
+  
+  const question = {
+    id: currentQuestion.value.questionId,
     title: currentQuestion.value.questionTitle,
     content: currentQuestion.value.questionContent,
-    createdAt: currentQuestion.value.questionCreatedAt,
+    createdAt: new Date(currentQuestion.value.questionCreatedAt).toLocaleDateString('ko-KR'),
     status: currentQuestion.value.questionIsAnswered ? 'ANSWERED' : 'WAITING',
-    authorEmail: currentQuestion.value.questionAuthorEmail,
-    answer: currentQuestion.value.answerContent ? {
-      content: currentQuestion.value.answerContent,
-      createdAt: currentQuestion.value.answerCreatedAt,
-      authorEmail: currentQuestion.value.answerAuthorEmail
-    } : null
+    authorEmail: currentQuestion.value.questionAuthorEmail
   };
+
+  if (currentQuestion.value.answerContent) {
+    question.answer = {
+      id: currentQuestion.value.answerId,
+      content: currentQuestion.value.answerContent,
+      createdAt: new Date(currentQuestion.value.answerCreatedAt).toLocaleDateString('ko-KR'),
+      authorEmail: currentQuestion.value.answerAuthorEmail
+    };
+  }
+
+  return question;
 });
 
 const isOwner = computed(() => {
   return currentQuestion.value?.questionAuthorEmail === authStore.user?.email;
 });
 
-const handleList = () => {
-  router.push({ name: "question" });
+const isAnswered = computed(() => {
+  return currentQuestion.value?.questionIsAnswered;
+});
+
+const buttonPermissions = computed(() => {
+  if (authStore.isAdmin) {
+    // 관리자는 답변이 없는 경우에만 답변 작성 버튼이 보임
+    return {
+      answer: !isAnswered.value,
+      list: true
+    };
+  } else {
+    // 일반 사용자는 자신의 글이고 답변이 없는 경우에만 수정/삭제 가능
+    return {
+      edit: isOwner.value && !isAnswered.value,
+      delete: isOwner.value && !isAnswered.value,
+      list: true
+    };
+  }
+});
+
+const buttonLabels = computed(() => {
+  if (authStore.isAdmin) {
+    return {
+      answer: '답변작성',
+      list: '목록'
+    };
+  } else {
+    return {
+      edit: '수정',
+      delete: '삭제',
+      list: '목록'
+    };
+  }
+});
+
+const handleButtonClick = async (buttonType) => {
+  switch (buttonType) {
+    case 'edit':
+      alert('수정 기능은 준비 중입니다.');
+      break;
+    case 'delete':
+      handleDelete();
+      break;
+    case 'answer':
+      const questionId = route.params.id;
+      router.push({ 
+        name: 'question-answer', 
+        params: { id: questionId } 
+      });
+      break;
+    case 'list':
+      router.push({ name: 'question' });
+      break;
+  }
+};
+
+const handleDelete = async () => {
+  if (confirm('이 문의글을 삭제하시겠습니까?')) {
+    alert('삭제 기능은 준비 중입니다.');
+  }
 };
 
 const additionalFields = [
@@ -83,25 +150,15 @@ const additionalFields = [
           <PageHeader title="문의글 상세" icon="mdi-help-circle" />
           <div class="content-area">
             <BoardDetail
-              type="question"
               :article="formattedQuestion"
-              :isAdmin="isOwner"
-              :additionalFields="additionalFields"
-              :buttons="['list']"
-              @list="handleList"
+              loading-key="question-detail"
+              :additional-fields="additionalFields"
+              :buttons="authStore.isAdmin ? ['answer', 'list'] : ['edit', 'delete', 'list']"
+              :button-permissions="buttonPermissions"
+              :button-labels="buttonLabels"
+              :answer="formattedQuestion?.answer"
+              @click-button="handleButtonClick"
             />
-            
-            <v-card v-if="formattedQuestion?.answer" class="mt-6">
-              <v-card-title class="text-h6 pa-4">
-                답변 내용
-                <div class="text-caption mt-1">
-                  답변일: {{ new Date(formattedQuestion.answer.createdAt).toLocaleDateString() }}
-                  ({{ formattedQuestion.answer.authorEmail }})
-                </div>
-              </v-card-title>
-              <v-card-text class="pa-4" v-html="formattedQuestion.answer.content">
-              </v-card-text>
-            </v-card>
           </div>
         </div>
       </v-col>
