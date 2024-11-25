@@ -5,6 +5,7 @@ import com.trip.attraction.service.AttractionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,16 @@ public class AttractionController {
 
     @GetMapping("/init")
     @Operation(summary = "관광지 초기 데이터 로드", description = "관광지 초기 화면 접근 시 필요한 데이터를 로드합니다.")
-    public ResponseEntity<AttractionInitDataResponseDto> getInitialData() {
+    public ResponseEntity<AttractionInitDataResponseDto> getInitialData(
+            @Parameter(description = "페이지 번호", example = "1") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "페이지 크기", example = "5") @RequestParam(defaultValue = "5") int size,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
 
-        AttractionInitDataResponseDto response = attractionService.getAttractionInitialData(1, 5);
+        AttractionInitDataResponseDto response = attractionService.getAttractionInitialData(page, size);
+        List<AttractionDto> enrichedAttractions = attractionService.enrichWithLikeStatus(response.getAttractList(), userId);
+        response.setAttractList(enrichedAttractions);
         return ResponseEntity.ok(response);
     }
     
@@ -38,10 +46,11 @@ public class AttractionController {
             @Parameter(description = "검색 키워드", example = "공원") @RequestParam(required = false) String word,
             @Parameter(description = "페이지 번호", example = "1") @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 크기", example = "5") @RequestParam(defaultValue = "5") int size,
-            @Parameter(description = "정렬 기준 (예: name, likes, views)", example = "name") @RequestParam(defaultValue = "name") String sortBy) {
+            @Parameter(description = "정렬 기준 (예: name, likes, views)", example = "name") @RequestParam(defaultValue = "name") String sortBy,  HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
 
-        // Service 호출 및 결과 반환
         PagedAttractionResponseDto response = attractionService.searchAttractions(sidoCode, gugunCode, type, word, page, size, sortBy);
+        response.setAttractionList(attractionService.enrichWithLikeStatus(response.getAttractionList(), userId));
         return ResponseEntity.ok(response);
     }
 
@@ -56,8 +65,9 @@ public class AttractionController {
     @GetMapping("/detail/{attractionId}")
     @Operation(summary = "관광지 상세 정보 조회", description = "관광지 ID를 사용하여 관광지의 상세 정보를 조회합니다.")
     public ResponseEntity<AttractionDetailResponseDto> getAttractionDetail(
-            @Parameter(description = "관광지 ID", required = true, example = "3820") @PathVariable("attractionId") int attractionId) {
-        AttractionDetailResponseDto attractionDetailResponseDto = attractionService.getAttractionDetailWithComments(attractionId);
+            @Parameter(description = "관광지 ID", required = true, example = "3820") @PathVariable("attractionId") int attractionId, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        AttractionDetailResponseDto attractionDetailResponseDto = attractionService.getAttractionDetailWithComments(attractionId, userId);
         return ResponseEntity.ok(attractionDetailResponseDto);
     }
 }

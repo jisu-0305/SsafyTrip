@@ -35,7 +35,5 @@ public interface AttractionMapper {
     int countTotalAttractions();
 
     void updateAttractionViews(@Param("attractionId") int attractionId);
-
-    void updateHit(@Param("attractionId") int attractionId, @Param("amount") int amount);
 }
 

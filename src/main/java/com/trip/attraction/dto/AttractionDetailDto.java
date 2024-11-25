@@ -27,4 +27,5 @@ public class AttractionDetailDto {
     private String overview;
     private int hit;
     private int views;
+    private Boolean isLike;
 }
