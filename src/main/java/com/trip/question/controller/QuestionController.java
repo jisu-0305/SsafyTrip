@@ -19,10 +19,13 @@ public class QuestionController {
 
     // 전체 리스트 조회
     @GetMapping("/questions")
-    public ResponseEntity<List<QuestionsDto>> getAllQuestions(HttpSession session) {
+    public ResponseEntity<PagedQuestionResponseDto> getAllQuestions(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
 
-        List<QuestionsDto> res = questionService.selectAllQuestions(user.getUserId());
+        PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),page,size);
 
         return ResponseEntity.ok(res);
 

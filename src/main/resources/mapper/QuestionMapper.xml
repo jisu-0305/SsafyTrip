@@ -6,6 +6,13 @@
 <mapper namespace="com.trip.question.mapper.QuestionMapper">
 
     <!-- 1. 질문 목록 조회 -->
+    <!-- (1) 회원 전체 질문 개수   -->
+    <select id="getCountQuestions" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM questions
+        WHERE user_id = #{userId}
+    </select>
+
     <!-- 결과 매핑 정의 -->
     <resultMap id="questionResultMap" type="QuestionsDto">
         <id property="questionId" column="question_id" />
@@ -14,11 +21,13 @@
         <result property="isAnswered" column="is_answered" />
     </resultMap>
 
-    <!-- 특정 user_id에 따른 질문 목록 조회 -->
+    <!-- (2)offset을 통해 특정 페이지의 데이터 가져오기 -->
     <select id="getQuestionsByUserId" resultMap="questionResultMap">
         SELECT question_id, title, created_at, is_answered
         FROM questions
         WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
 
