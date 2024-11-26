@@ -14,4 +14,5 @@ public class QuestionsDto {
     private String title;
     private String createdAt;
     private boolean isAnswered;
+    private String questionAuthorEmail;
 }

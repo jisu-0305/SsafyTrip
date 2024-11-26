@@ -32,6 +32,8 @@ public class QuestionService {
         }else{
             totalCount = questionMapper.getCountQuestionsForAdmin();
             totalPage = (int) Math.ceil((double) totalCount / size);
+            System.out.println("QuestionService.selectAllQuestions");
+            System.out.println(totalCount);
             questionsList = questionMapper.getQuestionsByAdmin(offset, size);
         }
 
@@ -46,14 +48,29 @@ public class QuestionService {
 
 
     @Transactional
-    public QuestionDetailResDto selectByUserAndQuestionId(int userId, int questionId) {
-        Boolean isAnswered = questionMapper.selectIsAnswered(userId, questionId);
+    public QuestionDetailResDto selectByUserAndQuestionId(int userId, String role, int questionId) {
+        Boolean isAnswered = questionMapper.selectIsAnswered(questionId);
 
         QuestionDetailResDto questionDetailResDto;
-        if(isAnswered){
-            questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
+        if(role.equals("ROLE_USER")){
+            if(isAnswered){
+                questionDetailResDto = questionMapper.selectQuestionAndAnswerById(userId, questionId);
+            }else{
+                questionDetailResDto = questionMapper.selectQuestionById(userId,questionId);
+            }
         }else{
-            questionDetailResDto = questionMapper.selectQuestionById(userId,questionId);
+            if(isAnswered){
+                System.out.println("QuestionService.selectByUserAndQuestionId");
+                System.out.println("답변이 달린 경우(관리자)");
+                questionDetailResDto = questionMapper.selectQuestionAndAnswerByIdForAdmin(questionId);
+                System.out.println(questionDetailResDto);
+            }else{
+
+                System.out.println("QuestionService.selectByUserAndQuestionId");
+                System.out.println("답변이 달리지 않은 경우(관리자)");
+                questionDetailResDto = questionMapper.selectQuestionForAdmin(questionId);
+                System.out.println(questionDetailResDto);
+            }
         }
 
 

@@ -16,7 +16,6 @@
     <select id="getCountQuestionsForAdmin" resultType="int">
         SELECT COUNT(*)
         FROM questions
-        WHERE is_answered = false OR is_answered IS NULL
     </select>
 
     <!-- 결과 매핑 정의 -->
@@ -25,22 +24,28 @@
         <result property="title" column="title" />
         <result property="createdAt" column="created_at" />
         <result property="isAnswered" column="is_answered" />
+        <result property="questionAuthorEmail" column="member_email"/>
     </resultMap>
 
     <!-- (2)offset을 통해 특정 페이지의 데이터 가져오기 -->
     <select id="getQuestionsByUserId" resultMap="questionResultMap">
-        SELECT question_id, title, created_at, is_answered
+        SELECT question_id, title, created_at, is_answered,
+            m.email AS member_email
         FROM questions
-        WHERE user_id = #{userId}
+        JOIN
+             members m ON questions.user_id = m.user_id
+        WHERE m.user_id = #{userId}
         ORDER BY created_at DESC
-        LIMIT #{size} OFFSET #{offset}
+            LIMIT #{size} OFFSET #{offset}
     </select>
 
     <!-- (3)offset을 통해 관리자용  특정 페이지의 데이터 가져오기 -->
     <select id="getQuestionsByAdmin" resultMap="questionResultMap">
-        SELECT question_id, title, created_at, is_answered
+        SELECT question_id, title, created_at, is_answered,
+               m.email AS member_email
         FROM questions
-        WHERE is_answered = false OR is_answered IS NULL
+        JOIN
+             members m ON questions.user_id = m.user_id
         ORDER BY created_at DESC
             LIMIT #{size} OFFSET #{offset}
     </select>
@@ -59,7 +64,7 @@
     <select id="selectIsAnswered" parameterType="map" resultType="boolean">
         SELECT is_answered
         FROM questions
-        WHERE user_id = #{userId} AND question_id = #{questionId};
+        WHERE question_id = #{questionId};
     </select>
 
 
@@ -80,10 +85,10 @@
         <result property="answerAuthorEmail" column="answer_author_email" />
     </resultMap>
 
-    <!-- (2) 답변이 없을 경우, question테이블만 가져오기 -->
+    <!-- (2-1),  답변이 없을 경우(일반 유저), question테이블만 가져오기 -->
     <select id="selectQuestionById" parameterType="map" resultMap="QuestionAndAnswerResultMap">
         SELECT
-            q.question_id,
+            q.question_id AS question_id,
             q.title AS question_title,
             q.content AS question_content,
             q.created_at AS question_created_at,
@@ -94,7 +99,25 @@
             q.question_id = #{questionId} AND q.user_id = #{userId};
     </select>
 
-    <!-- (3) 답변이 있을 경우, 전체 가져오기 -->
+    <!-- (2-2),답변이 없을 경우(관리자), question과 질문자 이메일만 가져오기 -->
+    <select id="selectQuestionForAdmin" parameterType="map" resultMap="QuestionAndAnswerResultMap">
+        SELECT
+            q.question_id AS question_id,
+            q.title AS question_title,
+            q.content AS question_content,
+            q.created_at AS question_created_at,
+            q.is_answered AS question_isAnswered,
+            m.email as question_author_email
+        FROM
+            questions q
+                JOIN
+            members m ON q.user_id = m.user_id
+        WHERE
+            q.question_id = #{questionId};
+    </select>
+
+
+    <!-- (3-1),  답변이 있을 경우(관리자), 전체 가져오기 -->
     <select id="selectQuestionAndAnswerById" parameterType="map" resultMap="QuestionAndAnswerResultMap">
         SELECT
             q.question_id,
@@ -116,6 +139,31 @@
                 LEFT JOIN
             members am ON a.user_id = am.user_id
         WHERE q.question_id = #{questionId} AND m.user_id = #{userId};
+
+    </select>
+
+    <!-- (3-2), 답변이 있을 경우(관리자), 전체 가져오기 -->
+    <select id="selectQuestionAndAnswerByIdForAdmin" parameterType="map" resultMap="QuestionAndAnswerResultMap">
+        SELECT
+            q.question_id,
+            q.title AS question_title,
+            q.content AS question_content,
+            q.created_at AS question_created_at,
+            q.is_answered AS question_isAnswered,
+            m.email AS question_author_email,
+            a.answer_id,
+            a.content AS answer_content,
+            a.created_at AS answer_created_at,
+            am.email AS answer_author_email
+        FROM
+            questions q
+                JOIN
+            members m ON q.user_id = m.user_id
+                LEFT JOIN
+            answers a ON q.question_id = a.question_id
+                LEFT JOIN
+            members am ON a.user_id = am.user_id
+        WHERE q.question_id = #{questionId};
 
     </select>
 
