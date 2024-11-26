@@ -69,8 +69,8 @@ public class AIController {
                         OpenAiImageOptions.builder()
                                 .withQuality("hd")
                                 .withN(1) // 여기에서 n 값을 1로 설정
-                                .withHeight(512)
-                                .withWidth(512)
+                                .withHeight(1024)
+                                .withWidth(1024)
                                 .build()));
     }
 }
