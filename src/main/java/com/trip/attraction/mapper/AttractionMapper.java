@@ -20,7 +20,8 @@ public interface AttractionMapper {
             @Param("word") String word,
             @Param("offset") int offset,
             @Param("limit") int limit,
-            @Param("sortBy") String sortBy
+            @Param("sortColumn") String sortColumn,
+            @Param("sortDirection") String sortDirection
     );
 
     // 조건에 맞는 관광지의 총 갯수 조회
@@ -34,5 +35,7 @@ public interface AttractionMapper {
     int countTotalAttractions();
 
     void updateAttractionViews(@Param("attractionId") int attractionId);
+
+    String findTitleByAttractionId(@Param("attractionId") int attractionId);
 }
 

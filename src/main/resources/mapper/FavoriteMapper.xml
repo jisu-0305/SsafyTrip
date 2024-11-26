@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.trip.favorite.mapper.FavoriteMapper">
+
+    <insert id="insertFavorite">
+        INSERT INTO favorites (user_id, attraction_id)
+        VALUES (#{userId}, #{attractionId})
+    </insert>
+
+    <delete id="deleteFavorite">
+        DELETE FROM favorites
+        WHERE user_id = #{userId}
+        AND attraction_id = #{attractionId}
+    </delete>
+
+    <select id="isAlreadyFavorited" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM favorites
+        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
+    </select>
+
+    <select id="countFavoriteAttractions" resultType="int">
+        SELECT COUNT(*)
+        FROM favorites f
+        JOIN attractions a ON f.attraction_id = a.no
+        WHERE f.user_id = #{userId}
+        <if test="word != null and word != ''">
+            AND a.title LIKE CONCAT('%', #{word}, '%')
+        </if>
+    </select>
+
+    <select id="selectFavoriteAttractions" resultType="AttractionDto">
+        SELECT
+        a.no,
+        a.content_id AS contentId,
+        a.title,
+        a.latitude,
+        a.longitude,
+        a.addr1 AS address,
+        a.first_image1 AS firstImage1,
+        a.hit,
+        a.views
+        FROM favorites f
+        JOIN attractions a ON f.attraction_id = a.no
+        WHERE f.user_id = #{userId}
+        <if test="word != null and word != ''">
+            AND a.title LIKE CONCAT('%', #{word}, '%')
+        </if>
+        ORDER BY a.title ASC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="isLikedAttraction" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM favorites
+        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
+    </select>
+
+    <update id="updateHit">
+        UPDATE attractions
+        SET hit = hit + #{amount}
+        WHERE no = #{attractionId}
+    </update>
+</mapper>

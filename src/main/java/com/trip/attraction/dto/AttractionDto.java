@@ -13,8 +13,11 @@ public class AttractionDto {
 	private int no;
     private int contentId;
     private String title;
+    private String contentType;
+    private Boolean isLike;
     private double latitude;
     private double longitude;
+    private String address;
     private String firstImage1;
     private int hit;
     private int views;

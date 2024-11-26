@@ -39,6 +39,7 @@ public class MemberController {
 	public ResponseEntity<Boolean> checkDuplicateEmail(@Parameter(in = ParameterIn.PATH, description = "인증할 회원의 아이디.", required = true)
 										  @PathVariable("email") String userId) {
 
+		System.out.println("MemberController.checkDuplicateEmail");
 		Boolean isDuplicate = memberService.checkDuplicateEmail(userId);
 
 		return ResponseEntity.ok(isDuplicate);
@@ -48,12 +49,14 @@ public class MemberController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@Parameter(description = "로그인 시 필요한 회원정보(아이디, 비밀번호).", required = true)
 						@RequestBody LoginRequestDTO loginRequestDTO, HttpSession session) {
+		System.out.println("MemberController.login");
 		// 로그인한 정보가 없으면 예외처리하기.
 		LoginResponseDTO loginResponseDTO = memberService.loginMember(loginRequestDTO);
 
 		session.setAttribute("userId", loginResponseDTO.getUserId());
 		session.setAttribute("email", loginResponseDTO.getEmail());
 		session.setAttribute("userRole", loginResponseDTO.getRole());
+		session.setAttribute("userAddress", loginResponseDTO.getAddress());
 
 		return ResponseEntity.ok(loginResponseDTO);
 	}
