@@ -24,11 +24,10 @@ public class QuestionController {
             @RequestParam(value = "size", defaultValue = "5") int size,
             HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
-
+        System.out.println("QuestionController.getAllQuestions");
         PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),user.getUserRole(),page,size);
 
-        return ResponseEntity.ok(res);
-
+       return ResponseEntity.ok(res);
     }
 
 
@@ -50,7 +49,7 @@ public class QuestionController {
         AuthorizedUserDto user = isAuthenticated(session);
 
         // userId와 questionId 둘 다 동일해야 보내주기
-        QuestionDetailResDto res = questionService.selectByUserAndQuestionId(user.getUserId(), questionId);
+        QuestionDetailResDto res = questionService.selectByUserAndQuestionId(user.getUserId(), user.getUserRole(),questionId);
 
         return ResponseEntity.ok(res);
 

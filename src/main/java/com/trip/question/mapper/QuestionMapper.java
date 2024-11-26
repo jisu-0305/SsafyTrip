@@ -17,7 +17,7 @@ public interface QuestionMapper {
 
     List<QuestionsDto> getQuestionsByAdmin(@Param("offset") int offset, @Param("size") int size);
 
-    Boolean selectIsAnswered(@Param("userId") int userId, @Param("questionId") int questionId);
+    Boolean selectIsAnswered(@Param("questionId") int questionId);
 
     QuestionDetailResDto selectQuestionById(@Param("userId") int userId, @Param("questionId") int questionId);
 
@@ -30,4 +30,9 @@ public interface QuestionMapper {
     int getCountQuestions(@Param("userId") int userId);
 
     int getCountQuestionsForAdmin();
+
+    QuestionDetailResDto selectQuestionForAdmin(@Param("questionId") int questionId);
+
+    QuestionDetailResDto selectQuestionAndAnswerByIdForAdmin(@Param("questionId") int questionId);
+
 }
