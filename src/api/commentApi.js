@@ -11,11 +11,20 @@ function createComment(attractionId, commentData) {
 }
 
 // 댓글 삭제 API
-function deleteComment(commentId) {  
-  return myaxios.delete(`/comments/${commentId}`); 
+function deleteComment(commentId) {
+  return myaxios.delete(`/comments/${commentId}`);
+}
+
+//내 댓글 조회 API
+function getMyComments() {
+  console.log("getMyComments API 호출");
+  return myaxios.get('/mypage/comments', {
+  });
 }
 
 export const commentApi = {
   createComment,
   deleteComment,
+  getMyComments,
 };
+
