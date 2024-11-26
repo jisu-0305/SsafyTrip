@@ -1,6 +1,6 @@
 package com.trip.ai.controller;
 
-import com.trip.ai.dto.WeatherDto;
+import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.service.AIService;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,6 @@ import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,9 +53,9 @@ public class AIController {
             "   - Ensure each section is visually balanced with appropriate spacing for all items.\n";
 
     @PostMapping("/weather")
-    public ResponseEntity<?> getWeatherList(@RequestBody ScheduleDetailDto scheduleDetail) {
-        List<WeatherDto> weatherList = aIService.getWeatherList(scheduleDetail);
-        return ResponseEntity.ok(weatherList);
+    public ResponseEntity<WeatherAndClothesResponseDto> getWeatherAndClothes(@RequestBody ScheduleDetailDto scheduleDetail) {
+        WeatherAndClothesResponseDto responseDto = aIService.getWeatherAndClothes(scheduleDetail);
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/image")
