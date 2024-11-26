@@ -33,43 +33,29 @@ const carouselItems = ref([
 ]);
 
 const popularAttractions = ref([]);
+const currentSidoName = ref('전국');
 
-const getSidoCodeFromAddress = (address) => {
-  const sidoMap = {
-    '서울': '1',
-    '인천': '2',
-    '대전': '3',
-    '대구': '4',
-    '광주': '5',
-    '부산': '6',
-    '울산': '7',
-    '세종': '8',
-    '경기': '31',
-    '강원': '32',
-    '충북': '33',
-    '충남': '34',
-    '경북': '35',
-    '경남': '36',
-    '전북': '37',
-    '전남': '38',
-    '제주': '39'
+const getSidoCodeFromSidoList = (address, sidoList) => {
+  const sido = sidoList.find(item => address.startsWith(item.name));
+  return {
+    code: sido ? sido.code : '1', // 기본값 서울
+    name: sido ? sido.name : '서울특별시'
   };
-
-  for (const [sido, code] of Object.entries(sidoMap)) {
-    if (address.startsWith(sido)) {
-      return code;
-    }
-  }
-  return '1'; // 기본값 서울
 };
 
 onMounted(async () => {
+  // 시도 목록 조회
+  const sidoList = await attractionStore.fetchSidoList();
+  
   if (authStore.user?.address) {
-    const sidoCode = getSidoCodeFromAddress(authStore.user.address);
-    popularAttractions.value = await attractionStore.fetchPopularAttractions(sidoCode);
+    const { code: sidoCode, name: sidoName } = getSidoCodeFromSidoList(authStore.user.address, sidoList);
+    const result = await attractionStore.fetchPopularAttractions(sidoCode);
+    popularAttractions.value = result.attractions;
+    currentSidoName.value = sidoName;
   } else {
-    // 로그인하지 않은 경우 전체 인기 여행지 조회
-    popularAttractions.value = await attractionStore.fetchPopularAttractions();
+    const result = await attractionStore.fetchPopularAttractions();
+    popularAttractions.value = result.attractions;
+    currentSidoName.value = '전국';
   }
 });
 </script>
@@ -106,7 +92,7 @@ onMounted(async () => {
       <v-col cols="12">
         <v-carousel
           cycle
-          height="500"
+          :height="$vuetify.display.mdAndUp ? 500 : 700"
           hide-delimiter-background
           show-arrows="hover"
         >
@@ -115,14 +101,23 @@ onMounted(async () => {
             :key="i"
           >
             <v-row class="fill-height" align="center">
-              <v-col cols="12" md="6">
+              <v-col 
+                cols="12" 
+                md="6"
+                :class="$vuetify.display.mdAndUp ? 'pa-4' : 'pa-2'"
+              >
                 <v-img
                   :src="item.image"
-                  height="400"
+                  :height="$vuetify.display.mdAndUp ? 400 : 300"
                   cover
+                  class="rounded-lg"
                 ></v-img>
               </v-col>
-              <v-col cols="12" md="6" class="pa-16">
+              <v-col 
+                cols="12" 
+                md="6"
+                :class="$vuetify.display.mdAndUp ? 'pa-16' : 'pa-4'"
+              >
                 <h2 class="text-h4 mb-6">{{ item.heading }}</h2>
                 <p class="text-body-1">{{ item.subtitle }}</p>
               </v-col>
@@ -135,13 +130,16 @@ onMounted(async () => {
     <!-- 세 번째 섹션 -->
     <v-row class="my-16 px-4">
       <v-col cols="12" class="text-center mb-16">
-        <h2 class="text-h4 mb-4">
-          {{ authStore.user?.address 
-            ? `${authStore.user.address} 근처에서 인기 많은 여행지` 
-            : '지금 한국에서 인기 많은 여행지' 
-          }}
+        <h2 class="text-h4 mb-2">
+          <strong>{{ currentSidoName }}</strong> 인기 여행지
         </h2>
-        <p class="text-subtitle-1">조회수 기준 TOP 5</p>
+        <p class="text-subtitle-1 mb-2">좋아요 기준 TOP 4</p>
+        <p class="text-body-2 text-grey">
+          {{ currentSidoName === '전국' 
+            ? '전국의 인기 여행지를 소개합니다' 
+            : `${currentSidoName}의 매력적인 여행지를 만나보세요` 
+          }}
+        </p>
       </v-col>
       
       <v-col 

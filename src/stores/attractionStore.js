@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { listAttractions, getInitialAttractions } from '@/api/attractApi';
+import { listAttractions, getInitialAttractions, getSidoList } from '@/api/attractApi';
 
 export const useAttractionStore = defineStore('attraction', () => {
   const attractions = ref([]);
@@ -152,11 +152,23 @@ export const useAttractionStore = defineStore('attraction', () => {
     }
   };
 
+  const fetchSidoList = async () => {
+    try {
+      const response = await getSidoList();
+      sidoList.value = response.data || [];
+      return sidoList.value;
+    } catch (error) {
+      console.error('시도 목록 조회 실패:', error);
+      return [];
+    }
+  };
+
   const fetchPopularAttractions = async (sidoCode = null) => {
     try {
       loading.value = true;
       const params = {
-        sortBy: 'views',
+        sortBy: 'likes',
+        size: 4
       };
       
       if (sidoCode) {
@@ -164,10 +176,18 @@ export const useAttractionStore = defineStore('attraction', () => {
       }
       
       const response = await listAttractions(params);
-      return response.data.attractionList || [];
+      const sidoName = sidoList.value.find(sido => sido.code === sidoCode)?.name || '전국';
+      
+      return {
+        attractions: response.data.attractionList || [],
+        sidoName
+      };
     } catch (error) {
       console.error('인기 관광지 조회 실패:', error);
-      return [];
+      return {
+        attractions: [],
+        sidoName: '전국'
+      };
     } finally {
       loading.value = false;
     }
@@ -189,6 +209,7 @@ export const useAttractionStore = defineStore('attraction', () => {
     initializeStore,
     saveState,
     restoreState,
+    fetchSidoList,
     fetchPopularAttractions
   };
 }); 

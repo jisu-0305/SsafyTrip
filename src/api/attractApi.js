@@ -9,7 +9,7 @@ function listAttractions(params) {
       type: params.contentTypeId,  
       word: params.keyword,        
       page: params.page || 1,
-      size: 5,
+      size: params.size || 5,
       sortBy: params.sortBy || 'name',
     }
   });
@@ -18,6 +18,11 @@ function listAttractions(params) {
 // 특정 관광지 상세 정보 조회 API
 function getAttractionDetail(attractionId) {
   return myaxios.get(`/attractions/detail/${attractionId}`);
+}
+
+// 구군 목록 조회 API
+function getSidoList() {
+  return myaxios.get(`/attractions/sidos`);
 }
 
 // 구군 목록 조회 API
@@ -46,5 +51,6 @@ export {
   getGugunList,
   addFavorite,
   deleteFavorite,
-  getInitialAttractions
+  getInitialAttractions,
+  getSidoList
 }; 
