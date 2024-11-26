@@ -11,6 +11,7 @@
 		<result property="name" column="name"/>
 		<result property="email" column="email"/>
 		<result property="role" column="role"/>
+		<result property="address" column="address"/>
 		<result property="profileImage" column="profile_image"/>
 	</resultMap>
 
@@ -19,9 +20,8 @@
 		INSERT INTO members (name, email, password, birth_date, address, gender, role) values( #{name}, #{email}, #{password}, #{birthDate}, #{address}, #{gender}, #{role})
 	</insert>
 
-
 	<select id="findByEmailAndPassword" parameterType="LoginRequestDTO" resultMap="loginResponseMap">
-		SELECT user_id, name, email, role, profile_image
+		SELECT user_id, name, email, role, address, profile_image
 		FROM members
 		WHERE email = #{email} AND password = #{passWord}
 	</select>

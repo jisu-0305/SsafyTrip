@@ -72,7 +72,7 @@ public class AttractionServiceImpl implements AttractionService {
         List<AttractionDto> attractionList = attractionMapper.searchAttractions(
                 sidoCode, gugunCode, type, word, offset, size, sortColumn, sortDirection
         );
-        
+
         PagedAttractionResponseDto pagedAttractionResponseDto = new PagedAttractionResponseDto();
         pagedAttractionResponseDto.setAttractionList(attractionList);
         pagedAttractionResponseDto.setTotalCount(totalCount);
@@ -84,6 +84,11 @@ public class AttractionServiceImpl implements AttractionService {
     @Override
     public List<GuGunDto> getGuGunList(int sidoCode) {
         return sidoGunMapper.getGuGunList(sidoCode);
+    }
+
+    @Override
+    public List<SidoDto> getSidoList(){
+        return sidoGunMapper.getSidoList();
     }
 
     @Override

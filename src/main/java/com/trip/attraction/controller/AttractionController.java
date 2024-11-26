@@ -62,6 +62,13 @@ public class AttractionController {
         return ResponseEntity.ok(gugunList);
     }
 
+    @GetMapping("/sidos")
+    @Operation(summary = "시도 리스트 조회", description = "입력된 시도 리스트를 조회합니다.")
+    public ResponseEntity<List<SidoDto>> getSidoList() {
+        List<SidoDto> sidoList = attractionService.getSidoList();
+        return ResponseEntity.ok(sidoList);
+    }
+
     @GetMapping("/detail/{attractionId}")
     @Operation(summary = "관광지 상세 정보 조회", description = "관광지 ID를 사용하여 관광지의 상세 정보를 조회합니다.")
     public ResponseEntity<AttractionDetailResponseDto> getAttractionDetail(
