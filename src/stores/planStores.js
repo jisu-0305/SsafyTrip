@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { getFavorites } from '@/api/attractApi';
-import { getAllSchedules } from '@/api/scheduleApi';
+import * as scheduleApi from '@/api/scheduleApi';
 
 export const usePlanStore = defineStore('plan', () => {
   // 찜 목록 관련 상태
@@ -92,7 +92,7 @@ export const usePlanStore = defineStore('plan', () => {
   // 모든 일정 조회 함수 추가
   const fetchAllSchedules = async () => {
     try {
-      const response = await getAllSchedules();
+      const response = await scheduleApi.getAllSchedules();
       allSchedules.value = response.data;
       console.log('불러온 일정 목록:', allSchedules.value);
       return allSchedules.value;
@@ -338,6 +338,17 @@ export const usePlanStore = defineStore('plan', () => {
     timeDialog.value = false;
   };
 
+  // 일정 상세 조회 함수 수정
+  const fetchScheduleDetail = async (scheduleId) => {
+    try {
+      const response = await scheduleApi.getScheduleDetail(scheduleId);
+      return response.data;
+    } catch (error) {
+      console.error('일정 상세 정보를 불러오는 중 오류 발생:', error);
+      throw error;
+    }
+  };
+
   return {
     // 찜 목록 관련
     wishList,
@@ -393,5 +404,6 @@ export const usePlanStore = defineStore('plan', () => {
     // 새로운 상태와 함수 추가
     allSchedules,
     fetchAllSchedules,
+    fetchScheduleDetail,
   };
 }); 

@@ -15,7 +15,7 @@
               variant="text"
               color="primary"
               class="px-0 mt-2"
-              @click="router.push({ name: 'attract-plan' })"
+              @click="router.push('/plan');"
             >
               <v-icon start>mdi-arrow-right</v-icon>
               새로운 여행을 준비하러 가실래요?
@@ -69,7 +69,7 @@ const authStore = useAuthStore();
 const activityItems = [
   { title: '찜 목록', icon: 'mdi-bookmark-outline', route: 'favorites' },
   { title: '나의 댓글', icon: 'mdi-chat-outline', route: 'reviews' },
-  { title: '여행 일정', icon: 'mdi-map-outline', route: 'courses' },
+  { title: '여행 일정', icon: 'mdi-map-outline', route: 'schedules' },
   { title: '1:1 문의', icon: 'mdi-help-circle-outline', route: 'question' }
 ];
 

@@ -90,6 +90,17 @@ const router = createRouter({
       component: () => import("@/components/mypage/FavoriteMyPage.vue"),
     },
     {
+      path: "/schedules",
+      name: "schedules",
+      component: () => import("@/components/mypage/ScheduleMyPage.vue"),
+    },
+    {
+      path: "/schedules/detail/:id",
+      name: "schedule-detail",
+      component: () => import("@/views/schedules/ScheduleDetailView.vue"),
+      props: true
+    },
+    {
       path: "/reviews",
       name: "reviews",
       component: () => import("@/components/mypage/CommentMyPage.vue"),

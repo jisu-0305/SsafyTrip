@@ -29,7 +29,10 @@ const formatDate = (dateString) => {
 };
 
 const navigateToDetail = (scheduleId) => {
-  router.push(`/schedules/detail/${scheduleId}`);
+  router.push({
+    name: 'schedule-detail',
+    params: { id: scheduleId }
+  });
 };
 </script>
 
