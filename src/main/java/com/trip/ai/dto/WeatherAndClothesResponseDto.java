@@ -14,4 +14,5 @@ import java.util.List;
 public class WeatherAndClothesResponseDto {
     private List<WeatherDto> weatherList;
     private String clothesURL;
+    private String supplies;
 }

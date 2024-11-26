@@ -36,9 +36,12 @@ public class AIServiceImpl implements AIService {
 
         // 3. 코디 이미지 생성 및 URL 추출
         String clothesURL = generateImageURL(clothesPrompt);
+//        String clothesURL = "dummyURL";
 
-        // 4. WeatherAndClothesResponseDto 반환
-        return new WeatherAndClothesResponseDto(weatherList, clothesURL);
+        // 4. 준비물 DTO 생성 및 추출
+        String supplies = generateSupplies(weatherList);
+
+        return new WeatherAndClothesResponseDto(weatherList, clothesURL, supplies);
     }
 
     private List<WeatherDto> getWeatherList(ScheduleDetailDto scheduleDetail) {
@@ -115,6 +118,35 @@ public class AIServiceImpl implements AIService {
                 .append("Do not include fonts, text, humans, and backgrounds. Only display the clothing items.Keep it minimalistic.");
         return promptBuilder.toString();
     }
+
+    private String generateSupplies(List<WeatherDto> weatherList) {
+        StringBuilder prompt = new StringBuilder("다음 날씨와 장소를 참고하여 필요한 여행 준비물을 추천해주세요. 카테고리별로 나눠주세요. 200바이트 이내로 작성해주세요.\n\n");
+
+        int day = 1;
+        for (WeatherDto weather : weatherList) {
+            prompt.append("Day ").append(day).append(":\n")
+                    .append("- 날짜: ").append(weather.getDate()).append("\n")
+                    .append("- 장소: ").append(weather.getLocation()).append("\n")
+                    .append("- 온도: ").append(weather.getHighTemperature()).append("°C / ")
+                    .append(weather.getLowTemperature()).append("°C\n\n");
+            day++;
+        }
+
+        prompt.append("카테고리1: 의류 (양말, 속옷 등)\n")
+                .append("카테고리2: 스킨케어/면도용품 (스킨, 로션, 선크림 등)\n")
+                .append("카테고리3: 헤어용품 (고데기, 에센스 등)\n")
+                .append("etc: 기본 필수품 (주민등록증, 여권 등)")
+                 .append("특수문자 (예: ##, **, !! 등)또는 마크다운 문법 사용하지 말고, 간단하고 읽기 쉽게 작성해주세요. 추가로 줄바꿈은 카테고리 변경시에만 쓰세요");
+
+        // AI로부터 응답 받기
+        String response = chatClient.prompt()
+                .user(prompt.toString())
+                .call()
+                .content();
+
+        return response.trim();
+    }
+
 
     private String generateImageURL(String prompt) {
         try {
