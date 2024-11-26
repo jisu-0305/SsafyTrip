@@ -89,6 +89,11 @@ const router = createRouter({
       name: "favorites",
       component: () => import("@/components/mypage/FavoriteMyPage.vue"),
     },
+    {
+      path: "/reviews",
+      name: "reviews",
+      component: () => import("@/components/mypage/CommentMyPage.vue"),
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }

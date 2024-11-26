@@ -80,8 +80,9 @@ const handleClick = (activity) => {
       router.push({ name: 'question' });
     } else if (item.route === 'favorites') {
       router.push({ name: 'favorites' });
-    }  
-    else {
+    } else if(item.route === 'reviews'){
+      router.push({ name:'reviews' });
+    } else {
       alert(`${activity} 버튼이 클릭되었습니다.`);
     }
   }
