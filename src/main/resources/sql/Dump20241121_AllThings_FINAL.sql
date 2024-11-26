@@ -40,8 +40,11 @@ CREATE TABLE members (
 
 INSERT INTO members (user_id, name, gender, email, password, birth_date, address, role)
 VALUES
-    (1, '홍길동', 'M', 'hong', '123', '1990-05-10', '서울특별시 강남구 역삼동 123-45', 'ROLE_USER'),
-    (2, '김민지', 'F', 'minji', '456', '1985-08-15', '서울특별시 마포구 합정동 678-90', 'ROLE_ADMIN');
+    (1, '김보라', 'F', 'hong@naver.com', '12345678', '1990-05-10', '서울특별시 강남구 역삼동 123-45', 'ROLE_USER'),
+    (2, '김민지', 'F', 'admin@naver.com', '12345678', '1985-08-15', '서울특별시 마포구 합정동 678-90', 'ROLE_ADMIN'),
+    (3, '김지수', 'M', 'comjisu0311@naver.com', '123', '2000-03-05', '서울특별시 성북구 123-45', 'ROLE_USER'),
+    (4, '오지석', 'M', 'ohjiseok12@naver.com', '123', '1995-05-10', '부산광역시 서구 동구동 123-45', 'ROLE_USER'),
+    (5, '이학준', 'M', 'hakjungood@gmail.com', '123', '1997-05-10', '서울특별시 양천구 신정 7동 123-45', 'ROLE_USER');
 
 -- contenttypes
 CREATE TABLE `contenttypes` (
@@ -102,8 +105,8 @@ CREATE TABLE notices (
 
 INSERT INTO notices (title, content, user_id, image_url)
 VALUES
-    ('Admin Notice', 'This is an important notice created by the admin.', 1, 'https://example.com/admin-notice.jpg'),
-    ('User Update', 'User has shared an update regarding the event.', 2, 'https://example.com/user-update.jpg');
+    ('디지털 관광주민증 전용 크리스마스 열차 여행상품', '다가오는 크리스마스, 다양한 이벤트 참여하고 혜택 챙겨가세요', 2, 'https://ifh.cc/g/OwSt4M.jpg'),
+    ('대한민국 구석구석 만족도 조사 이벤트', '이벤트 참여해주시면 감사하겠습니다', 2, 'https://ifh.cc/g/WTQpq6.jpg');
 
 -- comments
 CREATE TABLE comments (
@@ -118,10 +121,10 @@ CREATE TABLE comments (
 
 INSERT INTO comments (author_id, attraction_id, content)
 VALUES
-    (1, 3820, '예시 댓글 1입니다.'),
-    (1, 3820, '예시 댓글 2입니다.'),
-    (1, 3820, '예시 댓글 3입니다.'),
-    (1, 3820, '예시 댓글 4입니다.');
+    (1, 17066, '지난번 친구들이랑 갔었는데 너무 좋았어요 다음에 또 오고 싶네요'),
+    (3, 17066, '부산가면 또 바다죠. 해운대 만한 곳이 없습니다'),
+    (4, 17066, '제가 부산사람이지만 역시 부산은 해운대입니다'),
+    (5, 17066, '여기에 진짜 맛있는 국밥집이 있어요. 강추입니다 강추');
 
 
 -- favorites 
@@ -134,16 +137,18 @@ CREATE TABLE favorites (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO favorites (user_id, attraction_id) VALUES
-    (1, 3818),
-    (1, 3819),                                            
-    (1, 3820),
-    (1, 3821),
-    (1, 3823),
-    (1, 3824),
-    (1, 3825),                                            
-    (1, 3826),
-    (1, 3827),
-    (1, 3828);
+    (1, 17001),
+    (1, 17236),
+    (1, 17880),
+    (1, 17933),
+    (1, 17058),
+    (1, 16755),
+    (1, 17060),
+    (1, 19120),
+    (1, 17061),
+    (1, 16830),
+    (1, 16935),
+    (1, 18455);
 
 -- questions
 CREATE TABLE questions (
@@ -165,10 +170,14 @@ CREATE TABLE answers (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO questions (user_id, title, content)
-VALUES (1, 'How to learn Java effectively?', 'I am trying to learn Java but need some effective resources. Any suggestions?');
+VALUES 
+(1, 'AI 코디 추천 관련 질문입니다.', '되게 효율적으로 잘 사용하고 있는데 성별 선택과 같이 좀 더 옵션적인 부분 추가 해주셨으면 좋겠습니다. 혹시라도 추가 예정이시라면 나오는 기간 알 수 있을까요?'),
+(1, '추가되지 않는 관광지에 대한 질문입니다.', '현재 새로 생긴 관광지에 대해서는 정보가 없는데 따로 추가하지 않는 이유가 있을까요? 궁금합니다.');
 
 INSERT INTO answers (question_id, user_id, content)
-VALUES (1, 2, 'You can learn Java effectively by practicing coding on platforms like LeetCode and reading books like Effective Java.');
+VALUES 
+(1, 2, '그 부분에 대해서는 지금 담당자와 협의하에 추가할 예정입니다. 추후 업데이트 시에 공지로 알려드리겠습니다.'),
+(2, 2, '현재 추가되는 관광지에 있어서는 1달에 1번 데이터 갱신중에 있습니다. 금방 업데이트가 될 것이니 걱정하지 마세요');
 
 -- schedules 
 CREATE TABLE schedules (
@@ -186,7 +195,9 @@ CREATE TABLE schedules (
 
 INSERT INTO schedules (user_id, title, memo, total_cost, start_date, end_date)
 VALUES
-    (1, '부산 2박 3일 여행', '부산에서의 힐링 여행 일정', 500000, '2024-12-01', '2024-12-03');
+    (1, '부산 2박 3일 여행', '부산에서의 힐링 여행 일정', 400000, '2024-11-28', '2024-11-30'),
+    (1, '강릉 2박 3일 여행', '강릉에서의 힐링 여행 일정', 300000, '2024-12-01', '2024-12-03'),
+    (1, '가평 1박 2일 여행', '가평에서의 힐링 여행 일정', 150000, '2024-12-02', '2024-12-03');
 
 -- schedule_places 
 CREATE TABLE schedule_places (
@@ -204,20 +215,24 @@ CREATE TABLE schedule_places (
 
 INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order) 
 VALUES
-    (1, 17710, '2024-12-01 09:00:00', '힐사이드호텔에서 숙소 체크인', 100000, 1),
-    (1, 17709, '2024-12-01 12:00:00', '힐 사이드 관광호텔 주변에서 점심', 50000, 2),
-    (1, 17082, '2024-12-01 15:00:00', '히어로테마파크에서 즐거운 시간', 80000, 3);
+    (1, 16755, '2024-11-28 09:00:00', '광안리 해수욕장에서 아침 산책', 0, 1),
+    (1, 16846, '2024-11-28 12:00:00', '해운대 미포 끝집에서 점심 식사', 100000, 2),
+    (1, 17055, '2024-11-28 15:00:00', '해동 용궁사 방문', 0, 3),
+    (1, 17045, '2024-11-29 09:00:00', '태종대에서 전망대 관람', 0, 1),
+    (1, 17842, '2024-11-29 12:00:00', '남포동 국제시장 탐방 및 점심', 100000, 2),
+    (1, 16923, '2024-11-29 15:00:00', '송도 구름다리와 해상 케이블카 체험', 100000, 3),
+    (1, 16864, '2024-11-30 09:00:00', '감천문화마을 산책 및 사진 촬영', 0, 1),
+    (1, 18061, '2024-11-30 12:00:00', '자갈치 시장에서 해산물 점심', 100000, 2),
+    (1, 16899, '2024-11-30 15:00:00', '부산 타워에서 야경 감상', 0, 3);
 
 INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order) 
 VALUES
-    (1, 17081, '2024-12-02 09:00:00', '흰여울문화마을 산책', 0, 1),
-    (1, 19364, '2024-12-02 11:00:00', '희와제과에서 맛있는 디저트 즐기기', 20000, 2),
-    (1, 19363, '2024-12-02 14:00:00', '흑송에서 커피 한잔의 여유', 15000, 3),
-    (1, 19362, '2024-12-02 17:00:00', '흑기와에서 저녁 식사', 30000, 4);
+    (2, 21930, '2024-12-01 09:00:00', '강릉 3.1운동 기념공원', 100000, 1),
+    (2, 10042, '2024-12-02 15:00:00', '강릉생태막회집', 100000, 1),
+    (2, 10043, '2024-12-03 09:00:00', '강릉형제장칼국수', 100000, 1);
 
 INSERT INTO schedule_places (schedule_id, attraction_id, visit_time, memo, cost, visit_order) 
 VALUES
-    (1, 18498, '2024-12-03 09:00:00', '휴고보스코리아 매장에서 쇼핑', 100000, 1),
-    (1, 18497, '2024-12-03 11:00:00', '휴고보스 신세계 센텀시티점 방문', 50000, 2),
-    (1, 18496, '2024-12-03 15:00:00', '휴고보스 롯데아울렛 부산점 방문 후 공항으로 이동', 0, 3);
-
+    (3, 20269, '2024-12-02 09:00:00', '가평 영양잣마을', 100000, 1),
+    (3, 20268, '2024-12-02 15:00:00', '가평 연하리향나무', 100000, 1),
+    (3, 20255, '2024-12-03 09:00:00', '황가평양냉면', 0, 1);
