@@ -105,7 +105,7 @@ CREATE TABLE notices (
 
 INSERT INTO notices (title, content, user_id, image_url)
 VALUES
-    ('디지털 관광주민증 전용 크리스마스 열차 여행상품', '다가오는 크리스마스, 다양한 이벤트 참여하고 혜택 챙겨가세요', 1, 'https://ifh.cc/g/OwSt4M.jpg'),
+    ('디지털 관광주민증 전용 크리스마스 열차 여행상품', '다가오는 크리스마스, 다양한 이벤트 참여하고 혜택 챙겨가세요', 2, 'https://ifh.cc/g/OwSt4M.jpg'),
     ('대한민국 구석구석 만족도 조사 이벤트', '이벤트 참여해주시면 감사하겠습니다', 2, 'https://ifh.cc/g/WTQpq6.jpg');
 
 -- comments
