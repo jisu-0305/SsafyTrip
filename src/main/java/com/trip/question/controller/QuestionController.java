@@ -25,7 +25,7 @@ public class QuestionController {
             HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
 
-        PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),page,size);
+        PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),user.getUserRole(),page,size);
 
         return ResponseEntity.ok(res);
 

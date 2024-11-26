@@ -13,6 +13,12 @@
         WHERE user_id = #{userId}
     </select>
 
+    <select id="getCountQuestionsForAdmin" resultType="int">
+        SELECT COUNT(*)
+        FROM questions
+        WHERE is_answered = false OR is_answered IS NULL
+    </select>
+
     <!-- 결과 매핑 정의 -->
     <resultMap id="questionResultMap" type="QuestionsDto">
         <id property="questionId" column="question_id" />
@@ -28,6 +34,15 @@
         WHERE user_id = #{userId}
         ORDER BY created_at DESC
         LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- (3)offset을 통해 관리자용  특정 페이지의 데이터 가져오기 -->
+    <select id="getQuestionsByAdmin" resultMap="questionResultMap">
+        SELECT question_id, title, created_at, is_answered
+        FROM questions
+        WHERE is_answered = false OR is_answered IS NULL
+        ORDER BY created_at DESC
+            LIMIT #{size} OFFSET #{offset}
     </select>
 
 

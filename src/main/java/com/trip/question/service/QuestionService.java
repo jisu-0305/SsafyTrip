@@ -20,13 +20,21 @@ public class QuestionService {
         return true;
     }
 
-    public PagedQuestionResponseDto selectAllQuestions(int userId, int page, int size) {
+    public PagedQuestionResponseDto selectAllQuestions(int userId, String userRole,int page, int size) {
         int offset = (page - 1) * size;
+        int totalCount, totalPage;
+        List<QuestionsDto> questionsList;
 
-        int totalCount = questionMapper.getCountQuestions(userId);
-        int totalPage = (int) Math.ceil((double) totalCount / size);
+        if(userRole.equals("ROLE_USER")){
+            totalCount = questionMapper.getCountQuestions(userId);
+            totalPage = (int) Math.ceil((double) totalCount / size);
+            questionsList = questionMapper.getQuestionsByUserId((int)userId,offset,size);
+        }else{
+            totalCount = questionMapper.getCountQuestionsForAdmin();
+            totalPage = (int) Math.ceil((double) totalCount / size);
+            questionsList = questionMapper.getQuestionsByAdmin(offset, size);
+        }
 
-        List<QuestionsDto> questionsList = questionMapper.getQuestionsByUserId((int)userId,offset,size);
 
         PagedQuestionResponseDto pagedQuestionResponseDto = new PagedQuestionResponseDto();
         pagedQuestionResponseDto.setQuestionsList(questionsList);
