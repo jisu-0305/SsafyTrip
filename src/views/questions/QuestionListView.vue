@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { storeToRefs } from 'pinia';
 import { useQuestionStore } from "@/stores/questionStores";
 import { useRouter } from 'vue-router';
@@ -10,22 +10,38 @@ import SearchResultInfo from "@/components/common/SearchResultInfo.vue";
 
 const router = useRouter();
 const questionStore = useQuestionStore();
-const { questions, currentPage, totalPages, totalElements, searchKeyword } = storeToRefs(questionStore);
 const authStore = useAuthStore();
+const { questions, currentPage, totalPages, totalElements, searchKeyword } = storeToRefs(questionStore);
 
-onMounted(() => {
-  questionStore.fetchQuestions();
+onMounted(async () => {
+  try {
+    if (!authStore.isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push({ name: 'user-login' });
+      return;
+    }
+    await questionStore.fetchQuestions();
+  } catch (error) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      authStore.handleAuthError(error);
+    }
+  }
 });
 
-const handlePageChange = (questionId) => {
-  questionStore.fetchQuestionById(questionId);
-};
+watch(currentPage, async (newPage) => {
+  await questionStore.fetchQuestions(newPage, 10, searchKeyword.value);
+});
 
-const handleSearch = () => {
-  questionStore.fetchQuestions(1, 10, searchKeyword.value);
+const handleSearch = async () => {
+  await questionStore.fetchQuestions(1, 10, searchKeyword.value);
 };
 
 const goToWrite = () => {
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요한 서비스입니다.');
+    router.push('/login');
+    return;
+  }
   router.push({ name: 'question-write' });
 };
 
@@ -47,12 +63,12 @@ const columns = [
     label: '제목' 
   },
   {
-    key: 'status',
+    key: 'is_answered',
     label: '상태',
     style: 'width: 100px',
     formatter: (value) => ({
-      text: value === 'ANSWERED' ? '답변완료' : '답변대기',
-      color: value === 'ANSWERED' ? 'success' : 'error',
+      text: value ? '답변완료' : '답변대기',
+      color: value ? 'success' : 'error',
       variant: 'flat'
     })
   },
@@ -107,10 +123,12 @@ const columns = [
             </div>
 
             <div class="list-area">
+              <SearchResultInfo :total-count="totalElements" />
               <BoardList 
                 :articles="questions" 
                 :columns="columns"
                 :on-row-click="handleRowClick"
+                type="question"
               />
               
               <div class="text-center mt-6">

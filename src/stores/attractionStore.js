@@ -18,7 +18,6 @@ export const useAttractionStore = defineStore('attraction', () => {
     keyword: '',
     sortBy: 'name'
   });
-  const isInitialized = ref(localStorage.getItem('attraction-initialized') === 'true');
 
   const fetchAttractions = async (params = {}, resetPage = false) => {
     try {
@@ -75,14 +74,11 @@ export const useAttractionStore = defineStore('attraction', () => {
   const fetchInitialAttractions = async () => {
     try {
       loading.value = true;
+      currentPage.value = 1;
       const response = await getInitialAttractions();
       
       sidoList.value = response.data.sidoList || [];
       contentTypeList.value = response.data.contentTypeList || [];
-      
-      localStorage.setItem('sido-list', JSON.stringify(sidoList.value));
-      localStorage.setItem('content-type-list', JSON.stringify(contentTypeList.value));
-      
       attractions.value = response.data.attractList || [];
       totalPages.value = response.data.totalPages || 0;
       totalCount.value = response.data.totalCount || 0;
@@ -95,60 +91,13 @@ export const useAttractionStore = defineStore('attraction', () => {
             attraction.longitude || 126.9780
           )
         }));
+      } else {
+        mapPositions.value = [];
       }
-      
-      isInitialized.value = true;
-      localStorage.setItem('attraction-initialized', 'true');
     } catch (error) {
       console.error('초기 관광지 목록 조회 실패:', error);
     } finally {
       loading.value = false;
-    }
-  };
-
-  const saveState = () => {
-    const state = {
-      attractions: attractions.value,
-      totalPages: totalPages.value,
-      currentPage: currentPage.value,
-      searchParams: searchParams.value,
-      totalCount: totalCount.value,
-      mapPositions: mapPositions.value
-    };
-    sessionStorage.setItem('attraction-state', JSON.stringify(state));
-  };
-
-  const restoreState = () => {
-    const savedState = sessionStorage.getItem('attraction-state');
-    if (savedState) {
-      try {
-        const state = JSON.parse(savedState);
-        attractions.value = state.attractions || [];
-        totalPages.value = state.totalPages || 0;
-        currentPage.value = state.currentPage || 1;
-        searchParams.value = state.searchParams || {};
-        totalCount.value = state.totalCount || 0;
-        mapPositions.value = state.mapPositions || [];
-        
-        return true;
-      } catch (error) {
-        console.error('상태 복원 실패:', error);
-        return false;
-      }
-    }
-    return false;
-  };
-
-  const initializeStore = () => {
-    const savedSidoList = localStorage.getItem('sido-list');
-    const savedContentTypeList = localStorage.getItem('content-type-list');
-    
-    if (savedSidoList) {
-      sidoList.value = JSON.parse(savedSidoList);
-    }
-    
-    if (savedContentTypeList) {
-      contentTypeList.value = JSON.parse(savedContentTypeList);
     }
   };
 
@@ -203,12 +152,8 @@ export const useAttractionStore = defineStore('attraction', () => {
     sidoList,
     contentTypeList,
     searchParams,
-    isInitialized,
     fetchAttractions,
     fetchInitialAttractions,
-    initializeStore,
-    saveState,
-    restoreState,
     fetchSidoList,
     fetchPopularAttractions
   };

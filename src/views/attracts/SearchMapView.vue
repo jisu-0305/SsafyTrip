@@ -8,8 +8,7 @@ import { useAttractionStore } from "@/stores/attractionStore";
 import { storeToRefs } from "pinia";
 
 const attractionStore = useAttractionStore();
-const { attractions, totalPages, currentPage, loading, totalCount } =
-  storeToRefs(attractionStore);
+const { loading } = storeToRefs(attractionStore);
 
 const handleSearch = async (params) => {
   await attractionStore.fetchAttractions(params);
@@ -24,14 +23,9 @@ onMounted(async () => {
 });
 
 const hoveredMarkerId = ref(null);
-const selectedMarkerId = ref(null);
 
 const handleMarkerHover = (contentId) => {
   hoveredMarkerId.value = contentId;
-};
-
-const handleMarkerClick = (contentId) => {
-  selectedMarkerId.value = contentId;
 };
 </script>
 
@@ -50,7 +44,6 @@ const handleMarkerClick = (contentId) => {
                 <v-card height="600" class="map-card">
                   <AttractKakaoMap
                     @hover-marker="handleMarkerHover"
-                    @click-marker="handleMarkerClick"
                   />
                 </v-card>
               </v-col>

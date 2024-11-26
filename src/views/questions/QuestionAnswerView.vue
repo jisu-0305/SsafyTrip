@@ -5,15 +5,8 @@ import { useAuthStore } from "@/stores/authStores";
 import BoardWrite from "@/components/board/BoardWrite.vue";
 import PageHeader from "@/components/common/PageHeader.vue";
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  }
-});
-
-const router = useRouter();
 const route = useRoute();
+const router = useRouter();
 const questionStore = useQuestionStore();
 const authStore = useAuthStore();
 

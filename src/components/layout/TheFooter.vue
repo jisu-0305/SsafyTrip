@@ -57,7 +57,7 @@ const handleLinkClick = (route) => {
           <h3 class="text-subtitle-1 font-weight-bold mb-4">고객센터</h3>
           <div class="text-body-2 text-grey-darken-1">
             <p class="contact-info">이메일: support@inssaroute.com</p>
-            <p class="contact-info">전화: 1544-9001</p>
+            <p class="contact-info">전화: 1544-0000</p>
             <p class="contact-info">운영시간: 평일 09:00 - 18:00</p>
           </div>
         </v-col>

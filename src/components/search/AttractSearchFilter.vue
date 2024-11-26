@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { getGugunList } from '@/api/attractApi';
 import { useAttractionStore } from '@/stores/attractionStore';
 import { storeToRefs } from 'pinia';
 
 const attractionStore = useAttractionStore();
-const { sidoList: apiSidoList, contentTypeList: apiContentTypeList } = storeToRefs(attractionStore);
+const { sidoList: apiSidoList, contentTypeList: apiContentTypeList, searchParams } = storeToRefs(attractionStore);
 const emit = defineEmits(['search']);
 
 const sidoList = computed(() => [
@@ -54,15 +54,19 @@ const handleSearch = () => {
     gugunCode: selectedGugun.value,
     contentTypeId: selectedType.value,
     keyword: keyword.value,
-    sortBy: selectedSort.value
+    sortBy: selectedSort.value,
+    page: 1
   };
   
-  attractionStore.fetchAttractions(params);
+  attractionStore.fetchAttractions(params, true);
   emit('search', params);
 };
 
-onMounted(async () => {
-  await attractionStore.fetchInitialAttractions();
+// 컴포넌트 마운트 시 검색 조건 복원
+onMounted(() => {
+  if (selectedSido.value) {
+    handleSidoChange();
+  }
 });
 </script>
 

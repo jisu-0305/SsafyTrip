@@ -104,14 +104,8 @@ const buttonLabels = computed(() => {
 
 const handleButtonClick = async (buttonType) => {
   switch (buttonType) {
-    case 'edit':
-      alert('수정 기능은 준비 중입니다.');
-      break;
-    case 'delete':
-      handleDelete();
-      break;
     case 'answer':
-      const questionId = route.params.id;
+      const questionId = route.id;
       router.push({ 
         name: 'question-answer', 
         params: { id: questionId } 
@@ -119,6 +113,12 @@ const handleButtonClick = async (buttonType) => {
       break;
     case 'list':
       router.push({ name: 'question' });
+      break;
+    case 'edit':
+      alert('수정 기능은 준비 중입니다.');
+      break;
+    case 'delete':
+      handleDelete();
       break;
   }
 };

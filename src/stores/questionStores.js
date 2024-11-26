@@ -12,10 +12,12 @@ export const useQuestionStore = defineStore('question', () => {
   const searchKeyword = ref('')
 
   // 액션
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (page = 1, size = 10, keyword = '') => {
     try {
-      const response = await questionApi.getQuestions()
-      questions.value = response.data
+      const response = await questionApi.getQuestions(page, size, keyword)
+      questions.value = response.data.questionsList
+      totalPages.value = response.data.totalPages
+      totalElements.value = response.data.totalCount
     } catch (error) {
       console.error('질문 목록 조회 실패:', error)
       throw error

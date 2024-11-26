@@ -83,6 +83,10 @@ const handleEdit = () => {
 const handleList = () => {
   router.push({ name: "notice" });
 };
+
+const visibleButtons = computed(() => {
+  return authStore.isAdmin ? ['edit', 'delete', 'list'] : ['list']
+})
 </script>
 
 <template>
@@ -95,7 +99,7 @@ const handleList = () => {
           <BoardDetail
             :article="currentNotice"
             loading-key="notice-detail"
-            :buttons="['edit', 'delete', 'list']"
+            :buttons="visibleButtons"
             :button-permissions="buttonPermissions"
             :button-labels="buttonLabels"
             @click-button="handleButtonClick"

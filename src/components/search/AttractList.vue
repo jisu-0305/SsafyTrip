@@ -1,28 +1,24 @@
 <script setup>
-import { storeToRefs } from "pinia";
-import { useAttractionStore } from "@/stores/attractionStore";
+import { storeToRefs } from 'pinia';
+import { useAttractionStore } from '@/stores/attractionStore';
 
 const attractionStore = useAttractionStore();
-const { attractions, currentPage, totalPages, totalCount, contentTypeList } =
-  storeToRefs(attractionStore);
+const { attractions, currentPage, totalPages, totalCount, contentTypeList } = storeToRefs(attractionStore);
 
 // 천 단위 콤마 포맷팅 함수
 const formatNumber = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-const emit = defineEmits(["update:page"]);
+const emit = defineEmits(['update:page']);
 
 const handlePageChange = (page) => {
-  emit("update:page", page);
+  emit('update:page', page);
 };
 
 const props = defineProps({
-  hoveredMarkerId: Number,
+  hoveredMarkerId: Number
 });
-
-console.log("학준 from AttactList");
-console.log(attractions.value);
 </script>
 
 <template>
@@ -38,20 +34,20 @@ console.log(attractions.value);
       <v-list-item
         v-for="attraction in attractions"
         :key="attraction.no"
-        :class="{ highlighted: attraction.contentId === hoveredMarkerId }"
+        :class="{ 'highlighted': attraction.contentId === hoveredMarkerId }"
         @click="$router.push(`/attraction/${attraction.no}`)"
         style="cursor: pointer"
       >
         <template v-slot:prepend>
           <v-avatar size="100">
-            <v-img :src="attraction.firstImage1" :alt="attraction.title" cover>
+            <v-img 
+              :src="attraction.firstImage1" 
+              :alt="attraction.title"
+              cover
+            >
               <template v-slot:placeholder>
                 <v-avatar color="grey-lighten-2" size="100">
-                  <v-icon
-                    icon="mdi-image-off"
-                    color="grey-darken-2"
-                    size="32"
-                  ></v-icon>
+                  <v-icon icon="mdi-image-off" color="grey-darken-2" size="32"></v-icon>
                 </v-avatar>
               </template>
             </v-img>
@@ -65,23 +61,21 @@ console.log(attractions.value);
         <v-list-item-subtitle>
           <div class="d-flex flex-column gap-2">
             <div>
-              <v-chip size="small" color="primary" class="font-weight-medium">
-                {{
-                  contentTypeList.find(
-                    (type) => type.contentTypeId === attraction.contentTypeId
-                  )?.name || "기타"
-                }}
+              <v-chip
+                size="small"
+                color="primary"
+                class="font-weight-medium"
+              >
+                {{ contentTypeList.find(type => type.contentTypeId === attraction.contentTypeId)?.name || '기타' }}
               </v-chip>
             </div>
-
+            
             <div class="d-flex align-center gap-4">
               <div class="d-flex align-center">
-                <v-icon size="small" color="error" class="me-1"
-                  >mdi-heart</v-icon
-                >
+                <v-icon size="small" color="error" class="me-1">mdi-heart</v-icon>
                 <span class="text-caption">{{ attraction.hit }}</span>
               </div>
-
+              
               <div class="d-flex align-center">
                 <v-icon size="small" color="grey" class="me-1">mdi-eye</v-icon>
                 <span class="text-caption">{{ attraction.views }}</span>
@@ -111,7 +105,7 @@ console.log(attractions.value);
 }
 
 .highlighted::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0;
