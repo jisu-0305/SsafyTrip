@@ -1,90 +1,53 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/stores/authStores';
-import { useFavoriteStore } from '@/stores/favoriteStore';
-import { useRouter } from 'vue-router';
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/authStores";
+import { useFavoriteStore } from "@/stores/favoriteStore";
+import { useRouter } from "vue-router";
 import PageHeader from "@/components/common/PageHeader.vue";
 import SearchResultInfo from "@/components/common/SearchResultInfo.vue";
+import { useCommentStore } from "@/stores/commentStore";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const favoriteStore = useFavoriteStore();
-const { favoriteList, totalPages, totalCount } = storeToRefs(favoriteStore);
+const totalCount = ref(0);
 
+const getMyCommentItems = async () => {
+  if (!authStore.isLoggedIn) {
+    alert("로그인이 필요한 서비스입니다.");
+    router.push({ name: "user-login" });
+    return;
+  }
 
-// const formatNumber = (num) => {
-//   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-// };
+  myCommentItems.value = await fetchMyComments();
+  totalCount.value = myCommentItems.value.length;
+};
 
-// const fetchAttractions = async () => {
-//   try {
-//     if (!authStore.isLoggedIn) {
-//       alert('로그인이 필요한 서비스입니다.');
-//       router.push({ name: 'user-login' });
-//       return;
-//     }
-//     await favoriteStore.fetchFavorites({
-//       page: page.value,
-//       word: search.value
-//     });
-//   } catch (error) {
-//     if (error.response?.status === 401 || error.response?.status === 403) {
-//       alert('로그인이 필요한 서비스입니다.');
-//       router.push('/login');
-//     }
-//     console.error("Error fetching attractions:", error);
-//   }
-// };
+const handleFavoriteToggle = async (attractId) => {
+  if (!authStore.isLoggedIn) {
+    alert("로그인이 필요한 서비스입니다.");
+    router.push({ name: "user-login" });
+    return;
+  }
 
-// const handleSearch = () => {
-//   page.value = 1;
-//   fetchAttractions();
-// };
+  await favoriteStore.toggleFavorite(attractId);
 
-// const handlePageChange = (newPage) => {
-//   page.value = newPage;
-//   fetchAttractions();
-// };
-
-// const handleFavoriteToggle = async (attractId) => {
-//   if (!authStore.isLoggedIn) {
-//     alert('로그인이 필요한 서비스입니다.');
-//     router.push({ name: 'user-login' });
-//     return;
-//   }
-
-//   await favoriteStore.toggleFavorite(attractId);
-
-//     const attraction = favoriteList.value.find(item => item.no === attractId);
-//     if (attraction) {
-//       attraction.hit = favoriteStore.favoriteAttractions.has(attractId) 
-//         ? attraction.hit + 1 
-//         : Math.max(0, attraction.hit - 1);
-//     }
-  
-// };
-
-// onMounted(fetchAttractions);
-
-// --------------------------------
-
-import { useCommentStore } from '@/stores/commentStore';
+  const attraction = favoriteList.value.find((item) => item.no === attractId);
+  if (attraction) {
+    attraction.hit = favoriteStore.favoriteAttractions.has(attractId)
+      ? attraction.hit + 1
+      : Math.max(0, attraction.hit - 1);
+  }
+};
 
 const commentStore = useCommentStore();
 const { fetchMyComments, myComments } = commentStore;
+const myCommentItems = ref([]);
 
-const logMyComments = async () => {
-  console.log("my comments");
-  const myComments = await fetchMyComments();
-  console.log("제발!!!!!");
-  console.log(myComments);
-};
 onMounted(async () => {
-  await fetchMyComments(); // 데이터를 서버에서 가져옴
-  logMyComments(); // 데이터를 가져온 후 콘솔에 찍기
+  getMyCommentItems(); // 데이터를 가져온 후 콘솔에 찍기
 });
-
 </script>
 
 <template>
@@ -99,34 +62,41 @@ onMounted(async () => {
               <v-card>
                 <v-list lines="three">
                   <v-list-item
-                    v-for="item in favoriteList"
-                    :key="item.no"
-                    @click="$router.push(`/attraction/${item.no}`)"
+                    v-for="item in myCommentItems"
+                    :key="item.id"
+                    @click="$router.push(`/attraction/${item.attractionId}`)"
                     style="cursor: pointer"
                   >
                     <template v-slot:prepend>
                       <v-avatar size="100">
-                        <v-img 
-                          :src="item.firstImage1" 
-                          :alt="item.title"
-                          cover
-                        >
+                        <v-img :src="item.image" :alt="item.title" cover>
                           <template v-slot:placeholder>
                             <v-avatar color="grey-lighten-2" size="100">
-                              <v-icon icon="mdi-image-off" color="grey-darken-2" size="32"></v-icon>
+                              <v-icon
+                                icon="mdi-image-off"
+                                color="grey-darken-2"
+                                size="32"
+                              ></v-icon>
                             </v-avatar>
                           </template>
                         </v-img>
                       </v-avatar>
                     </template>
 
-                    <v-list-item-title class="text-subtitle-1 font-weight-bold mb-1">
-                      {{ item.title }}
+                    <v-list-item-title
+                      class="text-subtitle-1 font-weight-bold mb-1"
+                    >
+                      {{ item.content }}
                     </v-list-item-title>
 
                     <v-list-item-subtitle>
                       <div class="d-flex flex-column gap-2">
                         <div>
+                          {{ item.attractionName }}
+                        </div>
+
+                        <div class="text-caption text-grey">
+                          <!-- {{ item.atrractionName }} -->
                           <v-chip
                             size="small"
                             color="primary"
@@ -135,30 +105,14 @@ onMounted(async () => {
                             여행지
                           </v-chip>
                         </div>
-                        
-                        <div class="text-caption text-grey">{{ item.address }}</div>
-                        
-                        <div class="d-flex align-center gap-4">
-                          <div class="d-flex align-center">
-                            <v-icon 
-                              size="small" 
-                              :color="favoriteStore.favoriteAttractions.has(item.no) ? 'error' : ''"
-                              class="me-1"
-                              :icon="favoriteStore.favoriteAttractions.has(item.no) ? 'mdi-heart' : 'mdi-heart-outline'"
-                              @click.stop="handleFavoriteToggle(item.no)"
-                            >
-                              mdi-heart
-                            </v-icon>
-                            <span class="text-caption">{{ item.hit }}</span>
-                          </div>
-                        </div>
+
+                        <div class="d-flex align-center gap-4"></div>
                       </div>
                     </v-list-item-subtitle>
                   </v-list-item>
                 </v-list>
 
-                <v-card-actions class="justify-center">
-                </v-card-actions>
+                <v-card-actions class="justify-center"> </v-card-actions>
               </v-card>
             </div>
           </div>
