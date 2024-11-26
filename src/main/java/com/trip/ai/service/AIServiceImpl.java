@@ -100,7 +100,7 @@ public class AIServiceImpl implements AIService {
     private String generateClothesPrompt(List<WeatherDto> weatherList) {
         StringBuilder promptBuilder = new StringBuilder();
 
-        promptBuilder.append("Create a single image divided into three equal vertical rectangles. ");
+        promptBuilder.append("여행일정과 날씨를 참고하여 옷만 존재하는 코디북을 얻고 싶습니다. 한 이미지 안에 날짜 사이즈만큼의 직사각형으로 분리하여, 각 날짜별 코디를 넣어주세요. 아래 JSON 데이터를 참고하여 이미지를 제작하세요. 이미지는 코디만 포함하며, 텍스트나 불필요한 배경 이미지는 넣지 마세요.");
 
         int day = 1;
         for (WeatherDto weather : weatherList) {
@@ -114,8 +114,7 @@ public class AIServiceImpl implements AIService {
             day++;
         }
 
-        promptBuilder.append("Ensure that the outfits are unique and suitable for the listed locations and conditions. ")
-                .append("Do not include fonts, text, humans, and backgrounds. Only display the clothing items.Keep it minimalistic.");
+        promptBuilder.append("코디북 이미지는 다음 JSON 데이터를 기반으로 만들어주세요. ");
         return promptBuilder.toString();
     }
 
