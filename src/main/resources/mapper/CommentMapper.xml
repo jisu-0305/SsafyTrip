@@ -48,10 +48,16 @@
         SELECT
             c.comment_id AS id,
             c.attraction_id AS attractionId,
+            a.title AS attractionName,
+            a.first_image1 AS image,
             c.content AS content,
             c.created_at AS createdAt
-        FROM comments c
-        WHERE c.author_id = #{userId}
-        ORDER BY c.created_at DESC
+        FROM
+            comments c
+                JOIN attractions a ON c.attraction_id = a.no
+        WHERE
+            c.author_id = #{userId}
+        ORDER BY
+            c.created_at DESC
     </select>
 </mapper>
