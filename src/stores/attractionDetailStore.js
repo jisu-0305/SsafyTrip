@@ -17,6 +17,7 @@ export const useAttractionDetailStore = defineStore("attractionDetail", () => {
 
       console.log("학준");
       console.log("attractionDetailStore");
+      console.log(attraction.value.overview);
       console.log(attraction.value.isLike);
 
       // 좋아요 상태 설정

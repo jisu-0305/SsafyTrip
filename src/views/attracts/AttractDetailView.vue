@@ -186,8 +186,9 @@ if (attraction.value) {
                       icon
                       variant="text"
                       :color="
-                        //favoriteAttractions.has(parseInt(route.params.id))
-                        attraction.isLike ? 'red' : ''
+                        favoriteAttractions.has(parseInt(route.params.id))
+                        //attraction.isLike 
+                        ? 'red' : ''
                       "
                       :loading="favoriteStore.loading"
                       @click="toggleFavorite"
@@ -195,8 +196,9 @@ if (attraction.value) {
                     >
                       <v-icon>
                         {{
-                          //favoriteAttractions.has(parseInt(route.params.id))
-                          attraction.isLike ? "mdi-heart" : "mdi-heart-outline"
+                          favoriteAttractions.has(parseInt(route.params.id))
+                          //attraction.isLike 
+                          ? "mdi-heart" : "mdi-heart-outline"
                         }}
                       </v-icon>
                     </v-btn>
@@ -218,8 +220,11 @@ if (attraction.value) {
                           {{ attraction?.tel }}
                         </div>
 
-                        <div class="text-body-1 mb-4">
+                        <!-- <div class="text-body-1 mb-4">
                           {{ attraction?.overview || "상세 설명이 없습니다." }}
+                        </div> -->
+
+                        <div class="text-body-1 mb-4" v-html="attraction?.overview?.replace(/\n/g, '<br>') || '상세 설명이 없습니다.'">
                         </div>
 
                         <div class="d-flex gap-4">

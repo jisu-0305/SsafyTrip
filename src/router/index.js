@@ -7,7 +7,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "main", 
+      name: "main",
       component: TheMainView,
     },
     {
@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: "/join",
-      name: "user-join", 
+      name: "user-join",
       component: () => import("@/views/auth/AuthRegisterView.vue"),
     },
     {
@@ -31,7 +31,7 @@ const router = createRouter({
       component: () => import("@/views/attracts/SearchMapView.vue"),
     },
     {
-      path: "/plan", 
+      path: "/plan",
       name: "travel-plan",
       component: () => import("@/views/plan/AttractionPlan.vue"),
     },
@@ -53,7 +53,7 @@ const router = createRouter({
     },
     {
       path: "/notice/:id/edit",
-      name: "notice-edit", 
+      name: "notice-edit",
       component: () => import("@/views/notices/NoticeEditView.vue"),
       props: true,
     },
@@ -83,6 +83,11 @@ const router = createRouter({
       name: "question-edit",
       component: () => import("@/views/questions/QuestionEditView.vue"),
       props: true,
+    },
+    {
+      path: "/favorites",
+      name: "favorites",
+      component: () => import("@/components/mypage/FavoriteMyPage.vue"),
     },
   ],
 });

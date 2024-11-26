@@ -42,7 +42,10 @@ const handleClick = (activity) => {
   if (item) {
     if (item.route === 'question') {
       router.push({ name: 'question' });
-    } else {
+    } else if (item.route === 'favorites') {
+      router.push({ name: 'favorites' });
+    }  
+    else {
       alert(`${activity} 버튼이 클릭되었습니다.`);
     }
   }
