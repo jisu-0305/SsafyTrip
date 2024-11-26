@@ -31,7 +31,7 @@ public class OverviewDataUtil {
             urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=" + URLEncoder.encode("json", "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + URLEncoder.encode(contentId, "UTF-8"));
             urlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=" + URLEncoder.encode(contentTypeId, "UTF-8"));
-            urlBuilder.append("&" + URLEncoder.encode(serviceKey, "UTF-8")+ "=" + URLEncoder.encode(serviceKey, "UTF-8"));
+            urlBuilder.append("&" + URLEncoder.encode("serviceKey", "UTF-8")+ "=" + URLEncoder.encode(serviceKey, "UTF-8"));
             
 
             // connect
