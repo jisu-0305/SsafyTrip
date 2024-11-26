@@ -1,41 +1,68 @@
 <template>
     <v-card class="mx-auto my-4" max-width="400">
-        <v-toolbar flat color="black" dark>
-            <v-toolbar-title>
-                DAY {{ day }}
-            </v-toolbar-title>
+        <v-toolbar 
+            flat 
+            color="primary" 
+            dark
+            :title="`DAY ${day}`"
+        >
             <v-spacer></v-spacer>
-            <v-btn icon @click="emitRemoveDay">
-                <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            <v-btn
+                icon="mdi-delete"
+                @click="emitRemoveDay"
+                aria-label="일정 삭제"
+            ></v-btn>
         </v-toolbar>
 
         <v-card-text>
-            <v-container>
-                <!-- 일정 항목 반복 렌더링 -->
-                <v-row v-for="(item, index) in schedules" :key="index" align="center" class="mb-2">
-                    <v-col cols="1" style="margin-right: 10px;">
-                        <v-avatar color="orange" size="24">
-                            <span class="white--text">{{ index + 1 }}</span>
-                        </v-avatar>
-                    </v-col>
-                    <v-col>
-                        <div class="font-weight-bold">{{ item.title }}</div>
-                        <div>{{ item.memo }}</div>
-                    </v-col>
-                    <v-col class="text-right" cols="1">
-                        <v-btn icon @click="removeSchedule(index)">
-                            <v-icon>mdi-trash-can-outline</v-icon>
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-container>
+            <v-list>
+                <v-hover v-for="(item, index) in schedules" :key="index" v-slot="{ isHovering, props }">
+                    <v-list-item
+                        v-bind="props"
+                        :class="{ 'on-hover': isHovering }"
+                    >
+                        <template v-slot:prepend>
+                            <v-avatar 
+                                color="primary" 
+                                size="32"
+                                class="white--text"
+                            >
+                                {{ index + 1 }}
+                            </v-avatar>
+                        </template>
 
-            <v-container>
-                <v-btn outlined color="primary" block @click="emitAddSchedule">
-                    관광지 추가
-                </v-btn>
-            </v-container>
+                        <v-list-item-title class="font-weight-bold">
+                            {{ item.title }}
+                        </v-list-item-title>
+                        
+                        <v-list-item-subtitle>
+                            {{ item.memo }}
+                        </v-list-item-subtitle>
+
+                        <template v-slot:append>
+                            <v-btn
+                                icon="mdi-trash-can-outline"
+                                variant="text"
+                                size="small"
+                                @click="removeSchedule(index)"
+                                aria-label="관광지 삭제"
+                            ></v-btn>
+                        </template>
+                    </v-list-item>
+                </v-hover>
+            </v-list>
+
+            <v-divider class="my-4"></v-divider>
+            
+            <v-btn
+                block
+                color="primary"
+                variant="outlined"
+                prepend-icon="mdi-plus"
+                @click="emitAddSchedule"
+            >
+                관광지 추가
+            </v-btn>
         </v-card-text>
     </v-card>
 </template>
@@ -62,9 +89,7 @@ const emitRemoveDay = () => {
 </script>
 
 <style scoped>
-.day-date {
-    font-size: 14px;
-    margin-left: 10px;
-    color: #bbb;
+.on-hover {
+    background-color: rgba(var(--v-theme-primary), 0.04);
 }
 </style>

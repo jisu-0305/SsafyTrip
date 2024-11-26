@@ -35,7 +35,7 @@ onMounted(() => {
 
 <style scoped>
 #map-container {
-    width: 50%;
+    width: 100%;
     /* 화면의 절반 너비 */
     margin: 0 auto;
     /* 가운데 정렬 */
@@ -43,7 +43,7 @@ onMounted(() => {
 
 #map {
     width: 100%;
-    height: 300px;
+    height: 500px;
     /* 고정된 높이 */
 }
 </style>
