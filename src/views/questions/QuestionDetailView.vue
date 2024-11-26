@@ -1,17 +1,17 @@
 <script setup>
 import { onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
 import { useQuestionStore } from "@/stores/questionStores";
-import { useAuthStore } from '@/stores/authStores';
-import { useLoadingStore } from '@/stores/loadingStore';
+import { useAuthStore } from "@/stores/authStores";
+import { useLoadingStore } from "@/stores/loadingStore";
 import BoardDetail from "@/components/board/BoardDetail.vue";
 import PageHeader from "@/components/common/PageHeader.vue";
 
 const route = useRoute();
 const router = useRouter();
 const questionStore = useQuestionStore();
-const { currentQuestion } = storeToRefs(questionStore);
+const { currentQuestion, questionIsAnswered } = storeToRefs(questionStore);
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
@@ -20,16 +20,16 @@ let isComponentMounted = true;
 onMounted(async () => {
   try {
     if (isComponentMounted) {
-      loadingStore.startLoading('question-detail');
+      loadingStore.startLoading("question-detail");
       await questionStore.fetchQuestionById(route.params.id);
     }
   } catch (error) {
     if (isComponentMounted) {
-      console.error('문의글 로딩 실패:', error);
+      console.error("문의글 로딩 실패:", error);
     }
   } finally {
     if (isComponentMounted) {
-      loadingStore.endLoading('question-detail');
+      loadingStore.endLoading("question-detail");
     }
   }
 });
@@ -40,22 +40,26 @@ onUnmounted(() => {
 
 const formattedQuestion = computed(() => {
   if (!currentQuestion.value) return null;
-  
+
   const question = {
     id: currentQuestion.value.questionId,
     title: currentQuestion.value.questionTitle,
     content: currentQuestion.value.questionContent,
-    createdAt: new Date(currentQuestion.value.questionCreatedAt).toLocaleDateString('ko-KR'),
-    status: currentQuestion.value.questionIsAnswered ? 'ANSWERED' : 'WAITING',
-    authorEmail: currentQuestion.value.questionAuthorEmail
+    createdAt: new Date(
+      currentQuestion.value.questionCreatedAt
+    ).toLocaleDateString("ko-KR"),
+    status: currentQuestion.value.questionIsAnswered ? "ANSWERED" : "WAITING",
+    authorEmail: currentQuestion.value.questionAuthorEmail,
   };
 
   if (currentQuestion.value.answerContent) {
     question.answer = {
       id: currentQuestion.value.answerId,
       content: currentQuestion.value.answerContent,
-      createdAt: new Date(currentQuestion.value.answerCreatedAt).toLocaleDateString('ko-KR'),
-      authorEmail: currentQuestion.value.answerAuthorEmail
+      createdAt: new Date(
+        currentQuestion.value.answerCreatedAt
+      ).toLocaleDateString("ko-KR"),
+      authorEmail: currentQuestion.value.answerAuthorEmail,
     };
   }
 
@@ -70,75 +74,82 @@ const isAnswered = computed(() => {
   return currentQuestion.value?.questionIsAnswered;
 });
 
-const buttonPermissions = computed(() => {
-  if (authStore.isAdmin) {
-    // 관리자는 답변이 없는 경우에만 답변 작성 버튼이 보임
-    return {
-      answer: !isAnswered.value,
-      list: true
-    };
-  } else {
-    // 일반 사용자는 자신의 글이고 답변이 없는 경우에만 수정/삭제 가능
-    return {
-      edit: isOwner.value && !isAnswered.value,
-      delete: isOwner.value && !isAnswered.value,
-      list: true
-    };
-  }
-});
+console.log("isAnswered");
+console.log(isAnswered.value);
 
 const buttonLabels = computed(() => {
+  console.log("QuestionDetailView");
+  console.log(authStore.isAdmin);
+
   if (authStore.isAdmin) {
-    return {
-      answer: '답변작성',
-      list: '목록'
-    };
+    if (isAnswered.value) {
+      return {
+        answer: "답변수정",
+        list: "목록",
+      };
+    } else {
+      return {
+        answer: "답변작성",
+        list: "목록",
+      };
+    }
   } else {
     return {
-      edit: '수정',
-      delete: '삭제',
-      list: '목록'
+      edit: "수정",
+      delete: "삭제",
+      list: "목록",
     };
   }
 });
 
 const handleButtonClick = async (buttonType) => {
   switch (buttonType) {
-    case 'answer':
-      const questionId = route.id;
-      router.push({ 
-        name: 'question-answer', 
-        params: { id: questionId } 
+    case "answer":
+      // const questionId = route.id;
+      const questionId = route.params.id;
+      console.log("QuestionDetailView from jun");
+      console.log(questionId);
+
+      //router.push({ name: "user-login" });
+      //router.push({ name: "question-answer" });
+
+      router.push({
+        path: `/question/${questionId}/answer`,
+      });
+
+      router.push({
+        name: "question-answer",
+        params: { id: questionId },
       });
       break;
-    case 'list':
-      router.push({ name: 'question' });
+    case "list":
+      router.push({ name: "question" });
       break;
-    case 'edit':
-      alert('수정 기능은 준비 중입니다.');
+    case "edit":
+      alert("수정 기능은 준비 중입니다.");
       break;
-    case 'delete':
+    case "delete":
       handleDelete();
       break;
   }
 };
 
 const handleDelete = async () => {
-  if (confirm('이 문의글을 삭제하시겠습니까?')) {
-    alert('삭제 기능은 준비 중입니다.');
+  if (confirm("이 문의글을 삭제하시겠습니까?")) {
+    alert("삭제 기능은 준비 중입니다.");
   }
 };
 
 const additionalFields = [
-  { 
-    key: 'status', 
-    label: '상태',
-    formatter: (value) => value === 'ANSWERED' ? '답변완료' : '답변대기'
+  {
+    key: "status",
+    label: "상태",
+    formatter: (value) => (value === "ANSWERED" ? "답변완료" : "답변대기"),
   },
-  { 
-    key: 'authorEmail', 
-    label: '작성자' 
-  }
+  {
+    key: "authorEmail",
+    label: "작성자",
+  },
 ];
 </script>
 
@@ -153,7 +164,7 @@ const additionalFields = [
               :article="formattedQuestion"
               loading-key="question-detail"
               :additional-fields="additionalFields"
-              :buttons="authStore.isAdmin ? ['answer', 'list'] : ['edit', 'delete', 'list']"
+              :buttons="authStore.isAdmin ? ['answer', 'list'] : ['list']"
               :button-permissions="buttonPermissions"
               :button-labels="buttonLabels"
               :answer="formattedQuestion?.answer"
@@ -170,4 +181,4 @@ const additionalFields = [
 .page-container {
   padding: 20px;
 }
-</style> 
+</style>

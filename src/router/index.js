@@ -49,7 +49,7 @@ const router = createRouter({
       path: "/notice/:id",
       name: "notice-detail",
       component: () => import("@/views/notices/NoticeDetailView.vue"),
-      props: true
+      props: true,
     },
     {
       path: "/notice/:id/edit",
@@ -58,9 +58,9 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/attraction/:id',
-      name: 'AttractionDetail',
-      component: () => import('@/views/attracts/AttractDetailView.vue')
+      path: "/attraction/:id",
+      name: "AttractionDetail",
+      component: () => import("@/views/attracts/AttractDetailView.vue"),
     },
     {
       path: "/question",
@@ -76,13 +76,13 @@ const router = createRouter({
       path: "/question/:id",
       name: "question-detail",
       component: () => import("@/views/questions/QuestionDetailView.vue"),
-      props: true
+      props: true,
     },
     {
       path: "/question/:id/answer",
       name: "question-answer",
       component: () => import("@/views/questions/QuestionAnswerView.vue"),
-      props: true
+      props: true,
     },
     {
       path: "/favorites",
@@ -96,8 +96,8 @@ const router = createRouter({
     },
   ],
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 }
-  }
+    return { top: 0 };
+  },
 });
 
 export default router;

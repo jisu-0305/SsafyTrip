@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useQuestionStore } from "@/stores/questionStores";
 import { useAuthStore } from "@/stores/authStores";
@@ -10,10 +11,18 @@ const router = useRouter();
 const questionStore = useQuestionStore();
 const authStore = useAuthStore();
 
+const questionId = route.params.id;
+console.log("QuestionAnswerView, jun");
+console.log(questionId);
+
+const answerText = ref("");
+
 const handleSubmit = async (formData) => {
+  console.log(answerText.value);
+
   try {
     await questionStore.createQuestionAnswer(route.params.id, {
-      content: formData.content
+      content: answerText.value,
     });
     alert("답변이 등록되었습니다.");
     router.push({ name: "question-detail", params: { id: route.params.id } });
@@ -30,12 +39,25 @@ const handleSubmit = async (formData) => {
         <div class="inner-content">
           <PageHeader title="답변 작성" icon="mdi-comment-text" />
           <div class="content-area">
-            <BoardWrite
+            <!-- <BoardWrite  활용 불가..
               type="answer"
               title="답변 작성"
               :show-title-field="false"
               @submit="handleSubmit"
-            />
+            /> -->
+            <div class="content-area">
+              <!-- 텍스트 입력 및 버튼 -->
+              <v-textarea
+                label="답변 내용을 입력하세요"
+                v-model="answerText"
+                outlined
+                rows="5"
+              ></v-textarea>
+
+              <v-btn color="primary" class="mt-4" @click="handleSubmit">
+                답변 등록
+              </v-btn>
+            </div>
           </div>
         </div>
       </v-col>
@@ -47,4 +69,4 @@ const handleSubmit = async (formData) => {
 .page-container {
   padding: 20px;
 }
-</style> 
+</style>
