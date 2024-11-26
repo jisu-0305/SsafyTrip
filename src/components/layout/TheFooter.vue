@@ -1,10 +1,18 @@
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const quickLinks = [
-  { title: '공지사항', icon: 'mdi-bell-outline' },
-  { title: '자주 묻는 질문', icon: 'mdi-help-circle-outline' },
-  { title: '이용약관', icon: 'mdi-file-document-outline' },
-  { title: '개인정보처리방침', icon: 'mdi-shield-outline' }
+  { title: '공지사항', icon: 'mdi-bell-outline', route: 'notice' },
+  { title: '질문하기', icon: 'mdi-help-circle-outline', route: 'question' },
+  { title: '이용약관', icon: 'mdi-file-document-outline', route: 'terms' },
+  { title: '개인정보처리방침', icon: 'mdi-shield-outline', route: 'privacy' }
 ];
+
+const handleLinkClick = (route) => {
+  router.push({ name: route });
+};
 </script>
 
 <template>
@@ -13,7 +21,11 @@ const quickLinks = [
       <v-row>
         <!-- 회사 정보 섹션 -->
         <v-col cols="12" md="4" class="text-center text-md-left mb-6 mb-md-0">
-          <h3 class="text-h6 font-weight-bold mb-4">인싸루트</h3>
+          <h3 class="text-h6 font-weight-bold mb-4">
+            <v-btn variant="plain" class="pa-0" @click="router.push('/')">
+              인싸루트
+            </v-btn>
+          </h3>
           <p class="text-body-2 text-grey-darken-1">
             당신의 여행을 더 특별하게<br>
             AI 기반 스마트 여행 플래너
@@ -30,6 +42,8 @@ const quickLinks = [
               :title="link.title"
               class="px-0"
               density="compact"
+              @click="handleLinkClick(link.route)"
+              :class="'quick-link-item'"
             >
               <template v-slot:prepend>
                 <v-icon size="small" color="grey-darken-1">{{ link.icon }}</v-icon>
@@ -42,9 +56,9 @@ const quickLinks = [
         <v-col cols="12" md="4" class="text-center text-md-right">
           <h3 class="text-subtitle-1 font-weight-bold mb-4">고객센터</h3>
           <div class="text-body-2 text-grey-darken-1">
-            <p>이메일: support@inssaroute.com</p>
-            <p>전화: 1544-9001</p>
-            <p>운영시간: 평일 09:00 - 18:00</p>
+            <p class="contact-info">이메일: support@inssaroute.com</p>
+            <p class="contact-info">전화: 1544-0000</p>
+            <p class="contact-info">운영시간: 평일 09:00 - 18:00</p>
           </div>
         </v-col>
       </v-row>
@@ -70,10 +84,24 @@ const quickLinks = [
 
 :deep(.v-list-item) {
   min-height: 32px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+:deep(.v-list-item:hover) {
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 :deep(.v-list-item__content) {
   padding: 0;
+}
+
+.contact-info {
+  margin-bottom: 8px;
+}
+
+.quick-link-item {
+  border-radius: 4px;
 }
 </style>
 

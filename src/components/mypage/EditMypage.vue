@@ -56,9 +56,9 @@ import { ref } from "vue";
 
 const valid = ref(false);
 const formData = ref({
-  email: "user1@naver.com",
-  name: "홍길동",
-  gender: "private",
+  email: "hong@naver.com",
+  name: "김보라",
+  gender: "female",
   address: "",
 });
 

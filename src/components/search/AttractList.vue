@@ -54,23 +54,28 @@ const props = defineProps({
           </v-avatar>
         </template>
 
-        <v-list-item-title class="text-subtitle-1 font-weight-bold mb-1">
+
+        <div>
+          <v-chip
+            size="small"
+            color="primary"
+            class="font-weight-medium mb-1"
+          >
+            {{ attraction.contentType ? attraction.contentType : '기타' }}
+          </v-chip>
+        </div>
+
+        <v-list-item-title class="text-subtitle-1 font-weight-bold">
           {{ attraction.title }}
         </v-list-item-title>
 
+
         <v-list-item-subtitle>
           <div class="d-flex flex-column gap-2">
-            <div>
-              <v-chip
-                size="small"
-                color="primary"
-                class="font-weight-medium"
-              >
-                {{ contentTypeList.find(type => type.contentTypeId === attraction.contentTypeId)?.name || '기타' }}
-              </v-chip>
-            </div>
             
+            <div class="text-caption text-grey-darken-3">{{ attraction.address }}</div>
             <div class="d-flex align-center gap-4">
+              
               <div class="d-flex align-center">
                 <v-icon size="small" color="error" class="me-1">mdi-heart</v-icon>
                 <span class="text-caption">{{ attraction.hit }}</span>

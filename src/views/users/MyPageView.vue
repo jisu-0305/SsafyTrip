@@ -1,16 +1,28 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import PageHeader from '@/components/common/PageHeader.vue';
 import NavigationMyPage from '@/components/mypage/NavigationMyPage.vue';
 import ActivityMyPage from '@/components/mypage/ActivityMyPage.vue';
 import EditMyPage from '@/components/mypage/EditMyPage.vue';
 import DeleteMyPage from '@/components/mypage/DeleteMyPage.vue';
 import { useLoadingStore } from '@/stores/loadingStore';
+import { useAuthStore } from '@/stores/authStores';
 
+const router = useRouter();
 const currentCompFlag = ref(1);
 const loadingStore = useLoadingStore();
+const authStore = useAuthStore();
 const { isComponentLoading } = storeToRefs(loadingStore);
+
+onMounted(() => {
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요한 서비스입니다.');
+    router.push('/login');
+    return;
+  }
+});
 
 async function updateCurrentCompHanlder(params) {
   try {

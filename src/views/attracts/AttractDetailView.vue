@@ -13,7 +13,7 @@ import { useAttractionStore } from '@/stores/attractionStore';
 const route = useRoute();
 const router = useRouter();
 const attractionDetailStore = useAttractionDetailStore();
-const { attraction, comments, loading } = storeToRefs(attractionDetailStore);
+const { attraction, loading } = storeToRefs(attractionDetailStore);
 const map = ref(null);
 
 const authStore = useAuthStore();
@@ -74,7 +74,6 @@ watch([loading, attraction], ([newLoading, newAttraction]) => {
 
 onMounted(async () => {
   // 상세 페이지 진입 시 현재 상태 저장
-  attractionStore.saveState();
   
   const attractId = parseInt(route.params.id);
   await attractionDetailStore.fetchAttractionDetail(attractId);
@@ -84,51 +83,52 @@ onMounted(async () => {
 });
 
 const contentTypes = {
-  12: '관광지',
-  14: '문화시설',
-  15: '축제공연행사',
-  25: '여행코스',
-  28: '레포츠',
-  32: '숙박',
-  38: '쇼핑'
+  12: "관광지",
+  14: "문화시설",
+  15: "축제공연행사",
+  25: "여행코스",
+  28: "레포츠",
+  32: "숙박",
+  38: "쇼핑",
+  39: "음식점",
 };
 
 const submitComment = async () => {
   if (!newComment.value.trim()) return;
-  
+
   try {
-    await axios.post('/api/comments', {
+    await axios.post("/api/comments", {
       attractionId: parseInt(route.params.id),
-      content: newComment.value
+      content: newComment.value,
     });
-    
+
     // 댓글 작성 후 목록 새로고침
-    await attractionDetailStore.fetchAttractionDetail(parseInt(route.params.id));
-    newComment.value = ''; // 입력창 초기화
-    
+    await attractionDetailStore.fetchAttractionDetail(
+      parseInt(route.params.id)
+    );
+    newComment.value = ""; // 입력창 초기화
   } catch (error) {
-    console.error('댓글 작성 실패:', error);
-    alert('댓글 작성에 실패했습니다.');
+    console.error("댓글 작성 실패:", error);
+    alert("댓글 작성에 실패했습니다.");
   }
 };
 
 const toggleFavorite = async () => {
   if (!authStore.isLoggedIn) {
-    alert('로그인이 필요한 서비스입니다.');
+    alert("로그인이 필요한 서비스입니다.");
     return;
   }
   await favoriteStore.toggleFavorite(parseInt(route.params.id));
+
+  if (attraction.value.isLike == false) {
+    attraction.value.isLike = true;
+  } else {
+    attraction.value.isLike = false;
+  }
 };
 
-const goBack = async () => {
-  const success = attractionStore.restoreState();
-  if (success) {
-    // 상태 복원 후 API 호출하여 데이터 동기화
-    await attractionStore.fetchAttractions(attractionStore.searchParams, false);
-    router.go(-1);
-  } else {
-    router.push('/search');
-  }
+const goBack = () => {
+  router.go(-1);
 };
 </script>
 
@@ -137,7 +137,15 @@ const goBack = async () => {
     <v-row justify="center">
       <v-col cols="12" class="content-wrapper">
         <div class="inner-content">
-          <PageHeader title="관광지 상세" icon="mdi-map-marker-detail" />
+          <PageHeader 
+            title="관광지 상세" 
+            icon="mdi-map-marker-radius"
+            :additional-icons="[
+              'mdi-camera',
+              'mdi-map-search',
+              'mdi-compass'
+            ]"
+          />
           
           <div class="content-area">
             <v-row v-if="!loading">

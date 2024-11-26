@@ -1,8 +1,6 @@
 import myaxios from "@/api/axios.js";
 
 function deleteUser(userData) {
-  console.log(userData);
-
   return myaxios.delete("/mypage/delete", {
     data: {
       email: userData.email,
@@ -10,4 +8,15 @@ function deleteUser(userData) {
     },
   });
 }
-export { deleteUser };
+
+function getFavorites(params) {
+  return myaxios.get('/favorites', {
+    params: {
+      page: params.page,
+      size: params.size || 4,
+      word: params.word
+    }
+  });
+}
+
+export { deleteUser, getFavorites };

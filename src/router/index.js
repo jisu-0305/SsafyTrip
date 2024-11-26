@@ -7,7 +7,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "main", 
+      name: "main",
       component: TheMainView,
     },
     {
@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: "/join",
-      name: "user-join", 
+      name: "user-join",
       component: () => import("@/views/auth/AuthRegisterView.vue"),
     },
     {
@@ -31,7 +31,7 @@ const router = createRouter({
       component: () => import("@/views/attracts/SearchMapView.vue"),
     },
     {
-      path: "/plan", 
+      path: "/plan",
       name: "travel-plan",
       component: () => import("@/views/plan/AttractionPlan.vue"),
     },
@@ -49,18 +49,18 @@ const router = createRouter({
       path: "/notice/:id",
       name: "notice-detail",
       component: () => import("@/views/notices/NoticeDetailView.vue"),
-      props: true
+      props: true,
     },
     {
       path: "/notice/:id/edit",
-      name: "notice-edit", 
+      name: "notice-edit",
       component: () => import("@/views/notices/NoticeEditView.vue"),
       props: true,
     },
     {
-      path: '/attraction/:id',
-      name: 'AttractionDetail',
-      component: () => import('@/views/attracts/AttractDetailView.vue')
+      path: "/attraction/:id",
+      name: "AttractionDetail",
+      component: () => import("@/views/attracts/AttractDetailView.vue"),
     },
     {
       path: "/question",
@@ -76,15 +76,39 @@ const router = createRouter({
       path: "/question/:id",
       name: "question-detail",
       component: () => import("@/views/questions/QuestionDetailView.vue"),
+      props: true,
+    },
+    {
+      path: "/question/:id/answer",
+      name: "question-answer",
+      component: () => import("@/views/questions/QuestionAnswerView.vue"),
+      props: true,
+    },
+    {
+      path: "/favorites",
+      name: "favorites",
+      component: () => import("@/components/mypage/FavoriteMyPage.vue"),
+    },
+    {
+      path: "/schedules",
+      name: "schedules",
+      component: () => import("@/components/mypage/ScheduleMyPage.vue"),
+    },
+    {
+      path: "/schedules/detail/:id",
+      name: "schedule-detail",
+      component: () => import("@/views/schedules/ScheduleDetailView.vue"),
       props: true
     },
     {
-      path: "/question/:id/edit",
-      name: "question-edit",
-      component: () => import("@/views/questions/QuestionEditView.vue"),
-      props: true,
+      path: "/reviews",
+      name: "reviews",
+      component: () => import("@/components/mypage/CommentMyPage.vue"),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 };
+  },
 });
 
 export default router;

@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import { getAttractionDetail } from '@/api/attractApi';
-import { useFavoriteStore } from '@/stores/favoriteStore';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { getAttractionDetail } from "@/api/attractApi";
+import { useFavoriteStore } from "@/stores/favoriteStore";
 
-export const useAttractionDetailStore = defineStore('attractionDetail', () => {
+export const useAttractionDetailStore = defineStore("attractionDetail", () => {
   const attraction = ref(null);
   const comments = ref([]);
   const loading = ref(false);
@@ -14,14 +14,19 @@ export const useAttractionDetailStore = defineStore('attractionDetail', () => {
       const response = await getAttractionDetail(attractId);
       attraction.value = response.data.attract;
       comments.value = response.data.commentList;
-      
+
+      console.log("학준");
+      console.log("attractionDetailStore");
+      console.log(attraction.value.overview);
+      console.log(attraction.value.isLike);
+
       // 좋아요 상태 설정
       const favoriteStore = useFavoriteStore();
       if (attraction.value?.isFavorite) {
         favoriteStore.setFavoriteStatus(attractId, true);
       }
     } catch (error) {
-      console.error('관광지 상세 정보 조회 실패:', error);
+      console.error("관광지 상세 정보 조회 실패:", error);
       attraction.value = null;
       comments.value = [];
     } finally {
@@ -33,6 +38,6 @@ export const useAttractionDetailStore = defineStore('attractionDetail', () => {
     attraction,
     comments,
     loading,
-    fetchAttractionDetail
+    fetchAttractionDetail,
   };
-}); 
+});

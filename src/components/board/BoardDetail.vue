@@ -6,42 +6,44 @@ import { storeToRefs } from 'pinia'
 import { useLoadingStore } from '@/stores/loadingStore'
 
 const props = defineProps({
-  type: {
-    type: String,
-    required: true,
-    validator: (value) => ['notice', 'qna', 'review'].includes(value)
-  },
+  // 기본 데이터
   article: {
     type: Object,
     required: true
   },
-  isAdmin: {
-    type: Boolean,
-    default: false
+  // 로딩 상태 키
+  loadingKey: {
+    type: String,
+    required: true
   },
   // 추가 필드 설정
   additionalFields: {
     type: Array,
     default: () => []
-    // [{ key: 'author', label: '작성자' }, { key: 'status', label: '상태' }]
   },
-  // 버튼 커스터마이징
+  // 버튼 설정
   buttons: {
     type: Array,
-    default: () => ['edit', 'delete', 'list']
+    default: () => []
+  },
+  // 버튼 권한 설정
+  buttonPermissions: {
+    type: Object,
+    default: () => ({})
   },
   // 버튼 라벨 커스터마이징
   buttonLabels: {
     type: Object,
-    default: () => ({
-      edit: '수정',
-      delete: '삭제',
-      list: '목록'
-    })
+    default: () => ({})
+  },
+  // 답변 영역 설정 (Q&A용)
+  answer: {
+    type: Object,
+    default: null
   }
 })
 
-const emit = defineEmits(['edit', 'delete', 'list'])
+const emit = defineEmits(['click-button'])
 
 const loadingStore = useLoadingStore()
 const { isComponentLoading } = storeToRefs(loadingStore)
@@ -63,29 +65,31 @@ const formattedDate = computed(() => {
 })
 
 const formatValue = (value, field) => {
+  if (!value) return ''
+  
   if (field.formatter) {
     return field.formatter(value)
   }
   return value
 }
+
+const handleButtonClick = (buttonType) => {
+  emit('click-button', buttonType)
+}
 </script>
 
 <template>
   <v-card elevation="3" class="article-card">
-    <template v-if="isComponentLoading(`${type}-detail`)">
+    <template v-if="isComponentLoading(loadingKey)">
       <v-card-text class="d-flex justify-center align-center" style="min-height: 400px">
-        <v-progress-circular
-          indeterminate
-          color="primary"
-          size="64"
-        ></v-progress-circular>
+        <v-progress-circular indeterminate color="primary" size="64" />
       </v-card-text>
     </template>
-    <template v-else>
+    <template v-else-if="article">
       <!-- 제목 영역 -->
       <v-card-title class="text-h4 pa-6 title-area">
         <div class="title-wrapper">
-          {{ article?.title }}
+          {{ article.title }}
         </div>
         <!-- 추가 필드 표시 -->
         <div class="additional-fields mt-2">
@@ -94,7 +98,9 @@ const formatValue = (value, field) => {
             :key="field.key"
             class="text-caption d-inline-block me-4"
           >
-            {{ field.label }}: {{ formatValue(article[field.key], field) }}
+            <template v-if="article[field.key]">
+              {{ field.label }}: {{ formatValue(article[field.key], field) }}
+            </template>
           </div>
           <div class="text-caption d-inline-block">
             작성일: {{ formattedDate }}
@@ -102,57 +108,56 @@ const formatValue = (value, field) => {
         </div>
       </v-card-title>
       
-      <v-divider></v-divider>
+      <v-divider />
       
       <!-- 본문 영역 -->
       <v-card-text class="pa-6">
         <div class="ql-snow">
-          <div 
-            class="ql-editor content-area"
-            v-html="sanitizedContent"
-          ></div>
+          <div class="ql-editor content-area" v-html="sanitizedContent" />
         </div>
       </v-card-text>
       
-      <v-divider></v-divider>
+      <v-divider />
       
       <!-- 버튼 영역 -->
       <v-card-actions class="pa-4">
-        <v-spacer></v-spacer>
-        <template v-if="isAdmin && buttons.includes('edit')">
+        <v-spacer />
+        <template v-for="button in buttons" :key="button">
           <v-btn
-            color="primary"
-            variant="tonal"
+            v-if="!buttonPermissions[button] || buttonPermissions[button]"
+            :color="button === 'delete' ? 'error' : button === 'list' ? 'black' : 'blue'"
+            :variant="button === 'list' ? 'outlined' : 'tonal'"
             class="mx-2"
-            @click="emit('edit')"
-            prepend-icon="mdi-pencil"
+            @click="handleButtonClick(button)"
+            :prepend-icon="
+              button === 'edit' ? 'mdi-pencil' :
+              button === 'delete' ? 'mdi-delete' :
+              button === 'answer' ? 'mdi-pencil-plus' :
+              'mdi-format-list-bulleted'
+            "
           >
-            {{ buttonLabels.edit }}
-          </v-btn>
-        </template>
-        <template v-if="isAdmin && buttons.includes('delete')">
-          <v-btn
-            color="error"
-            variant="tonal"
-            class="mx-2"
-            @click="emit('delete')"
-            prepend-icon="mdi-delete"
-          >
-            {{ buttonLabels.delete }}
-          </v-btn>
-        </template>
-        <template v-if="buttons.includes('list')">
-          <v-btn
-            color="black"
-            variant="outlined"
-            class="mx-2"
-            @click="emit('list')"
-            prepend-icon="mdi-format-list-bulleted"
-          >
-            {{ buttonLabels.list }}
+            {{ buttonLabels[button] }}
           </v-btn>
         </template>
       </v-card-actions>
+    </template>
+    <template v-else>
+      <v-card-text class="text-center pa-6">
+        데이터를 불러올 수 없습니다.
+      </v-card-text>
+    </template>
+
+    <!-- 답변 영역 (Q&A용) -->
+    <template v-if="answer">
+      <v-divider />
+      <v-card-title class="text-h6 pa-4">
+        답변 내용
+        <div class="text-caption mt-1">
+          답변일: {{ new Date(answer.createdAt).toLocaleDateString() }}
+          ({{ answer.authorEmail }})
+        </div>
+      </v-card-title>
+      <v-card-text class="pa-4" v-html="DOMPurify.sanitize(answer.content)" />
     </template>
   </v-card>
 </template>

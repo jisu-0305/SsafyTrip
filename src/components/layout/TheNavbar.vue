@@ -8,13 +8,13 @@ import { useAuthStore } from '@/stores/authStores'
 const menuStore = useMenuStore();
 const router = useRouter();
 const drawer = ref(false);
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 const { menuItems } = storeToRefs(menuStore);
 
-// 사용자 이니셜 계산
+// 사용자 이니셜 계산 - authStore에서 가져오도록 수정
 const userInitial = computed(() => {
-  return menuStore.userInfo?.name?.[0] || 'U';
+  return authStore.user?.name?.[0] || 'U';
 });
 
 const handleMenuClick = (route) => {
@@ -35,16 +35,13 @@ const goToMyPage = () => {
 };
 
 const handleLogout = async () => {
-  const { success } = await authStore.logout()
+  const { success } = await authStore.logout();
   if (success) {
-    menuStore.changeMenuState(false)  // 메뉴 상태 변경
-    router.push({ name: 'main' })     // 메인 페이지로 이동
+    router.push({ name: 'main' });
   } else {
-    menuStore.changeMenuState(false)
-    alert('로그아웃 중 오류가 발생했습니다.')
+    alert('로그아웃 중 오류가 발생했습니다.');
   }
-}
-
+};
 </script>
 
 <template>
@@ -84,7 +81,7 @@ const handleLogout = async () => {
 
       <!-- 로그인/회원가입/마이페이지 버튼 -->
       <div class="auth-buttons hidden-sm-and-down">
-        <template v-if="!menuStore.isLoggedIn">
+        <template v-if="!authStore.isLoggedIn">
           <v-btn class="signup-btn" @click="goToSignup">
             회원가입
           </v-btn>
@@ -116,7 +113,7 @@ const handleLogout = async () => {
         <v-divider class="my-2"></v-divider>
 
         <!-- 모바일에서만 보이는 로그인/회원가입 버튼 -->
-        <template v-if="!menuStore.isLoggedIn">
+        <template v-if="!authStore.isLoggedIn">
           <v-list-item @click="goToLogin">
             <template v-slot:prepend>
               <v-icon>mdi-login</v-icon>

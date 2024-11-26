@@ -1,70 +1,101 @@
 <template>
-    <div v-if="showWishList" class="wishlist-popup">
-        <v-card>
-            <v-card-title>찜 목록</v-card-title>
-            <v-card-text>
-                <v-row>
-                    <!-- 더미 데이터를 반복 렌더링 -->
-                    <v-col v-for="(spot, index) in dummyWishList" :key="index" cols="12" md="6">
-                        <v-card>
-                            <v-img :src="spot.image" height="150"></v-img>
-                            <v-card-title>{{ spot.title }}</v-card-title>
-                            <v-card-subtitle>{{ spot.location }}</v-card-subtitle>
-                            <v-btn color="primary" block @click="selectSpot(spot)">선택</v-btn>
-                        </v-card>
-                    </v-col>
+  <v-card flat>
+    <v-toolbar color="primary" dark flat>
+      <v-toolbar-title>찜 목록</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="closeDialog">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-toolbar>
+
+    <v-card-text class="pa-4">
+      <v-row>
+        <v-col 
+          v-for="(spot, index) in planStore.wishList" 
+          :key="index" 
+          cols="12" 
+          md="6"
+        >
+          <v-card variant="outlined" class="h-100">
+            <v-img
+              :src="spot.firstImage1 || 'https://via.placeholder.com/150'"
+              height="150"
+              cover
+              class="bg-grey-lighten-2"
+            >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular indeterminate color="grey-lighten-5"></v-progress-circular>
                 </v-row>
-            </v-card-text>
+              </template>
+            </v-img>
+
+            <v-card-title class="text-subtitle-1">{{ spot.title }}</v-card-title>
+            <v-card-subtitle>{{ spot.address }}</v-card-subtitle>
+
             <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text @click="closeDialog">닫기</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="primary"
+                variant="tonal"
+                @click="selectSpot(spot)"
+              >
+                선택
+              </v-btn>
             </v-card-actions>
-        </v-card>
-    </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { onMounted } from 'vue';
+import { usePlanStore } from '@/stores/planStores';
 
-const props = defineProps(['showWishList']);
-const emit = defineEmits(['update:showWishList', 'spotSelected']);
+const planStore = usePlanStore();
 
-// 더미 데이터 정의
-const dummyWishList = [
-    {
-        title: '관광지명 1',
-        location: '서울특별시 강동구 구천면길 1',
-        image: 'https://via.placeholder.com/150'
-    },
-    {
-        title: '관광지명 2',
-        location: '서울특별시 강동구 구천면길 2',
-        image: 'https://via.placeholder.com/150'
-    }
-];
-
-// 다이얼로그 닫기 핸들러
 const closeDialog = () => {
-    emit('update:showWishList', false);
+  planStore.setShowWishList(false);
 };
 
-// 관광지 선택 핸들러
 const selectSpot = (spot) => {
-    emit('spotSelected', spot);
+  planStore.setSelectedSpot(spot);
+  planStore.setShowWishList(false);
+  planStore.setShowSchedulePopup(true);
 };
+
+onMounted(() => planStore.fetchWishList());
 </script>
 
 <style scoped>
-.wishlist-popup {
-    position: fixed;
-    top: 20%;
-    right: 5%;
-    width: 20%;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+.v-card {
+  height: 100%;
+  border-radius: 0;
+}
+
+.v-toolbar {
+  border-radius: 0;
+}
+
+.v-card {
+  transition: transform 0.2s;
+}
+
+.v-card:hover {
+  transform: translateY(-4px);
+}
+
+:deep(.v-card-title) {
+  font-size: 1rem;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+:deep(.v-card-subtitle) {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  opacity: 0.8;
 }
 </style>

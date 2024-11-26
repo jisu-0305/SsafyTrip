@@ -2,8 +2,14 @@ import myaxios from "@/api/axios.js";
 
 export const questionApi = {
   // 질문 목록 조회
-  getQuestions: () => {
-    return myaxios.get('/mypage/questions')
+  getQuestions: (page = 1, size = 10, keyword = '') => {
+    return myaxios.get('/mypage/questions', {
+      params: {
+        page: page,
+        size,
+        keyword
+      }
+    })
   },
 
   // 질문 생성

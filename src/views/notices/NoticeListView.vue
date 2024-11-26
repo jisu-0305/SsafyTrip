@@ -29,6 +29,13 @@ const goToWrite = () => {
   router.push({ name: 'notice-write' });
 };
 
+const handleRowClick = (article) => {
+  router.push({ 
+    name: 'notice-detail', 
+    params: { id: article.noticeId.toString() } 
+  });
+};
+
 const columns = [
   { 
     key: 'noticeId', 
@@ -98,7 +105,7 @@ const columns = [
               <BoardList 
                 :articles="notices" 
                 :columns="columns"
-                type="notice"
+                :on-row-click="handleRowClick"
               />
               
               <!-- 페이지네이션 -->

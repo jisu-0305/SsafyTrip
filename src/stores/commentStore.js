@@ -6,6 +6,24 @@ export const useCommentStore = defineStore('comment', () => {
   const comments = ref([]);
   const loading = ref(false);
   const error = ref(null);
+  const myComments = ref([]);
+
+  // 내 댓글 목록 조회
+  const fetchMyComments = async () => {
+    try {
+      console.log("fetchMyComments 메소드 실행");
+      loading.value = true;
+      error.value = null;
+      const response = await commentApi.getMyComments();
+      myComments.value = response.data;
+      return response.data;
+    } catch (err) {
+      error.value = '내 댓글을 불러오는데 실패했습니다.';
+      myComments.value = [];
+    } finally {
+      loading.value = false;
+    }
+  };
 
   // 댓글 목록 조회
   const fetchComments = async (attractionId) => {
@@ -13,7 +31,7 @@ export const useCommentStore = defineStore('comment', () => {
       loading.value = true;
       error.value = null;
       const response = await commentApi.getComments(attractionId);
-      comments.value = response.data;
+      return response.data;
     } catch (err) {
       console.error('댓글 목록 조회 실패:', err);
       error.value = '댓글을 불러오는데 실패했습니다.';
@@ -62,10 +80,14 @@ export const useCommentStore = defineStore('comment', () => {
     loading.value = false;
   };
 
+  // 내 댓글 가져오기
+
   return {
     comments,
     loading,
     error,
+    myComments,
+    fetchMyComments,
     fetchComments,
     addComment,
     removeComment,

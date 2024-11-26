@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
 import { useNoticeStore } from "@/stores/noticeStores";
@@ -50,6 +50,32 @@ const handleDelete = async () => {
   }
 };
 
+const buttonPermissions = computed(() => ({
+  edit: authStore.isAdmin,
+  delete: authStore.isAdmin,
+  list: true
+}))
+
+const buttonLabels = {
+  edit: '수정',
+  delete: '삭제',
+  list: '목록'
+}
+
+const handleButtonClick = (buttonType) => {
+  switch (buttonType) {
+    case 'edit':
+      handleEdit()
+      break
+    case 'delete':
+      handleDelete()
+      break
+    case 'list':
+      handleList()
+      break
+  }
+}
+
 const handleEdit = () => {
   router.push({ name: "notice-edit", params: { id: route.params.id } });
 };
@@ -57,6 +83,10 @@ const handleEdit = () => {
 const handleList = () => {
   router.push({ name: "notice" });
 };
+
+const visibleButtons = computed(() => {
+  return authStore.isAdmin ? ['edit', 'delete', 'list'] : ['list']
+})
 </script>
 
 <template>
@@ -66,14 +96,14 @@ const handleList = () => {
         <div class="inner-content">
           <PageHeader title="공지사항 상세" icon="mdi-clipboard-text" />
           <div class="content-area">
-            <BoardDetail
-              type="notice"
-              :article="currentNotice"
-              :isAdmin="authStore.isAdmin"
-              @edit="handleEdit"
-              @delete="handleDelete"
-              @list="handleList"
-            />
+          <BoardDetail
+            :article="currentNotice"
+            loading-key="notice-detail"
+            :buttons="visibleButtons"
+            :button-permissions="buttonPermissions"
+            :button-labels="buttonLabels"
+            @click-button="handleButtonClick"
+          />
           </div>
         </div>
       </v-col>

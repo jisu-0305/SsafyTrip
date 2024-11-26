@@ -1,6 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
-import { useRouter } from "vue-router";
+import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   articles: {
@@ -11,30 +10,11 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  type: {
-    type: String,
-    required: true,
-    validator: (value) => ['notice', 'question', 'review'].includes(value)
+  onRowClick: {
+    type: Function,
+    required: true
   }
 });
-
-const router = useRouter();
-
-const moveToDetail = (article) => {
-  let id;
-  if (props.type === 'question') {
-    id = article.questionId;
-  } else if (props.type === 'notice') {
-    id = article.noticeId;
-  }
-  
-  if (id) {
-    router.push({ 
-      name: `${props.type}-detail`, 
-      params: { id: id.toString() } 
-    });
-  }
-};
 
 const formatValue = (item, column) => {
   if (column.formatter) {
@@ -70,8 +50,8 @@ const formatValue = (item, column) => {
     <tbody>
       <tr 
         v-for="article in articles" 
-        :key="article.questionId || article.noticeId" 
-        @click="moveToDetail(article)"
+        :key="article.id" 
+        @click="onRowClick(article)"
         style="cursor: pointer"
       >
         <td 

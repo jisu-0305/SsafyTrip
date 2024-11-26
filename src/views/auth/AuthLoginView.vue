@@ -61,24 +61,20 @@ const login = async () => {
   })
 
   if (success) {
-    // 아이디 저장 처리
     if (saveId.value) {
       localStorage.setItem('savedEmail', form.value.email)
     } else {
       localStorage.removeItem('savedEmail')
     }
     
-    // menuStore 상태 변경 - true 값을 전달
-    menuStore.changeMenuState(true)
-    
     // 사용자 정보 설정
     menuStore.setUserInfo({
-      name: authStore.user?.name || 'User' // authStore에서 사용자 이름 가져오기
+      name: authStore.user?.name || 'User'
     })
     
     router.push('/')
   } else {
-    form.value.password = '' // 비밀번호 초기화
+    form.value.password = ''
   }
 }
 </script>

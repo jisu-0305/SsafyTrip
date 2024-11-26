@@ -1,197 +1,198 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
-import placeholderImage from "@/assets/logo.png";
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/authStores';
+import { useFavoriteStore } from '@/stores/favoriteStore';
+import { useRouter } from 'vue-router';
+import PageHeader from "@/components/common/PageHeader.vue";
+import SearchResultInfo from "@/components/common/SearchResultInfo.vue";
 
-// Constants
-const ITEMS_PER_PAGE = 5; // 한 페이지에 보여줄 항목 수
-const PAGE_GROUP_SIZE = 5; // 페이지 그룹 크기
+const router = useRouter();
+const authStore = useAuthStore();
+const favoriteStore = useFavoriteStore();
+const { favoriteList, totalPages, totalCount } = storeToRefs(favoriteStore);
 
-// Data
-const breadcrumbs = [
-  { text: "Home", href: "/" },
-  { text: "Mypage", href: "/form" },
-  { text: "Advanced Form", href: "/form/advanced" },
-];
+const page = ref(1);
+const search = ref("");
 
-const search = ref(""); // 검색어
-const attractionList = ref([]); // 전체 데이터
-const filteredItems = ref([]); // 현재 페이지 데이터
-const page = ref(1); // 현재 페이지
-const pages = ref(1); // 전체 페이지 수
-const totalPages = ref(1);
+const formatNumber = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 
-// Fetch Data
 const fetchAttractions = async () => {
   try {
-    const response = await axios.get(
-      `http://localhost:8080/api/favorite?page=${page.value}&size=4&word=${search.value}`
-    );
-    attractionList.value = response.data.attractionList || [];
-    pages.value = response.data.totalPages || 1; // 전체 페이지 수 설정
-    filteredItems.value = attractionList.value; // 현재 페이지 항목
-    totalPages.value = response.data.totalPages;
+    if (!authStore.isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push({ name: 'user-login' });
+      return;
+    }
+    await favoriteStore.fetchFavorites({
+      page: page.value,
+      word: search.value
+    });
   } catch (error) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/login');
+    }
     console.error("Error fetching attractions:", error);
   }
 };
 
-const onSearch = () => {
+const handleSearch = () => {
   page.value = 1;
   fetchAttractions();
 };
 
-const deleteAttraction = async (attractId) => {
-  try {
-    await axios.delete(`http://localhost:8080/api/favorite/${attractId}`);
-    console.log(`Deleted attraction with id: ${attractId}`);
-    fetchAttractions();
-  } catch (error) {
-    console.error("Error deleting attraction:", error);
-  }
-};
-
-const heartClick = (no) => {
-  console.log("하트 클릭");
-
-  console.log(no);
-  deleteAttraction(no);
-};
-
-// Handle Page Change
-const onPageChange = (newPage) => {
-  page.value = newPage; // 페이지 업데이트
-  console.log("페이지 클릭");
-  console.log("새로운 페이지 번호:", newPage);
-
-  fetchAttractions(); // 새로운 데이터 로드
-};
-
-// Initial Data Load
-onMounted(() => {
+const handlePageChange = (newPage) => {
+  page.value = newPage;
   fetchAttractions();
-});
+};
+
+const handleFavoriteToggle = async (attractId) => {
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요한 서비스입니다.');
+    router.push({ name: 'user-login' });
+    return;
+  }
+
+  await favoriteStore.toggleFavorite(attractId);
+
+    const attraction = favoriteList.value.find(item => item.no === attractId);
+    if (attraction) {
+      attraction.hit = favoriteStore.favoriteAttractions.has(attractId) 
+        ? attraction.hit + 1 
+        : Math.max(0, attraction.hit - 1);
+    }
+  
+};
+
+onMounted(fetchAttractions);
 </script>
 
 <template>
-  <v-container>
-    <v-row>
-      <!-- Breadcrumbs -->
-      <v-breadcrumbs :items="breadcrumbs" class="mb-4">
-        <template v-slot:item="{ item }">
-          <v-breadcrumbs-item :href="item.href">{{
-            item.text
-          }}</v-breadcrumbs-item>
-        </template>
-      </v-breadcrumbs>
+  <v-container fluid class="page-container">
+    <v-row justify="center">
+      <v-col cols="12" class="content-wrapper">
+        <div class="inner-content">
+          <PageHeader title="나의 즐겨찾기" icon="mdi-heart" />
+          <div class="content-area">
+            <div class="search-area mb-6">
+              <v-row>
+                <v-col :cols="10">
+                  <v-text-field
+                    v-model="search"
+                    label="검색어"
+                    @keyup.enter="handleSearch"
+                    density="compact"
+                    variant="outlined"
+                    prepend-inner-icon="mdi-magnify"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                  <v-btn 
+                    color="primary" 
+                    @click="handleSearch" 
+                    block
+                    height="40"
+                  >
+                    검색
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
 
-      <!-- Search and Sort -->
-      <v-col cols="12" class="mb-4 d-flex align-center justify-space-between">
-        <div class="d-flex align-center" style="width: 50%">
-          <v-text-field
-            v-model="search"
-            placeholder="Search name"
-            prepend-inner-icon="mdi-magnify"
-            outlined
-            hide-details
-            class="mr-2"
-            style="
-              background-color: white;
-              border-radius: 4px;
-              border: 2px solid #007bff;
-              height: 56px;
-            "
-          ></v-text-field>
-          <v-btn
-            color="primary"
-            @click="onSearch"
-            style="
-              min-width: 40px;
-              border-radius: 4px;
-              background-color: #007bff;
-              color: white;
-              height: 56px;
-            "
-          >
-            <v-icon left>mdi-magnify</v-icon>
-            Search
-          </v-btn>
+            <div class="list-area">
+              <SearchResultInfo :total-count="totalCount" />
+              <v-card>
+                <v-list lines="three">
+                  <v-list-item
+                    v-for="item in favoriteList"
+                    :key="item.no"
+                    @click="$router.push(`/attraction/${item.no}`)"
+                    style="cursor: pointer"
+                  >
+                    <template v-slot:prepend>
+                      <v-avatar size="100">
+                        <v-img 
+                          :src="item.firstImage1" 
+                          :alt="item.title"
+                          cover
+                        >
+                          <template v-slot:placeholder>
+                            <v-avatar color="grey-lighten-2" size="100">
+                              <v-icon icon="mdi-image-off" color="grey-darken-2" size="32"></v-icon>
+                            </v-avatar>
+                          </template>
+                        </v-img>
+                      </v-avatar>
+                    </template>
+
+                    <div>
+                      <v-chip
+                        size="small"
+                        color="primary"
+                        class="font-weight-medium mb-1"
+                      >
+                        {{ item.contentType ? item.contentType : '기타' }}
+                      </v-chip>
+                    </div>
+
+                    <v-list-item-title class="text-subtitle-1 font-weight-bold">
+                      {{ item.title }}
+                    </v-list-item-title>
+
+                    <v-list-item-subtitle>
+                      <div class="d-flex flex-column gap-2">
+                        <div class="text-caption text-grey-darken-3">{{ item.address }}</div>
+                        <div class="d-flex align-center gap-4">
+                          <div class="d-flex align-center">
+                            <v-icon 
+                              size="small"
+                              :color="favoriteStore.favoriteAttractions.has(item.no) ? 'error' : ''"
+                              class="me-1"
+                              :icon="favoriteStore.favoriteAttractions.has(item.no) ? 'mdi-heart' : 'mdi-heart-outline'"
+                              @click.stop="handleFavoriteToggle(item.no)"
+                            >
+                              mdi-heart
+                            </v-icon>
+                            <span class="text-caption">{{ item.hit }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                </v-list>
+
+                <v-card-actions class="justify-center">
+                  <v-pagination
+                    v-model="page"
+                    :length="totalPages"
+                    :total-visible="7"
+                    @update:model-value="handlePageChange"
+                  ></v-pagination>
+                </v-card-actions>
+              </v-card>
+            </div>
+          </div>
         </div>
-        <div class="d-flex">
-          <v-btn text class="mr-2" style="text-transform: none">이름순</v-btn>
-          <v-btn text class="mr-2" style="text-transform: none"
-            >좋아요 순</v-btn
-          >
-          <v-btn text style="text-transform: none">조회수 순</v-btn>
-        </div>
-      </v-col>
-
-      <!-- Cards -->
-      <v-col cols="12" v-for="(item, index) in filteredItems" :key="index">
-        <v-card class="mb-2" height="140px" style="border: none">
-          <v-row no-gutters>
-            <v-col cols="4">
-              <v-img
-                :src="item.firstImage1 || placeholderImage"
-                height="130px"
-                width="500px"
-              ></v-img>
-            </v-col>
-            <v-col cols="8" class="position-relative">
-              <v-btn
-                icon
-                class="position-absolute"
-                style="top: 0; right: 0; background-color: transparent"
-              >
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-              <v-card-text>
-                <v-chip color="green" text-color="white" class="mb-2"
-                  >여행지</v-chip
-                >
-                <h3 style="margin-top: 4px; margin-bottom: 4px">
-                  {{ item.title }}
-                </h3>
-                <p style="margin-top: 2px; margin-bottom: 4px">
-                  위도: {{ item.latitude }}, 경도: {{ item.longitude }}
-                </p>
-                <div class="d-flex align-center" @click="heartClick(item.no)">
-                  <v-icon left>mdi-heart</v-icon>
-                  <span>{{ item.hit }}</span>
-                </div>
-              </v-card-text>
-            </v-col>
-          </v-row>
-        </v-card>
-        <v-divider></v-divider>
-      </v-col>
-
-      <!-- Pagination -->
-      <v-col cols="12" class="d-flex justify-center">
-        <v-pagination
-          v-model="page"
-          :length="totalPages"
-          :total-visible="5"
-          @click="onPageChange(page)"
-        ></v-pagination>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <style scoped>
-.v-breadcrumbs {
-  font-size: 14px;
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
 }
-.v-card-text h3 {
-  margin: 0;
-  font-size: 1.25rem;
+
+.v-list-item {
+  transition: background-color 0.3s ease;
 }
-.v-card-text p {
-  margin: 0;
-  color: grey;
-}
-.v-card {
-  height: 140px;
+
+.v-list-item:hover {
+  background-color: rgba(var(--v-theme-primary), 0.1);
 }
 </style>
