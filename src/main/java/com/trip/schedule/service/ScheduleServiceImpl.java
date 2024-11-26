@@ -44,7 +44,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleDetailResponseDto getScheduleDetail(Long userId, int scheduleId) {
+    public ScheduleDetailDto getScheduleDetail(Long userId, int scheduleId) {
         ScheduleInformationDto schedule = scheduleMapper.selectScheduleById(userId, scheduleId);
 
         List<SchedulePlaceDto> schedulePlaces = scheduleMapper.selectSchedulePlaces(scheduleId);
@@ -57,6 +57,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .sorted(Comparator.comparing(SchedulePlacesByDateDto::getDate)) // 날짜 기준 정렬
                 .collect(Collectors.toList());
 
-        return new ScheduleDetailResponseDto(schedule, schedulePlacesByDate);
+        return new ScheduleDetailDto(schedule, schedulePlacesByDate);
     }
 }

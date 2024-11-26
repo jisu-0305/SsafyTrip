@@ -90,6 +90,13 @@
 		SET views = views + 1
 		WHERE no = #{attractionId}
 	</update>
+
+	<select id="findTitleByAttractionId" parameterType="int" resultType="String">
+		SELECT title
+		FROM attractions
+		WHERE no = #{attractionId}
+	</select>
+
 </mapper>
 
 

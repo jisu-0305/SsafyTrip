@@ -1,4 +1,4 @@
 package com.trip.ai.dto;
 
-public class AiRequestDto {
+public class AIRequestDto {
 }
