@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import placeholderImage from "@/assets/logo.png";
+
 
 // Constants
 const ITEMS_PER_PAGE = 5; // 한 페이지에 보여줄 항목 수
 const PAGE_GROUP_SIZE = 5; // 페이지 그룹 크기
-
+const placeholderImage = "/img/logo.png";
 // Data
 const breadcrumbs = [
   { text: "Home", href: "/" },
@@ -20,13 +20,18 @@ const filteredItems = ref([]); // 현재 페이지 데이터
 const page = ref(1); // 현재 페이지
 const pages = ref(1); // 전체 페이지 수
 const totalPages = ref(1);
+const apiClient = axios.create({
+      baseURL: 'http://localhost:8080', // API 서버의 기본 URL
+      withCredentials: true, // 쿠키를 포함하도록 설정
+});
 
 // Fetch Data
 const fetchAttractions = async () => {
   try {
-    const response = await axios.get(
-      `http://localhost:8080/api/favorite?page=${page.value}&size=4&word=${search.value}`
+    const response = await apiClient.get(
+      `/api/favorites?page=${page.value}&size=4&word=${search.value}`
     );
+
     attractionList.value = response.data.attractionList || [];
     pages.value = response.data.totalPages || 1; // 전체 페이지 수 설정
     filteredItems.value = attractionList.value; // 현재 페이지 항목
@@ -43,7 +48,7 @@ const onSearch = () => {
 
 const deleteAttraction = async (attractId) => {
   try {
-    await axios.delete(`http://localhost:8080/api/favorite/${attractId}`);
+    await apiClient.delete(`/api/favorites/${attractId}`);
     console.log(`Deleted attraction with id: ${attractId}`);
     fetchAttractions();
   } catch (error) {
@@ -95,6 +100,7 @@ onMounted(() => {
             outlined
             hide-details
             class="mr-2"
+            @keydown.enter="onSearch"
             style="
               background-color: white;
               border-radius: 4px;
@@ -153,7 +159,7 @@ onMounted(() => {
                   {{ item.title }}
                 </h3>
                 <p style="margin-top: 2px; margin-bottom: 4px">
-                  위도: {{ item.latitude }}, 경도: {{ item.longitude }}
+                  {{item.address }}
                 </p>
                 <div class="d-flex align-center" @click="heartClick(item.no)">
                   <v-icon left>mdi-heart</v-icon>

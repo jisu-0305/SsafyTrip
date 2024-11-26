@@ -4,11 +4,12 @@ import AttractKakaoMap from "@/components/search/AttractKakaoMap.vue";
 import AttractSearchFilter from "@/components/search/AttractSearchFilter.vue";
 import AttractList from "@/components/search/AttractList.vue";
 import PageHeader from "@/components/common/PageHeader.vue";
-import { useAttractionStore } from '@/stores/attractionStore';
-import { storeToRefs } from 'pinia';
+import { useAttractionStore } from "@/stores/attractionStore";
+import { storeToRefs } from "pinia";
 
-const attractionStore = useAttractionStore(); 
-const { attractions, totalPages, currentPage, loading, totalCount } = storeToRefs(attractionStore);
+const attractionStore = useAttractionStore();
+const { attractions, totalPages, currentPage, loading, totalCount } =
+  storeToRefs(attractionStore);
 
 const handleSearch = async (params) => {
   await attractionStore.fetchAttractions(params);
@@ -21,7 +22,7 @@ const handlePageChange = async (page) => {
 onMounted(async () => {
   await attractionStore.fetchInitialAttractions();
 });
- 
+
 const hoveredMarkerId = ref(null);
 const selectedMarkerId = ref(null);
 
@@ -40,14 +41,14 @@ const handleMarkerClick = (contentId) => {
       <v-col cols="12" class="content-wrapper">
         <div class="inner-content">
           <PageHeader title="관광지 검색" icon="mdi-map-search" />
-          
+
           <div class="content-area">
             <AttractSearchFilter @search="handleSearch" class="mb-4" />
 
             <v-row>
               <v-col cols="12" md="6">
                 <v-card height="600" class="map-card">
-                  <AttractKakaoMap 
+                  <AttractKakaoMap
                     @hover-marker="handleMarkerHover"
                     @click-marker="handleMarkerClick"
                   />
@@ -61,10 +62,12 @@ const handleMarkerClick = (contentId) => {
                   color="primary"
                   class="d-flex mx-auto my-4"
                 />
-                <AttractList 
-                  :hoveredMarkerId="hoveredMarkerId"
-                  @update:page="handlePageChange" 
-                />
+                <keep-alive>
+                  <AttractList
+                    :hoveredMarkerId="hoveredMarkerId"
+                    @update:page="handlePageChange"
+                  />
+                </keep-alive>
               </v-col>
             </v-row>
           </div>
