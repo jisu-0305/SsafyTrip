@@ -1,8 +1,10 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
+import com.trip.schedule.dto.ScheduleDetailDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AttractionService {
 
@@ -19,4 +21,6 @@ public interface AttractionService {
     AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId);
 
     List<AttractionDto> enrichWithLikeStatus(List<AttractionDto> attractions, Long userId);
+
+    public Map<String, List<String>> getTitlesByDate(ScheduleDetailDto scheduleDetail);
 }

@@ -1,17 +1,21 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
-
-import com.trip.attraction.mapper.*;
+import com.trip.attraction.mapper.AttractionMapper;
+import com.trip.attraction.mapper.ContentTypeMapper;
+import com.trip.attraction.mapper.SidoGunMapper;
 import com.trip.attraction.util.OverviewDataUtil;
-
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
 import com.trip.favorite.service.FavoriteService;
+import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,5 +124,26 @@ public class AttractionServiceImpl implements AttractionService {
         return attractions.stream()
                 .map(attraction -> enrichWithLikeStatus(attraction, userId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, List<String>> getTitlesByDate(ScheduleDetailDto scheduleDetail) {
+        Map<String, List<String>> titlesByDate = new HashMap<>();
+
+        scheduleDetail.getSchedulePlacesByDate().forEach(dateEntry -> {
+            String date = dateEntry.getDate();
+            List<String> titles = new ArrayList<>();
+
+            dateEntry.getPlaces().forEach(place -> {
+                String title = attractionMapper.findTitleByAttractionId(place.getAttractionId());
+                if (title != null) {
+                    titles.add(title);
+                }
+            });
+
+            titlesByDate.put(date, titles);
+        });
+
+        return titlesByDate;
     }
 }

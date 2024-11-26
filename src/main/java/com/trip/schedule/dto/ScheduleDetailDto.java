@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleDetailResponseDto {
+public class ScheduleDetailDto {
     private ScheduleInformationDto schedule;           // 여행 일정 기본 정보
     private List<SchedulePlacesByDateDto> schedulePlacesByDate; // 날짜별 장소 리스트
 }
