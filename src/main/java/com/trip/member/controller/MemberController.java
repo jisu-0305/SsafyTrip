@@ -56,6 +56,7 @@ public class MemberController {
 		session.setAttribute("userId", loginResponseDTO.getUserId());
 		session.setAttribute("email", loginResponseDTO.getEmail());
 		session.setAttribute("userRole", loginResponseDTO.getRole());
+		session.setAttribute("userAddress", loginResponseDTO.getAddress());
 
 		return ResponseEntity.ok(loginResponseDTO);
 	}
