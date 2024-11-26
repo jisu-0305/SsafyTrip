@@ -32,6 +32,7 @@ public class AIServiceImpl implements AIService {
 
         // 2. 코디 프롬프트 생성
         String clothesPrompt = generateClothesPrompt(weatherList);
+        System.out.println("prompt: "+clothesPrompt);
 
         // 3. 코디 이미지 생성 및 URL 추출
         String clothesURL = generateImageURL(clothesPrompt);
@@ -50,7 +51,6 @@ public class AIServiceImpl implements AIService {
                 .call()
                 .content();
 
-        System.out.println("weahter:"+jsonResponse.toString());
         // 순수 JSON 데이터 추출
         String cleanedJsonResponse = extractPureJson(jsonResponse);
 
@@ -97,9 +97,7 @@ public class AIServiceImpl implements AIService {
     private String generateClothesPrompt(List<WeatherDto> weatherList) {
         StringBuilder promptBuilder = new StringBuilder();
 
-        promptBuilder.append("Create a single low-resolution image divided into three equal vertical rectangles. ")
-                .append("Each rectangle represents one day, with the text 'Day 1', 'Day 2', and 'Day 3' at the top-center. ")
-                .append("Include appropriate clothing and accessories for a woman based on the following weather conditions:\n\n");
+        promptBuilder.append("Create a single image divided into three equal vertical rectangles. ");
 
         int day = 1;
         for (WeatherDto weather : weatherList) {
@@ -107,15 +105,14 @@ public class AIServiceImpl implements AIService {
                     .append("- Date: ").append(weather.getDate()).append("\n")
                     .append("- Location: ").append(weather.getLocation()).append("\n")
                     .append("- Weather: ").append(weather.getWeatherCondition()).append(", ")
-                    .append(weather.getHighTemperature()).append("°C (high) / ")
-                    .append(weather.getLowTemperature()).append("°C (low), ")
-                    .append(weather.getPrecipitation()).append(" precipitation.\n\n");
+                    .append(weather.getHighTemperature()).append("°C / ")
+                    .append(weather.getLowTemperature()).append("°C, ")
+                    .append(weather.getPrecipitation()).append("\n\n");
             day++;
         }
 
-        promptBuilder.append("The image should include one outfit per day, with no background or human figures. ")
-                .append("Keep the layout minimalistic and clean.");
-
+        promptBuilder.append("Ensure that the outfits are unique and suitable for the listed locations and conditions. ")
+                .append("Do not include fonts, text, humans, and backgrounds. Only display the clothing items.Keep it minimalistic.");
         return promptBuilder.toString();
     }
 
