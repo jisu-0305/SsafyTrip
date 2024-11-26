@@ -69,20 +69,25 @@ const authStore = useAuthStore();
 const activityItems = [
   { title: '찜 목록', icon: 'mdi-bookmark-outline', route: 'favorites' },
   { title: '나의 댓글', icon: 'mdi-chat-outline', route: 'reviews' },
-  { title: '여행 일정', icon: 'mdi-map-outline', route: 'courses' },
+  { title: '여행 일정', icon: 'mdi-map-outline', route: 'schedules' },
   { title: '1:1 문의', icon: 'mdi-help-circle-outline', route: 'question' }
 ];
 
 const handleClick = (activity) => {
   const item = activityItems.find(item => item.title === activity);
   if (item) {
-    if (item.route === 'question') {
-      router.push({ name: 'question' });
-    } else if (item.route === 'favorites') {
-      router.push({ name: 'favorites' });
-    }  
-    else {
-      alert(`${activity} 버튼이 클릭되었습니다.`);
+    switch (item.route) {
+      case 'question':
+        router.push({ name: 'question' });
+        break;
+      case 'favorites':
+        router.push({ name: 'favorites' });
+        break;
+      case 'schedules':
+        router.push('/schedules');
+        break;
+      default:
+        alert(`${activity} 버튼이 클릭되었습니다.`);
     }
   }
 };

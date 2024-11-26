@@ -128,28 +128,27 @@ onMounted(fetchAttractions);
                       </v-avatar>
                     </template>
 
-                    <v-list-item-title class="text-subtitle-1 font-weight-bold mb-1">
+                    <div>
+                      <v-chip
+                        size="small"
+                        color="primary"
+                        class="font-weight-medium mb-1"
+                      >
+                        {{ item.contentType ? item.contentType : '기타' }}
+                      </v-chip>
+                    </div>
+
+                    <v-list-item-title class="text-subtitle-1 font-weight-bold">
                       {{ item.title }}
                     </v-list-item-title>
 
                     <v-list-item-subtitle>
                       <div class="d-flex flex-column gap-2">
-                        <div>
-                          <v-chip
-                            size="small"
-                            color="primary"
-                            class="font-weight-medium"
-                          >
-                            여행지
-                          </v-chip>
-                        </div>
-                        
-                        <div class="text-caption text-grey">{{ item.address }}</div>
-                        
+                        <div class="text-caption text-grey-darken-3">{{ item.address }}</div>
                         <div class="d-flex align-center gap-4">
                           <div class="d-flex align-center">
                             <v-icon 
-                              size="small" 
+                              size="small"
                               :color="favoriteStore.favoriteAttractions.has(item.no) ? 'error' : ''"
                               class="me-1"
                               :icon="favoriteStore.favoriteAttractions.has(item.no) ? 'mdi-heart' : 'mdi-heart-outline'"

@@ -2,30 +2,30 @@
   <v-container>
     <v-card flat>
       <v-card-text>
-        <v-form>
+        <v-form ref="form" v-model="isFormValid">
           <!-- 여행 제목 -->
           <v-text-field
-            v-model="travelTitle"
+            v-model="planStore.travelTitle"
             label="여행 제목"
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-format-title"
             class="mb-4"
-            hide-details="auto"
-            @update:model-value="handleTitleUpdate"
+            :rules="[v => !!v || '여행 제목을 입력해주세요']"
+            @update:model-value="planStore.setTravelTitle"
           ></v-text-field>
 
           <v-row>
             <!-- 출발 날짜 -->
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="startDateFormatted"
+                :model-value="planStore.startDateFormatted"
                 label="출발 날짜"
                 variant="outlined"
                 readonly
                 density="comfortable"
                 prepend-inner-icon="mdi-calendar-start"
-                hide-details="auto"
+                :rules="[v => !!planStore.startDate || '출발 날짜를 선택해주세요']"
                 @click="startDialog = true"
               ></v-text-field>
 
@@ -36,7 +36,7 @@
                   </v-card-title>
                   <v-divider></v-divider>
                   <v-date-picker
-                    v-model="startDate"
+                    v-model="startDateTemp"
                     @update:model-value="handleStartDateChange"
                   ></v-date-picker>
                 </v-card>
@@ -46,13 +46,13 @@
             <!-- 도착 날짜 -->
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="endDateFormatted"
+                :model-value="planStore.endDateFormatted"
                 label="도착 날짜"
                 variant="outlined"
                 readonly
                 density="comfortable"
                 prepend-inner-icon="mdi-calendar-end"
-                hide-details="auto"
+                :rules="[v => !!planStore.endDate || '도착 날짜를 선택해주세요']"
                 @click="endDialog = true"
               ></v-text-field>
 
@@ -63,7 +63,8 @@
                   </v-card-title>
                   <v-divider></v-divider>
                   <v-date-picker
-                    v-model="endDate"
+                    v-model="endDateTemp"
+                    :min="planStore.startDate"
                     @update:model-value="handleEndDateChange"
                   ></v-date-picker>
                 </v-card>
@@ -73,19 +74,20 @@
 
           <!-- 총 비용 -->
           <v-text-field
-            :model-value="formatCurrency(totalCost)"
+            :model-value="planStore.formatCurrency(planStore.calculateTotalCost)"
             label="총 예상 비용"
             variant="outlined"
             density="comfortable"
             readonly
-            prepend-inner-icon="mdi-currency-krw"
+            prepend-inner-icon="mdi-wallet"
             class="my-4"
-            hide-details="auto"
+            bg-color="grey-lighten-3"
+            :placeholder="planStore.calculateTotalCost ? undefined : '예상 비용이 계산됩니다.'"
           ></v-text-field>
 
           <!-- 메모 -->
           <v-textarea
-            v-model="memo"
+            v-model="planStore.memo"
             label="메모"
             variant="outlined"
             counter="300"
@@ -94,7 +96,7 @@
             density="comfortable"
             prepend-inner-icon="mdi-note-text"
             hide-details="auto"
-            @update:model-value="handleMemoUpdate"
+            @update:model-value="planStore.setMemo"
           ></v-textarea>
         </v-form>
       </v-card-text>
@@ -103,60 +105,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
+import { usePlanStore } from '@/stores/planStores';
 
-const props = defineProps(['totalCost']);
-const emit = defineEmits(['update:travelTitle', 'update:startDate', 'update:endDate', 'update:memo']);
-
-const travelTitle = ref('');
-const startDate = ref(null);
-const endDate = ref(null);
-const memo = ref('');
+const planStore = usePlanStore();
+const form = ref(null);
 const startDialog = ref(false);
 const endDialog = ref(false);
-
-// 날짜 포맷팅
-const formatDate = (date) => {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short'
-  });
-};
-
-// 통화 포맷팅
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency: 'KRW'
-  }).format(value || 0);
-};
-
-const startDateFormatted = computed(() => formatDate(startDate.value));
-const endDateFormatted = computed(() => formatDate(endDate.value));
-
-// 이벤트 핸들러
-const handleTitleUpdate = (value) => {
-  emit('update:travelTitle', value);
-};
+const startDateTemp = ref(null);
+const endDateTemp = ref(null);
 
 const handleStartDateChange = (value) => {
-  startDialog.value = false;
-  startDate.value = value;
-  emit('update:startDate', value);
+  if (value) {
+    console.log('Start date selected:', value);
+    planStore.setStartDate(value);
+    startDateTemp.value = value;
+    startDialog.value = false;
+  }
 };
 
 const handleEndDateChange = (value) => {
-  endDialog.value = false;
-  endDate.value = value;
-  emit('update:endDate', value);
+  if (value) {
+    console.log('End date selected:', value);
+    planStore.setEndDate(value);
+    endDateTemp.value = value;
+    endDialog.value = false;
+  }
 };
 
-const handleMemoUpdate = (value) => {
-  emit('update:memo', value);
-};
+const emit = defineEmits(['update:startDate', 'update:endDate', 'update:travelTitle', 'update:memo']);
 </script>
 
 <style scoped>
@@ -166,5 +143,10 @@ const handleMemoUpdate = (value) => {
 
 .v-text-field :deep(.v-field__prepend-inner) {
   padding-inline-start: 8px;
+}
+
+/* 읽기 전용 필드 스타일 */
+.v-text-field.readonly :deep(.v-field__input) {
+  background-color: rgb(var(--v-theme-grey-lighten-3));
 }
 </style>

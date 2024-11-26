@@ -89,6 +89,17 @@ const router = createRouter({
       name: "favorites",
       component: () => import("@/components/mypage/FavoriteMyPage.vue"),
     },
+    {
+      path: "/schedules",
+      name: "schedules",
+      component: () => import("@/components/mypage/ScheduleMyPage.vue"),
+    },
+    {
+      path: "/schedules/detail/:id",
+      name: "schedule-detail",
+      component: () => import("@/views/schedules/ScheduleDetailView.vue"),
+      props: true
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     return { top: 0 }

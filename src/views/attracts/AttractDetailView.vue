@@ -13,7 +13,7 @@ import { useAttractionStore } from '@/stores/attractionStore';
 const route = useRoute();
 const router = useRouter();
 const attractionDetailStore = useAttractionDetailStore();
-const { attraction, comments, loading } = storeToRefs(attractionDetailStore);
+const { attraction, loading } = storeToRefs(attractionDetailStore);
 const map = ref(null);
 
 const authStore = useAuthStore();

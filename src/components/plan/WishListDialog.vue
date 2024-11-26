@@ -1,91 +1,101 @@
 <template>
-    <div v-if="showWishList" class="wishlist-popup">
-        <v-card>
-            <v-card-title>
-                찜 목록
-                <v-btn icon @click="closeDialog">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </v-card-title>
-            <v-card-text>
-                <v-row>
-                    <!-- 찜 목록 데이터를 반복 렌더링 -->
-                    <v-col v-for="(spot, index) in wishList" :key="index" cols="12" md="6">
-                        <v-card>
-                            <v-img :src="spot.firstImage1 || 'https://via.placeholder.com/150'" height="150"
-                                alt="관광지 이미지"></v-img>
-                            <v-card-title>{{ spot.title }}</v-card-title>
-                            <v-card-subtitle>{{ spot.address }}</v-card-subtitle>
-                            <v-btn color="primary" block @click="selectSpot(spot)">
-                                선택
-                            </v-btn>
-                        </v-card>
-                    </v-col>
+  <v-card flat>
+    <v-toolbar color="primary" dark flat>
+      <v-toolbar-title>찜 목록</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="closeDialog">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-toolbar>
+
+    <v-card-text class="pa-4">
+      <v-row>
+        <v-col 
+          v-for="(spot, index) in planStore.wishList" 
+          :key="index" 
+          cols="12" 
+          md="6"
+        >
+          <v-card variant="outlined" class="h-100">
+            <v-img
+              :src="spot.firstImage1 || 'https://via.placeholder.com/150'"
+              height="150"
+              cover
+              class="bg-grey-lighten-2"
+            >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular indeterminate color="grey-lighten-5"></v-progress-circular>
                 </v-row>
-            </v-card-text>
+              </template>
+            </v-img>
+
+            <v-card-title class="text-subtitle-1">{{ spot.title }}</v-card-title>
+            <v-card-subtitle>{{ spot.address }}</v-card-subtitle>
+
             <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text @click="closeDialog">닫기</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="primary"
+                variant="tonal"
+                @click="selectSpot(spot)"
+              >
+                선택
+              </v-btn>
             </v-card-actions>
-        </v-card>
-    </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { defineProps, defineEmits } from 'vue';
-import { getFavorites } from '@/api/attractApi'; // API 호출 모듈
+import { onMounted } from 'vue';
+import { usePlanStore } from '@/stores/planStores';
 
-// Props와 Emits 정의
-const props = defineProps(['showWishList']);
-const emit = defineEmits(['update:showWishList', 'spotSelected']);
+const planStore = usePlanStore();
 
-// 찜 목록 데이터 관리
-const wishList = ref([]);
-
-// API를 통해 찜 목록 데이터 불러오기
-const fetchWishList = async () => {
-    try {
-        const data = await getFavorites(); // API 호출
-        wishList.value = data.attractionList || []; // 데이터 저장
-    } catch (error) {
-        console.error('찜 목록 데이터를 불러오는 중 오류:', error);
-    }
-};
-
-// 다이얼로그 닫기 핸들러
 const closeDialog = () => {
-    emit('update:showWishList', false); // 부모에게 상태 업데이트 요청
+  planStore.setShowWishList(false);
 };
 
-// 관광지 선택 핸들러
 const selectSpot = (spot) => {
-    emit('spotSelected', spot); // 부모에게 선택된 관광지 전달
+  planStore.setSelectedSpot(spot);
+  planStore.setShowWishList(false);
+  planStore.setShowSchedulePopup(true);
 };
 
-// 컴포넌트 마운트 시 찜 목록 데이터 로드
-onMounted(() => fetchWishList());
+onMounted(() => planStore.fetchWishList());
 </script>
 
 <style scoped>
-.wishlist-popup {
-    position: fixed;
-    top: 20%;
-    right: 5%;
-    width: 30%;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+.v-card {
+  height: 100%;
+  border-radius: 0;
 }
 
-v-card {
-    margin-bottom: 10px;
+.v-toolbar {
+  border-radius: 0;
 }
 
-v-img {
-    border-radius: 5px;
+.v-card {
+  transition: transform 0.2s;
+}
+
+.v-card:hover {
+  transform: translateY(-4px);
+}
+
+:deep(.v-card-title) {
+  font-size: 1rem;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+:deep(.v-card-subtitle) {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  opacity: 0.8;
 }
 </style>
