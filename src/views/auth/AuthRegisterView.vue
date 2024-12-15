@@ -126,7 +126,7 @@ const submitForm = async () => {
     isLoading.value = true  // 로딩 시작
     const registerData = prepareDataToSend()
     
-    await registerAxios(registerData, ({data}) => {
+    await authApi.register(registerData, ({data}) => {
       alert('회원가입이 완료되었습니다.')
       router.push({ name: 'user-login' })
     })
