@@ -33,7 +33,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSAFYTRIP_KEY }}
           source: dist/*
-          target: /home/ec2-user/dist
+          target: /home/ec2-user/fronted
 
    # 4. SSH 키 파일 생성
       - name: Create SSH key file
@@ -45,6 +45,7 @@ jobs:
       - name: Set permissions for dist folder
         run: |
           ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
-          sudo chmod -R 755 /home/ec2-user/dist
-          sudo chown -R nginx:nginx /home/ec2-user/dist
+          sudo chmod +x /home/ec2-user/frontend
+          sudo chmod -R 755 /home/ec2-user/frontend/dist
+          sudo chown -R nginx:nginx /home/ec2-user/frontend/dist
           EOF
