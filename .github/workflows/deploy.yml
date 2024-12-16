@@ -35,10 +35,16 @@ jobs:
           source: dist/*
           target: /home/ec2-user/dist
 
-      # 4. EC2에서 권한 설정
+   # 4. SSH 키 파일 생성
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.SSAFYTRIP_KEY }}" > /tmp/ssafytrip-key.pem
+          chmod 400 /tmp/ssafytrip-key.pem
+
+      # 5. EC2에서 권한 설정
       - name: Set permissions for dist folder
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSAFYTRIP_KEY }} ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
           sudo chmod -R 755 /home/ec2-user/dist
           sudo chown -R nginx:nginx /home/ec2-user/dist
           EOF
