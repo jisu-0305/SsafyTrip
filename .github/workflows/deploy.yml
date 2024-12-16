@@ -3,7 +3,7 @@ name: Deploy Frontend to EC2
 on:
   push:
     branches:
-      - feature/fe/68 # feature/fe/68 브랜치에 푸시될 때 실행
+      - dev/fe # dev/fe 브랜치에 푸시될 때 실행
 
 jobs:
   deploy:
