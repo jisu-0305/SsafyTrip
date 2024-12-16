@@ -33,7 +33,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSAFYTRIP_KEY }}
           source: dist/*
-          target: /home/ec2-user/fronted
+          target: /home/ec2-user/frontend
 
    # 4. SSH 키 파일 생성
       - name: Create SSH key file
