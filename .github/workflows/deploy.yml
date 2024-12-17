@@ -34,6 +34,7 @@ jobs:
           key: ${{ secrets.SSAFYTRIP_KEY }}
           source: dist/*
           target: /home/ec2-user/frontend
+          overwrite: true  # 기존 파일 덮어쓰기 설정 추가
 
    # 4. SSH 키 파일 생성
       - name: Create SSH key file
