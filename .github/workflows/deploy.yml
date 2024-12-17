@@ -1,0 +1,51 @@
+name: Deploy Frontend to EC2
+
+on:
+  push:
+    branches:
+      - dev/fe # dev/fe 브랜치에 푸시될 때 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Node.js 설정 및 의존성 설치
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Node.js 버전
+          
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      # 3. EC2에 dist 폴더 업로드
+      - name: Upload dist folder to EC2
+        uses: appleboy/scp-action@v0.1.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.SSAFYTRIP_KEY }}
+          source: dist/*
+          target: /home/ec2-user/frontend
+
+   # 4. SSH 키 파일 생성
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.SSAFYTRIP_KEY }}" > /tmp/ssafytrip-key.pem
+          chmod 400 /tmp/ssafytrip-key.pem
+
+      # 5. EC2에서 권한 설정
+      - name: Set permissions for dist folder
+        run: |
+          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
+          sudo chmod +x /home/ec2-user/frontend
+          sudo chmod -R 755 /home/ec2-user/frontend/dist
+          sudo chown -R nginx:nginx /home/ec2-user/frontend/dist
+          EOF
