@@ -47,7 +47,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSAFYTRIP_KEY }}
           source: dist/*
-          target: /home/ec2-user/frontend/dist
+          target: /home/ec2-user/frontend
           overwrite: true  # 덮어쓰기 활성화
 
       # 6. EC2에서 권한 설정
