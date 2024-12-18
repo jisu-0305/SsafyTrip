@@ -1,0 +1,62 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - dev/be # dev/be 브랜치에 푸시될 때 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. JDK 설정 및 의존성 설치
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # Spring Boot에 적합한 Java 버전
+          distribution: 'temurin'
+
+      # 3. mvnw 실행 권한 추가
+      - name: Add execute permission to mvnw
+        run: chmod +x ./mvnw
+
+      # 4. secret.properties 생성 및 환경 변수 추가
+      - name: Update secret.properties
+        run: |
+          touch ./src/main/resources/secret.properties
+          echo "${{ secrets.APPLICATION_SECRETS }}" > ./src/main/resources/secret.properties
+          cat ./src/main/resources/secret.properties # 디버깅용, 완료 후 삭제 가능
+
+      # 5. 프로젝트 빌드
+      - name: Install dependencies and build JAR
+        run: |
+          ./mvnw clean package -DskipTests # 테스트 제외하고 빌드
+
+      # 6. EC2에 JAR 파일 업로드
+      - name: Upload JAR to EC2
+        uses: appleboy/scp-action@v0.1.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.SSAFYTRIP_KEY }}
+          source: target/SpringFrameWorkTrip-0.0.1-SNAPSHOT.jar
+          target: /home/ec2-user/backend
+
+      # 7. SSH 키 파일 생성
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.SSAFYTRIP_KEY }}" > /tmp/ssafytrip-key.pem
+          chmod 400 /tmp/ssafytrip-key.pem
+
+      # 8. EC2에서 JAR 파일 실행
+      - name: Restart backend service
+        run: |
+          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
+          pkill -f 'java -jar' || true # 기존 실행 중인 애플리케이션 종료
+          nohup java -jar /home/ec2-user/backend/target/SpringFrameWorkTrip-0.0.1-SNAPSHOT.jar > /home/ec2-user/backend/app.log 2>&1 &
+          EOF
