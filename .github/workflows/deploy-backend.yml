@@ -3,8 +3,7 @@ name: Deploy Backend to EC2
 on:
   push:
     branches:
-      - feature/be/70 # test용
-      # - dev/be # dev/be 브랜치에 푸시될 때 실행
+      - dev/be # dev/be 브랜치에 푸시될 때 실행
 
 jobs:
   deploy:
