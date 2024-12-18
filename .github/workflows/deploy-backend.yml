@@ -22,7 +22,11 @@ jobs:
           java-version: '17' # Spring Boot에 적합한 Java 버전
           distribution: 'temurin'
 
-      # 3. application.properties 생성 및 환경 변수 추가
+      # 3. mvnw 실행 권한 추가
+      - name: Add execute permission to mvnw
+        run: chmod +x ./mvnw
+        
+      # 4. application.properties 생성 및 환경 변수 추가
       - name: Update application.properties
         run: |
           echo "spring.datasource.url=${{ secrets.SPRING_DATASOURCE_URL }}" >> ./src/main/resources/application.properties
