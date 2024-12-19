@@ -1,9 +1,12 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
+import com.trip.attraction.entity.GuGun;
+import com.trip.attraction.entity.Sido;
 import com.trip.attraction.mapper.AttractionMapper;
 import com.trip.attraction.mapper.ContentTypeMapper;
-import com.trip.attraction.mapper.SidoGunMapper;
+import com.trip.attraction.repository.GuGunRepository;
+import com.trip.attraction.repository.SidoRepository;
 import com.trip.attraction.util.OverviewDataUtil;
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
@@ -23,7 +26,8 @@ import java.util.stream.Collectors;
 public class AttractionServiceImpl implements AttractionService {
 
     private final AttractionMapper attractionMapper;
-    private final SidoGunMapper sidoGunMapper;
+    private final SidoRepository sidoRepository;
+    private final GuGunRepository guGunRepository;
     private final ContentTypeMapper contentTypeMapper;
     private final CommentService commentService;
     private final FavoriteService favoriteService;
@@ -36,7 +40,7 @@ public class AttractionServiceImpl implements AttractionService {
         int totalCount = attractionMapper.countTotalAttractions();
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
-        List<SidoDto> sidoList = sidoGunMapper.getSidoList();
+        List<SidoDto> sidoList = getSidoList();
         List<ContentTypeDto> contentTypeList = contentTypeMapper.selectAllContentTypes();
         List<AttractionDto> attractList = attractionMapper.getAttractions(offset, size);
 
@@ -85,14 +89,18 @@ public class AttractionServiceImpl implements AttractionService {
         return pagedAttractionResponseDto;
     }
 
-    @Override
-    public List<GuGunDto> getGuGunList(int sidoCode) {
-        return sidoGunMapper.getGuGunList(sidoCode);
+    public List<SidoDto> getSidoList() {
+        List<Sido> sidos = sidoRepository.findAll();
+        return sidos.stream()
+                .map(SidoDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public List<SidoDto> getSidoList(){
-        return sidoGunMapper.getSidoList();
+    public List<GuGunDto> getGuGunList(int sidoCode) {
+        List<GuGun> guGuns = guGunRepository.findBySidoCode(sidoCode);
+        return guGuns.stream()
+                .map(GuGunDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override
