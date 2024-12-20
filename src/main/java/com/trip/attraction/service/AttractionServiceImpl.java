@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +46,7 @@ public class AttractionServiceImpl implements AttractionService {
         List<AttractionDto> attractList = attractionsPage.getContent().stream()
                 .map(attraction -> {
                     String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
+                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
                     return AttractionDto.fromEntity(attraction, contentTypeName, null); // isLike는 이후 처리
                 })
                 .collect(Collectors.toList());
@@ -80,6 +82,7 @@ public class AttractionServiceImpl implements AttractionService {
         List<AttractionDto> attractionList = attractionsPage.getContent().stream()
                 .map(attraction -> {
                     String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
+                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
                     return AttractionDto.fromEntity(attraction, contentTypeName, null);}) //IsLike는 별도 처리
                 .collect(Collectors.toList());
 
@@ -109,6 +112,7 @@ public class AttractionServiceImpl implements AttractionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId, Long userId) {
         attractionRepository.updateAttractionViews(attractionId);
