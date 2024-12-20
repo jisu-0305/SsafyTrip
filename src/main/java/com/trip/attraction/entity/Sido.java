@@ -7,7 +7,6 @@ import lombok.Getter;
 @Table(name = "sidos")
 @Getter
 public class Sido {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int no;

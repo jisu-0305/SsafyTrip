@@ -9,7 +9,6 @@ import lombok.Getter;
 @Table(name = "contenttypes")
 @Getter
 public class ContentType {
-
     @Id
     private int contentTypeId;
 
