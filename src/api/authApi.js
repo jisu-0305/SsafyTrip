@@ -10,7 +10,7 @@ const authApi = {
       password: member.password,
       birthdate: member.birthdate,
       address: member.address,
-      role: 'USER',
+      role: 'ROLE_USER',
       status: 'ACTIVE'
     }
     return myaxios.post("/members/register", registerData)

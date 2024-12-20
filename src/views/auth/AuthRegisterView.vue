@@ -54,20 +54,25 @@ const passwordsDontMatch = computed(() => {
 
 
 // 이메일 중복 확인 함수 수정
-const checkEmailDuplicateListener = () => {
+const checkEmailDuplicateListener = async () => {
   if (!form.value.email) {
     emailMessage.value = '이메일을 입력해주세요.'
     return
   }
 
-  authApi.checkEmailDuplication(form.value.email, ({data}) => {
-    emailChecked.value = true
-    if (data) {
+  try {
+    const response = await authApi.checkEmailDuplication(form.value.email);
+    emailChecked.value = true;
+    
+    if (response.data) {
       emailMessage.value = '중복된 이메일입니다.'
     } else {
       emailMessage.value = '사용할 수 있는 이메일입니다.'
     }
-  })
+  } catch (error) {
+    console.error('이메일 중복 확인 실패:', error);
+    emailMessage.value = '이메일 중복 확인에 실패했습니다.';
+  }
 }
 
 // 이메일 입력 시 확인 상태 초기화
@@ -121,7 +126,7 @@ const submitForm = async () => {
     isLoading.value = true  // 로딩 시작
     const registerData = prepareDataToSend()
     
-    await registerAxios(registerData, ({data}) => {
+    await authApi.register(registerData, ({data}) => {
       alert('회원가입이 완료되었습니다.')
       router.push({ name: 'user-login' })
     })
