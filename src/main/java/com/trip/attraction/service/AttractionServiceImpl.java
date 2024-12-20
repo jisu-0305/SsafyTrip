@@ -1,10 +1,8 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
-import com.trip.attraction.entity.GuGun;
-import com.trip.attraction.entity.Sido;
 import com.trip.attraction.mapper.AttractionMapper;
-import com.trip.attraction.mapper.ContentTypeMapper;
+import com.trip.attraction.repository.ContentTypeRepository;
 import com.trip.attraction.repository.GuGunRepository;
 import com.trip.attraction.repository.SidoRepository;
 import com.trip.attraction.util.OverviewDataUtil;
@@ -28,7 +26,7 @@ public class AttractionServiceImpl implements AttractionService {
     private final AttractionMapper attractionMapper;
     private final SidoRepository sidoRepository;
     private final GuGunRepository guGunRepository;
-    private final ContentTypeMapper contentTypeMapper;
+    private final ContentTypeRepository contentTypeRepository;
     private final CommentService commentService;
     private final FavoriteService favoriteService;
     private final OverviewDataUtil overviewDataUtil;
@@ -41,7 +39,9 @@ public class AttractionServiceImpl implements AttractionService {
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         List<SidoDto> sidoList = getSidoList();
-        List<ContentTypeDto> contentTypeList = contentTypeMapper.selectAllContentTypes();
+        List<ContentTypeDto> contentTypeList = contentTypeRepository.findAll().stream()
+                .map(ContentTypeDto::fromEntity)
+                .collect(Collectors.toList());
         List<AttractionDto> attractList = attractionMapper.getAttractions(offset, size);
 
         AttractionInitDataResponseDto response = new AttractionInitDataResponseDto();
@@ -90,15 +90,13 @@ public class AttractionServiceImpl implements AttractionService {
     }
 
     public List<SidoDto> getSidoList() {
-        List<Sido> sidos = sidoRepository.findAll();
-        return sidos.stream()
+        return sidoRepository.findAll().stream()
                 .map(SidoDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     public List<GuGunDto> getGuGunList(int sidoCode) {
-        List<GuGun> guGuns = guGunRepository.findBySidoCode(sidoCode);
-        return guGuns.stream()
+        return guGunRepository.findBySidoCode(sidoCode).stream()
                 .map(GuGunDto::fromEntity)
                 .collect(Collectors.toList());
     }
