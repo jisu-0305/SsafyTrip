@@ -1,108 +1,130 @@
 package com.trip.attraction.service;
 
 import com.trip.attraction.dto.*;
-import com.trip.attraction.mapper.AttractionMapper;
-import com.trip.attraction.mapper.ContentTypeMapper;
-import com.trip.attraction.mapper.SidoGunMapper;
+import com.trip.attraction.entity.Attraction;
+import com.trip.attraction.repository.AttractionRepository;
+import com.trip.attraction.repository.ContentTypeRepository;
+import com.trip.attraction.repository.GuGunRepository;
+import com.trip.attraction.repository.SidoRepository;
 import com.trip.attraction.util.OverviewDataUtil;
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.service.CommentService;
 import com.trip.favorite.service.FavoriteService;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AttractionServiceImpl implements AttractionService {
 
-    private final AttractionMapper attractionMapper;
-    private final SidoGunMapper sidoGunMapper;
-    private final ContentTypeMapper contentTypeMapper;
+    private final AttractionRepository attractionRepository;
+    private final SidoRepository sidoRepository;
+    private final GuGunRepository guGunRepository;
+    private final ContentTypeRepository contentTypeRepository;
     private final CommentService commentService;
     private final FavoriteService favoriteService;
     private final OverviewDataUtil overviewDataUtil;
 
     @Override
     public AttractionInitDataResponseDto getAttractionInitialData(int page, int size) {
-        int offset = (page - 1) * size;
+        Pageable pageable = PageRequest.of(page - 1, size);
 
-        int totalCount = attractionMapper.countTotalAttractions();
-        int totalPages = (int) Math.ceil((double) totalCount / size);
+        Page<Attraction> attractionsPage = attractionRepository.findAll(pageable);
 
-        List<SidoDto> sidoList = sidoGunMapper.getSidoList();
-        List<ContentTypeDto> contentTypeList = contentTypeMapper.selectAllContentTypes();
-        List<AttractionDto> attractList = attractionMapper.getAttractions(offset, size);
+        Map<Integer, String> contentTypeMap = getContentTypeList().stream()
+                .collect(Collectors.toMap(ContentTypeDto::getContentTypeId, ContentTypeDto::getContentTypeName));
 
-        AttractionInitDataResponseDto response = new AttractionInitDataResponseDto();
-        response.setSidoList(sidoList);
-        response.setContentTypeList(contentTypeList);
-        response.setAttractList(attractList);
-        response.setTotalCount(totalCount);
-        response.setTotalPages(totalPages);
+        List<AttractionDto> attractList = attractionsPage.getContent().stream()
+                .map(attraction -> {
+                    String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
+                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
+                    return AttractionDto.fromEntity(attraction, contentTypeName, null); // isLike는 이후 처리
+                })
+                .collect(Collectors.toList());
 
-        return response;
+        List<SidoDto> sidoList = getSidoList();
+        List<ContentTypeDto> contentTypeList = getContentTypeList();
+
+        return new AttractionInitDataResponseDto(
+                sidoList,
+                contentTypeList,
+                attractList,
+                (int) attractionsPage.getTotalElements(),
+                attractionsPage.getTotalPages()
+        );
     }
 
     @Override
     public PagedAttractionResponseDto searchAttractions(Integer sidoCode, Integer gugunCode, Integer type, String word, int page, int size, String sortBy) {
-        int offset = (page - 1) * size;
-
-        int totalCount = attractionMapper.countFilteredAttractions(sidoCode, gugunCode, type, word);
-        int totalPages = (int) Math.ceil((double) totalCount / size);
-
-        String sortColumn;
-        String sortDirection = switch (sortBy) {
-            case "likes" -> {
-                sortColumn = "hit";
-                yield "DESC";
-            }
-            case "views" -> {
-                sortColumn = "views";
-                yield "DESC";
-            }
-            default -> {
-                sortColumn = "no";
-                yield "ASC";
-            }
+        // 정렬 조건 설정
+        Sort sort = switch (sortBy) {
+            case "likes" -> Sort.by(Sort.Direction.DESC, "hit");
+            case "views" -> Sort.by(Sort.Direction.DESC, "views");
+            default -> Sort.by(Sort.Direction.ASC, "no");
         };
 
-        List<AttractionDto> attractionList = attractionMapper.searchAttractions(
-                sidoCode, gugunCode, type, word, offset, size, sortColumn, sortDirection
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        Page<Attraction> attractionsPage = attractionRepository.searchAttractions(sidoCode, gugunCode, type, word, pageable);
+
+        Map<Integer, String> contentTypeMap = getContentTypeList().stream()
+                .collect(Collectors.toMap(ContentTypeDto::getContentTypeId, ContentTypeDto::getContentTypeName));
+
+        List<AttractionDto> attractionList = attractionsPage.getContent().stream()
+                .map(attraction -> {
+                    String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
+                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
+                    return AttractionDto.fromEntity(attraction, contentTypeName, null);}) //IsLike는 별도 처리
+                .collect(Collectors.toList());
+
+        // 응답 생성
+        return new PagedAttractionResponseDto(
+                attractionList,
+                (int) attractionsPage.getTotalElements(),
+                attractionsPage.getTotalPages()
         );
-
-        PagedAttractionResponseDto pagedAttractionResponseDto = new PagedAttractionResponseDto();
-        pagedAttractionResponseDto.setAttractionList(attractionList);
-        pagedAttractionResponseDto.setTotalCount(totalCount);
-        pagedAttractionResponseDto.setTotalPages(totalPages);
-
-        return pagedAttractionResponseDto;
     }
 
-    @Override
+    public List<SidoDto> getSidoList() {
+        return sidoRepository.findAll().stream()
+                .map(SidoDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     public List<GuGunDto> getGuGunList(int sidoCode) {
-        return sidoGunMapper.getGuGunList(sidoCode);
+        return guGunRepository.findBySidoCode(sidoCode).stream()
+                .map(GuGunDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public List<SidoDto> getSidoList(){
-        return sidoGunMapper.getSidoList();
+    public List<ContentTypeDto> getContentTypeList() {
+        return contentTypeRepository.findAll().stream()
+                .map(ContentTypeDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId, Long userId) {
-        attractionMapper.updateAttractionViews(attractionId);
-        AttractionDetailDto attractionDetailDto = attractionMapper.getAttractionDetail(attractionId);
+        attractionRepository.updateAttractionViews(attractionId);
+
+        Attraction attraction = Optional.ofNullable(attractionRepository.findAttractionDetail(attractionId))
+                .orElseThrow(() -> new RuntimeException("Attraction not found"));
 
         boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attractionId);
-        attractionDetailDto.setIsLike(isLike);
 
+        AttractionDetailDto attractionDetailDto = AttractionDetailDto.fromEntity(attraction, isLike);
+
+        //상세 정보 추가
         String overview = overviewDataUtil.getOverview(String.valueOf(attractionDetailDto.getContentId()), String.valueOf(attractionDetailDto.getContentTypeId()));
         attractionDetailDto.setOverview(overview);
 
@@ -132,14 +154,10 @@ public class AttractionServiceImpl implements AttractionService {
 
         scheduleDetail.getSchedulePlacesByDate().forEach(dateEntry -> {
             String date = dateEntry.getDate();
-            List<String> titles = new ArrayList<>();
-
-            dateEntry.getPlaces().forEach(place -> {
-                String title = attractionMapper.findTitleByAttractionId(place.getAttractionId());
-                if (title != null) {
-                    titles.add(title);
-                }
-            });
+            List<String> titles = dateEntry.getPlaces().stream()
+                    .map(place -> attractionRepository.findTitleByAttractionId(place.getAttractionId()))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
 
             titlesByDate.put(date, titles);
         });

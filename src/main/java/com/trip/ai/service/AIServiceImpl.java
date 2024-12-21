@@ -66,7 +66,7 @@ public class AIServiceImpl implements AIService {
     }
 
     private String generateWeatherPrompt(ScheduleDetailDto scheduleDetail) {
-        Map<String, List<String>> titlesByDate = attractionService.getTitlesByDate(scheduleDetail);
+        Map<String, List<String>> titlesByDate = attractionService. getTitlesByDate(scheduleDetail);
         StringBuilder promptBuilder = new StringBuilder();
 
         promptBuilder.append("Please extract the locations from the provided schedule for each date, ")
