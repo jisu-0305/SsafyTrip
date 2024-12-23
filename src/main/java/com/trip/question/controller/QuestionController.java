@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("mypage")
 public class QuestionController {
-    @Autowired
     private final QuestionService questionService;
 
     // 전체 리스트 조회
@@ -24,12 +23,10 @@ public class QuestionController {
             @RequestParam(value = "size", defaultValue = "5") int size,
             HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
-        System.out.println("QuestionController.getAllQuestions");
         PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),user.getUserRole(),page,size);
 
        return ResponseEntity.ok(res);
     }
-
 
     // 리스트 추가
     @PostMapping("/questions")
@@ -65,11 +62,9 @@ public class QuestionController {
         AuthorizedUserDto user = isAuthenticated(session);
 
         questionService.insertAnswer(new QuestionAnswerReqDto(user.getUserId(), questionId, questionAnswerContentDto.getContent()));
-
         Boolean isSuccess = true;
 
         return ResponseEntity.ok(isSuccess);
-
     }
 
 
