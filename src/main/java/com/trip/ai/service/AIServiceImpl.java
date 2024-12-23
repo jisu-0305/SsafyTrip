@@ -32,11 +32,12 @@ public class AIServiceImpl implements AIService {
 
         // 2. 코디 프롬프트 생성
         String clothesPrompt = generateClothesPrompt(weatherList);
-        System.out.println("prompt: "+clothesPrompt);
+//        System.out.println("prompt: "+clothesPrompt);
 
         // 3. 코디 이미지 생성 및 URL 추출
-        String clothesURL = generateImageURL(clothesPrompt);
-//        String clothesURL = "dummyURL";
+//        String clothesURL = generateImageURL(clothesPrompt);
+        //AI 이미지 생성기능 잠금 - 타 기능 완성시 풀기
+        String clothesURL = "https://static-00.iconduck.com/assets.00/no-image-icon-512x512-lfoanl0w.png";
 
         // 4. 준비물 DTO 생성 및 추출
         String supplies = generateSupplies(weatherList);
