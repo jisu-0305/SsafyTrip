@@ -30,7 +30,7 @@ public class CommentController {
             @PathVariable("attractionId") int attractionId,
             @RequestBody CommentCreateRequestDto requestDto,
             HttpSession session) {
-
+        long userId = ((Long)session.getAttribute("userId"));
         // 로그인된 사용자 이메일 가져오기
         String loggedInEmail = (String) session.getAttribute("email");
         if (loggedInEmail == null) {
@@ -45,7 +45,7 @@ public class CommentController {
         }
 
         // 댓글 생성
-        commentService.createComment(attractionId, requestDto);
+        commentService.createComment(attractionId, requestDto, userId);
         return ResponseEntity.ok(ResponseDto.success("Comment created successfully"));
     }
 
@@ -60,7 +60,8 @@ public class CommentController {
         }
 
         // 댓글 삭제
-        boolean isDeleted = commentService.deleteComment(commentId, loggedInEmail);
+        long userId = ((Long)session.getAttribute("userId"));
+        boolean isDeleted = commentService.deleteComment(commentId, userId);
         if (!isDeleted) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResponseDto.failure("댓글 삭제 권한이 없습니다."));

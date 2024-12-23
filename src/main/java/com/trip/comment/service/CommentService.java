@@ -8,9 +8,9 @@ import com.trip.comment.dto.CommentResponseDto;
 import java.util.List;
 
 public interface CommentService {
-    void createComment(int attractionId, CommentCreateRequestDto requestDto);
+    void createComment(int attractionId, CommentCreateRequestDto requestDto, long userId);
 
-    boolean deleteComment(int commentId, String loggedInEmail);
+    boolean deleteComment(int commentId, long userId);
 
     List<CommentDto> getCommentsByAttractionId(int attractionId);
 
