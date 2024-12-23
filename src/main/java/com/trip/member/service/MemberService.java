@@ -7,7 +7,6 @@ import com.trip.member.dto.RegisterRequestDTO;
 
 public interface MemberService {
 	boolean checkDuplicateEmail(String email);
-	int registerMember(RegisterRequestDTO request);
+	boolean registerMember(RegisterRequestDTO request);
 	LoginResponseDTO loginMember(LoginRequestDTO request);
-	int deleteMember(String userId);
 }

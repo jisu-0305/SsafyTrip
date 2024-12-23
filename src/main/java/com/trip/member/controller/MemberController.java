@@ -25,8 +25,8 @@ public class MemberController {
 
 	@Operation(summary = "회원가입", description = "아이디, 이름, 비밀번호, 이메일을 입력해 회원가입")
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@Parameter(description = "회원가입 시 필요한 회원정보(아이디, 비밀번호, 이름, 이메일).", required = true) 
-						@RequestBody RegisterRequestDTO registerRequestDTO) {
+	public ResponseEntity<String> register(@Parameter(description = "회원가입 시 필요한 회원정보(아이디, 비밀번호, 이름, 이메일).", required = true)
+										   @RequestBody RegisterRequestDTO registerRequestDTO) {
 
 		memberService.registerMember(registerRequestDTO);
 
@@ -37,10 +37,8 @@ public class MemberController {
 	@Operation(summary = "중복 아이디 검사", description = "입력값을 사용하여 가입된 아이디와 중복되는지 검사.")
 	@GetMapping("/{email}")
 	public ResponseEntity<Boolean> checkDuplicateEmail(@Parameter(in = ParameterIn.PATH, description = "인증할 회원의 아이디.", required = true)
-										  @PathVariable("email") String userId) {
-
-		System.out.println("MemberController.checkDuplicateEmail");
-		Boolean isDuplicate = memberService.checkDuplicateEmail(userId);
+										  @PathVariable("email") String email) {
+		Boolean isDuplicate = memberService.checkDuplicateEmail(email);
 
 		return ResponseEntity.ok(isDuplicate);
 	}
@@ -49,8 +47,7 @@ public class MemberController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@Parameter(description = "로그인 시 필요한 회원정보(아이디, 비밀번호).", required = true)
 						@RequestBody LoginRequestDTO loginRequestDTO, HttpSession session) {
-		System.out.println("MemberController.login");
-		// 로그인한 정보가 없으면 예외처리하기.
+
 		LoginResponseDTO loginResponseDTO = memberService.loginMember(loginRequestDTO);
 
 		session.setAttribute("userId", loginResponseDTO.getUserId());
@@ -59,6 +56,7 @@ public class MemberController {
 		session.setAttribute("userAddress", loginResponseDTO.getAddress());
 
 		return ResponseEntity.ok(loginResponseDTO);
+
 	}
 
 	@Operation(summary = "로그아웃", description = "세션 정보를 이용하여 로그아웃")
@@ -66,7 +64,6 @@ public class MemberController {
 	private ResponseEntity<String> logout(HttpSession session) {
 
 		session.invalidate();
-
 		return ResponseEntity.ok("로그아웃이 완료되었습니다.");
 	}
 

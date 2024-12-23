@@ -12,6 +12,5 @@ import lombok.ToString;
 @ToString
 public class LoginRequestDTO {
 	private String email;
-	@JsonProperty("passWord")
-	private String passWord;
+	private String password;
 }
