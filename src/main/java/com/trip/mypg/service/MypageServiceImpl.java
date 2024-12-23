@@ -1,20 +1,11 @@
 package com.trip.mypg.service;
 
 import com.trip.member.entity.Member;
-import com.trip.member.mapper.MemberMapper;
 import com.trip.member.repository.MemberRepository;
-import com.trip.member.service.MemberService;
 import com.trip.mypg.dto.DeleteRequestDTO;
 import com.trip.mypg.dto.MemberUpdateDTO;
-import com.trip.mypg.mapper.MypageMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.io.IOException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
