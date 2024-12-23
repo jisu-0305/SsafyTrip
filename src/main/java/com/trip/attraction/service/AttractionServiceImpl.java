@@ -46,7 +46,6 @@ public class AttractionServiceImpl implements AttractionService {
         List<AttractionDto> attractList = attractionsPage.getContent().stream()
                 .map(attraction -> {
                     String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
-                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
                     return AttractionDto.fromEntity(attraction, contentTypeName, null); // isLike는 이후 처리
                 })
                 .collect(Collectors.toList());
@@ -82,7 +81,6 @@ public class AttractionServiceImpl implements AttractionService {
         List<AttractionDto> attractionList = attractionsPage.getContent().stream()
                 .map(attraction -> {
                     String contentTypeName = contentTypeMap.get(attraction.getContentTypeId());
-                    //boolean isLike = userId != null && favoriteService.isLikedByUser(userId, attraction.getNo());
                     return AttractionDto.fromEntity(attraction, contentTypeName, null);}) //IsLike는 별도 처리
                 .collect(Collectors.toList());
 

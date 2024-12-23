@@ -2,7 +2,9 @@ package com.trip.favorite.service;
 
 import com.trip.attraction.dto.AttractionDto;
 import com.trip.attraction.dto.PagedAttractionResponseDto;
+import com.trip.favorite.entity.Favorite;
 import com.trip.favorite.mapper.FavoriteMapper;
+import com.trip.favorite.repository.FavoriteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,33 +14,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
 
+    private final FavoriteRepository favoriteRepository;
     private final FavoriteMapper favoriteMapper;
 
-    @Override
     public void addFavorite(Long userId, int attractionId) {
-        boolean alreadyFavorited = favoriteMapper.isAlreadyFavorited(userId, attractionId);
-
-        if (!alreadyFavorited) {
-            favoriteMapper.insertFavorite(userId, attractionId);
-
-            favoriteMapper.updateHit(attractionId, 1);
-        } else {
+        if (favoriteRepository.existsByUserIdAndAttractionId(userId, attractionId)) {
             throw new IllegalStateException("이미 좋아요를 누른 상태입니다.");
         }
+
+        Favorite favorite = Favorite.create(userId, attractionId);
+        favoriteRepository.save(favorite);
     }
 
     @Override
     public void removeFavorite(Long userId, int attractionId) {
-        boolean alreadyFavorited = favoriteMapper.isAlreadyFavorited(userId, attractionId);
+        Favorite favorite = favoriteRepository.findByUserIdAndAttractionId(userId, attractionId)
+                .orElseThrow(() -> new IllegalStateException("좋아요하지 않은 상태에서 삭제 요청을 보낼 수 없습니다."));
 
-        if (alreadyFavorited) {
-            favoriteMapper.deleteFavorite(userId, attractionId);
-
-            favoriteMapper.updateHit(attractionId, -1);
-        } else {
-            throw new IllegalStateException("좋아요하지 않은 상태에서 삭제 요청을 보낼 수 없습니다.");
-        }
+        favoriteRepository.delete(favorite);
     }
+
 
     @Override
     public PagedAttractionResponseDto getFavoriteAttractions(Long userId, int page, int size, String word) {
@@ -49,18 +44,19 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         List<AttractionDto> attractionList = favoriteMapper.selectFavoriteAttractions(userId, word, offset, size);
 
-        PagedAttractionResponseDto responseDto = new PagedAttractionResponseDto();
-        responseDto.setAttractionList(attractionList);
-        responseDto.setTotalCount(totalCount);
-        responseDto.setTotalPages(totalPages);
-
-        return responseDto;
+        return new PagedAttractionResponseDto(
+                attractionList,
+                totalCount,
+                totalPages
+        );
     }
 
+    @Override
     public boolean isLikedByUser(Long userId, int attractionId) {
         if (userId == null) {
-            return false; // 비로그인 사용자는 false 반환
+            return false;
         }
-        return favoriteMapper.isLikedAttraction(userId, attractionId);
+
+        return favoriteRepository.existsByUserIdAndAttractionId(userId, attractionId);
     }
 }

@@ -6,23 +6,6 @@
 
 <mapper namespace="com.trip.favorite.mapper.FavoriteMapper">
 
-    <insert id="insertFavorite">
-        INSERT INTO favorites (user_id, attraction_id)
-        VALUES (#{userId}, #{attractionId})
-    </insert>
-
-    <delete id="deleteFavorite">
-        DELETE FROM favorites
-        WHERE user_id = #{userId}
-        AND attraction_id = #{attractionId}
-    </delete>
-
-    <select id="isAlreadyFavorited" resultType="boolean">
-        SELECT COUNT(*) > 0
-        FROM favorites
-        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
-    </select>
-
     <select id="countFavoriteAttractions" resultType="int">
         SELECT COUNT(*)
         FROM favorites f
@@ -53,16 +36,4 @@
         ORDER BY a.title ASC
         LIMIT #{offset}, #{size}
     </select>
-
-    <select id="isLikedAttraction" resultType="boolean">
-        SELECT COUNT(*) > 0
-        FROM favorites
-        WHERE user_id = #{userId} AND attraction_id = #{attractionId}
-    </select>
-
-    <update id="updateHit">
-        UPDATE attractions
-        SET hit = hit + #{amount}
-        WHERE no = #{attractionId}
-    </update>
 </mapper>

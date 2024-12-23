@@ -2,6 +2,7 @@ package com.trip.question.controller;
 
 import com.trip.question.dto.*;
 import com.trip.question.service.QuestionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "문의사항 컨트롤러", description = "1대1 문의사항 서비스 제공")
 @RequestMapping("mypage")
 public class QuestionController {
     private final QuestionService questionService;

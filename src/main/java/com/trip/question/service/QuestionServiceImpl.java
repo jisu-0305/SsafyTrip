@@ -61,7 +61,6 @@ public class QuestionServiceImpl implements QuestionService {
             if(isAnswered){
                 questionDetailResDto = questionMapper.selectQuestionAndAnswerByIdForAdmin(questionId);
             }else{
-
                 questionDetailResDto = questionMapper.selectQuestionForAdmin(questionId);
             }
         }
