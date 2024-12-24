@@ -1,0 +1,79 @@
+/* Container styles */
+.main-container {
+  max-width: 90rem;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* Text styles */
+.title-text {
+  white-space: nowrap;
+  display: inline;
+}
+
+/* Media queries */
+@media (max-width: 600px) {
+  .title-text {
+    white-space: normal;
+    display: block;
+  }
+
+  .title-text:first-child {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Image optimization */
+.optimized-image {
+  will-change: transform;
+  contain: content;
+}
+
+/* Layout */
+.full-width-section {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+/* Cards */
+.hover-card {
+  transition: var(--transition-base);
+}
+
+.hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Text Utilities */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Image Containers */
+.image-container {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-background-secondary);
+}
+
+/* Sections */
+.section-container {
+  padding: var(--section-padding) 0;
+}
+
+/* Cards */
+.attraction-card {
+  height: 100%;
+  transition: var(--transition-base);
+}
+
+.attraction-card:hover {
+  transform: translateY(-0.25rem);
+}

@@ -8,15 +8,16 @@ const attractionStore = useAttractionStore();
 
 // 이미지 페이드 인아웃을 위한 데이터
 const images = ref([
-  '/img/main1.png',
-  '/img/main.jpg', 
-  'image3.jpg'
+  { src: '/img/main1.png', loading: 'eager', alt: '메인 이미지 1' },
+  { src: '/img/main.jpg', loading: 'lazy', alt: '메인 이미지 2' },
+  { src: 'image3.jpg', loading: 'lazy', alt: '메인 이미지 3' }
 ]);
 
 // 캐러셀 아이템
 const carouselItems = ref([
   {
     image: '/img/main2.jpg',
+    loading: 'eager',
     heading: '여행을 준비하는 지수님은 인싸루트의 AI 코디추천으로 완벽하게 여행을 준비하셨어요.',
     subtitle: '여자친구와 제주 여행을 준비하는 지수님은 날씨와 지역을 고려하며 늘 1시간 이상 고민하던 코디를 인싸루트를 통해 단 5분만에 정할 수 있었어요!'
   },
@@ -59,40 +60,43 @@ onMounted(async () => {
   }
 });
 </script>
-
 <template>
-  <v-container class="main-container pa-0">
-    <!-- 첫 번째 섹션 -->
-    <div class="hero-section">
-      <v-container class="inner-container">
-        <v-row align="center" no-gutters>
-          <v-col cols="12" md="6" class="pa-16">
-            <h1 class="text-h3 font-weight-bold mb-6">
-              당신만을 위한 여행 플래너
+  <div class="hero-section">
+    <div class="content-wrapper">
+      <v-row align="center" justify="space-between" no-gutters>
+        <v-col cols="12" md="6" class="hero-text">
+          <div class="text-wrapper">
+            <h1 class="text-h3 font-weight-bold mb-4">
+              <span class="title-text">당신만을 위한 </span>
+              <span class="title-text">여행 플래너</span>
             </h1>
             <p class="text-h5">
               AI로 똑똑하고 완벽하게 일정 챙기기
             </p>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-fade-transition>
-              <v-img
-                :src="images[0]"
-                height="600"
-                cover
-              ></v-img>
-            </v-fade-transition>
-          </v-col>
-        </v-row>
-      </v-container>
+          </div>
+        </v-col>
+        <v-col cols="12" md="6" class="hero-image-col">
+          <v-fade-transition>
+            <v-img
+              :src="images[0].src"
+              :alt="images[0].alt"
+              :loading="images[0].loading"
+              :height="$vuetify.display.mdAndUp ? '37.5rem' : '25rem'"
+              cover
+              class="hero-image"
+            ></v-img>
+          </v-fade-transition>
+        </v-col>
+      </v-row>
     </div>
+  </div>
 
-    <!-- 두 번째 섹션 -->
-    <v-row class="my-16" justify="center">
+  <div class="content-wrapper">
+    <v-row class="carousel-section" justify="center">
       <v-col cols="12">
         <v-carousel
           cycle
-          :height="$vuetify.display.mdAndUp ? 500 : 700"
+          :height="$vuetify.display.mdAndUp ? '31.25rem' : '43.75rem'"
           hide-delimiter-background
           show-arrows="hover"
         >
@@ -104,22 +108,23 @@ onMounted(async () => {
               <v-col 
                 cols="12" 
                 md="6"
-                :class="$vuetify.display.mdAndUp ? 'pa-4' : 'pa-2'"
+                class="carousel-image-col"
               >
                 <v-img
                   :src="item.image"
-                  :height="$vuetify.display.mdAndUp ? 400 : 300"
+                  :loading="item.loading"
+                  :height="$vuetify.display.mdAndUp ? '25rem' : '18.75rem'"
                   cover
-                  class="rounded-lg"
+                  class="rounded-lg carousel-image"
                 ></v-img>
               </v-col>
               <v-col 
                 cols="12" 
                 md="6"
-                :class="$vuetify.display.mdAndUp ? 'pa-16' : 'pa-4'"
+                class="carousel-text-col"
               >
-                <h2 class="text-h4 mb-6">{{ item.heading }}</h2>
-                <p class="text-body-1">{{ item.subtitle }}</p>
+                <h2 class="carousel-heading">{{ item.heading }}</h2>
+                <p class="carousel-subtitle">{{ item.subtitle }}</p>
               </v-col>
             </v-row>
           </v-carousel-item>
@@ -127,14 +132,13 @@ onMounted(async () => {
       </v-col>
     </v-row>
 
-    <!-- 세 번째 섹션 -->
-    <v-row class="my-16 px-4">
-      <v-col cols="12" class="text-center mb-16">
-        <h2 class="text-h4 mb-2">
+    <v-row class="popular-section">
+      <v-col cols="12" class="text-center popular-header">
+        <h2 class="popular-title">
           <strong>{{ currentSidoName }}</strong> 인기 여행지
         </h2>
-        <p class="text-subtitle-1 mb-2">좋아요 기준 TOP 4</p>
-        <p class="text-body-2 text-grey">
+        <p class="popular-subtitle">좋아요 기준 TOP 4</p>
+        <p class="popular-description">
           {{ currentSidoName === '전국' 
             ? '전국의 인기 여행지를 소개합니다' 
             : `${currentSidoName}의 매력적인 여행지를 만나보세요` 
@@ -148,27 +152,24 @@ onMounted(async () => {
         cols="12" 
         sm="6" 
         md="3"
+        class="attraction-col"
       >
-        <v-card elevation="2" class="h-100" @click="$router.push(`/attraction/${attraction.no}`)">
+        <v-card elevation="2" class="attraction-card" @click="$router.push(`/attraction/${attraction.no}`)">
           <v-img
             :src="attraction.firstImage1"
-            height="200"
+            height="12.5rem"
             cover
-            class="bg-grey-lighten-2"
+            class="attraction-image"
           >
             <template v-slot:placeholder>
               <v-row align="center" justify="center" class="fill-height">
-                <v-icon
-                  icon="mdi-image-off"
-                  color="grey-lighten-2"
-                  size="64"
-                ></v-icon>
+                <v-icon icon="mdi-image-off" size="4rem"></v-icon>
               </v-row>
             </template>
           </v-img>
-          <v-card-title class="text-truncate">{{ attraction.title }}</v-card-title>
-          <v-card-subtitle>{{ attraction.addr1 }}</v-card-subtitle>
-          <v-card-text>
+          <v-card-title class="attraction-title">{{ attraction.title }}</v-card-title>
+          <v-card-subtitle class="attraction-address">{{ attraction.addr1 }}</v-card-subtitle>
+          <v-card-text class="attraction-stats">
             <div class="d-flex align-center gap-4">
               <div class="d-flex align-center">
                 <v-icon size="small" color="grey" class="me-1">mdi-eye</v-icon>
@@ -183,28 +184,59 @@ onMounted(async () => {
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <style scoped>
-.main-container {
-  max-width: 1440px;
-  margin: 0 auto;
-}
-
 .hero-section {
-  background-color: #f8f9fa;
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  composes: full-width-section from '@/assets/styles/common.css';
+  background-color: var(--color-background);
+  padding: var(--section-padding) 0;
 }
 
-.inner-container {
-  max-width: 1440px;
+.content-wrapper {
+  max-width: 1464px;
   margin: 0 auto;
-  min-height: 600px;
+  padding: 0 16px;
+}
+
+.hero-text {
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.text-wrapper {
+  background-color: rgba(248, 249, 250, 0.9);
+  padding: 1rem;
+  border-radius: var(--border-radius-md);
+}
+
+.carousel-section {
+  margin: clamp(1rem, 5vw, 4rem) 0;
+}
+
+.popular-section {
+  composes: section-container from '@/assets/styles/common.css';
+}
+
+@media (max-width: 1100px) {
+  .content-wrapper {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 960px) {
+  .hero-text {
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-text {
+    padding: 1rem 0.5rem;
+  }
 }
 </style>
+
