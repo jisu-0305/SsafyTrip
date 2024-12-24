@@ -3,7 +3,9 @@ package com.trip.comment.service;
 import com.trip.comment.dto.CommentCreateRequestDto;
 import com.trip.comment.dto.CommentDto;
 import com.trip.comment.dto.CommentResponseDto;
+import com.trip.comment.entity.Comment;
 import com.trip.comment.mapper.CommentMapper;
+import com.trip.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +15,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
+    private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
     @Override
-    public void createComment(int attractionId, CommentCreateRequestDto requestDto) {
-        commentMapper.insertComment(attractionId, requestDto);
+    public void createComment(int attractionId, CommentCreateRequestDto requestDto, long userId) {
+        Comment comment = Comment.create(
+                userId,
+                attractionId,
+                requestDto.getContent()
+        );
+        commentRepository.save(comment);
     }
 
     @Override
-    public boolean deleteComment(int commentId, String loggedInEmail) {
-        String authorEmail = commentMapper.findAuthorEmailByCommentId(commentId);
-
-        if (!loggedInEmail.equals(authorEmail)) {
+    public boolean deleteComment(int commentId, long userId) {
+        if (!commentRepository.existsBycommentIdAndAuthorId(commentId, userId)) {
             return false;
         }
-
-        commentMapper.deleteComment(commentId);
+        commentRepository.deleteById(commentId);
         return true;
     }
 

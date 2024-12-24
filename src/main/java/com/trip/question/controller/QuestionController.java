@@ -2,6 +2,7 @@ package com.trip.question.controller;
 
 import com.trip.question.dto.*;
 import com.trip.question.service.QuestionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "문의사항 컨트롤러", description = "1대1 문의사항 서비스 제공")
 @RequestMapping("mypage")
 public class QuestionController {
-    @Autowired
     private final QuestionService questionService;
 
     // 전체 리스트 조회
@@ -24,12 +25,10 @@ public class QuestionController {
             @RequestParam(value = "size", defaultValue = "5") int size,
             HttpSession session) {
         AuthorizedUserDto user = isAuthenticated(session);
-        System.out.println("QuestionController.getAllQuestions");
         PagedQuestionResponseDto res = questionService.selectAllQuestions(user.getUserId(),user.getUserRole(),page,size);
 
        return ResponseEntity.ok(res);
     }
-
 
     // 리스트 추가
     @PostMapping("/questions")
@@ -65,11 +64,9 @@ public class QuestionController {
         AuthorizedUserDto user = isAuthenticated(session);
 
         questionService.insertAnswer(new QuestionAnswerReqDto(user.getUserId(), questionId, questionAnswerContentDto.getContent()));
-
         Boolean isSuccess = true;
 
         return ResponseEntity.ok(isSuccess);
-
     }
 
 
