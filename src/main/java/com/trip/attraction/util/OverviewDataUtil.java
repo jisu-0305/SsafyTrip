@@ -87,8 +87,6 @@ public class OverviewDataUtil {
             conn.disconnect();
         }
 
-        System.out.println("OverviewDataUtil.getOverview");
-        System.out.println(result);
         return result;
     }
 }
