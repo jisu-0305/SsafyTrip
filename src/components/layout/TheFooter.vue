@@ -4,10 +4,10 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const quickLinks = [
+  { title: '여행 일정', icon: 'mdi-calendar-outline', route: 'schedules' },
+  { title: '관광지', icon: 'mdi-map-marker-outline', route: 'attraction' },
   { title: '공지사항', icon: 'mdi-bell-outline', route: 'notice' },
-  { title: '질문하기', icon: 'mdi-help-circle-outline', route: 'question' },
-  { title: '이용약관', icon: 'mdi-file-document-outline', route: 'terms' },
-  { title: '개인정보처리방침', icon: 'mdi-shield-outline', route: 'privacy' }
+  { title: '1:1 문의', icon: 'mdi-help-circle-outline', route: 'question' }
 ];
 
 const handleLinkClick = (route) => {
@@ -17,91 +17,104 @@ const handleLinkClick = (route) => {
 
 <template>
   <v-footer class="bg-grey-lighten-4">
-    <v-container>
-      <v-row>
+    <v-container class="py-6" style="max-width: 90rem; margin: 0 auto;">
+      <v-row justify="center">
         <!-- 회사 정보 섹션 -->
-        <v-col cols="12" md="4" class="text-center text-md-left mb-6 mb-md-0">
-          <h3 class="text-h6 font-weight-bold mb-4">
-            <v-btn variant="plain" class="pa-0" @click="router.push('/')">
-              인싸루트
+        <v-col cols="12" sm="6" md="4" class="mb-6 text-center">
+          <div class="d-flex flex-column align-center">
+            <v-btn variant="plain" class="pa-0 mb-4" @click="router.push('/')">
+              <v-img src="/img/logo2.png" width="140" height="50" contain></v-img>
             </v-btn>
-          </h3>
-          <p class="text-body-2 text-grey-darken-1">
-            당신의 여행을 더 특별하게<br>
-            AI 기반 스마트 여행 플래너
-          </p>
+            <p class="text-body-2 text-grey-darken-1">
+              당신의 여행을 더 특별하게<br>
+              AI 기반 스마트 여행 플래너
+            </p>
+          </div>
         </v-col>
 
         <!-- 빠른 링크 섹션 -->
-        <v-col cols="12" md="4" class="text-center mb-6 mb-md-0">
-          <h3 class="text-subtitle-1 font-weight-bold mb-4">빠른 링크</h3>
-          <v-list density="compact" bg-color="transparent">
-            <v-list-item
+        <v-col cols="12" sm="6" md="4" class="mb-6 text-center">
+          <h3 class="text-subtitle-1 font-weight-bold mb-4">서비스</h3>
+          <div class="d-flex flex-column gap-2 align-center">
+            <v-btn
               v-for="(link, i) in quickLinks"
               :key="i"
-              :title="link.title"
-              class="px-0"
+              variant="text"
               density="compact"
+              class="justify-center px-0"
               @click="handleLinkClick(link.route)"
-              :class="'quick-link-item'"
             >
-              <template v-slot:prepend>
-                <v-icon size="small" color="grey-darken-1">{{ link.icon }}</v-icon>
-              </template>
-            </v-list-item>
-          </v-list>
+              <v-icon start size="small" color="grey-darken-1">
+                {{ link.icon }}
+              </v-icon>
+              <span class="text-body-2 text-grey-darken-1">{{ link.title }}</span>
+            </v-btn>
+          </div>
         </v-col>
 
         <!-- 연락처 섹션 -->
-        <v-col cols="12" md="4" class="text-center text-md-right">
+        <v-col cols="12" sm="6" md="4" class="mb-6 text-center">
           <h3 class="text-subtitle-1 font-weight-bold mb-4">고객센터</h3>
-          <div class="text-body-2 text-grey-darken-1">
-            <p class="contact-info">이메일: support@inssaroute.com</p>
-            <p class="contact-info">전화: 1544-0000</p>
-            <p class="contact-info">운영시간: 평일 09:00 - 18:00</p>
+          <div class="d-flex flex-column gap-2 text-body-2 text-grey-darken-1 align-center">
+            <div class="d-flex align-center justify-center">
+              <v-icon size="small" class="mr-2">mdi-email-outline</v-icon>
+              <span>support@inssaroute.com</span>
+            </div>
+            <div class="d-flex align-center justify-center">
+              <v-icon size="small" class="mr-2">mdi-phone-outline</v-icon>
+              <span>1544-0000</span>
+            </div>
+            <div class="d-flex align-center justify-center">
+              <v-icon size="small" class="mr-2">mdi-clock-outline</v-icon>
+              <span>평일 09:00 - 18:00</span>
+            </div>
           </div>
         </v-col>
       </v-row>
 
       <!-- 저작권 표시 -->
-      <v-row class="mt-6">
-        <v-col cols="12">
-          <v-divider class="mb-4"></v-divider>
-          <div class="text-center text-body-2 text-grey-darken-1">
-            © {{ new Date().getFullYear() }} 인싸루트. All rights reserved.
-          </div>
-        </v-col>
-      </v-row>
+      <v-divider class="my-4"></v-divider>
+      <div class="text-center pb-4 text-body-2 text-grey-darken-1">
+        © {{ new Date().getFullYear() }} 인싸루트. All rights reserved.
+      </div>
     </v-container>
   </v-footer>
 </template>
 
 <style scoped>
 .v-footer {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
   margin-top: 50px;
+  width: 100%;
 }
 
-:deep(.v-list-item) {
-  min-height: 32px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+:deep(.v-btn) {
+  text-transform: none;
+  letter-spacing: normal;
 }
 
-:deep(.v-list-item:hover) {
-  background-color: rgba(0, 0, 0, 0.04);
+:deep(.v-btn:hover) {
+  background-color: transparent;
+  opacity: 0.8;
 }
 
-:deep(.v-list-item__content) {
-  padding: 0;
+.v-container {
+  max-width: 90rem;
+  margin: 0 auto;
 }
 
-.contact-info {
-  margin-bottom: 8px;
-}
-
-.quick-link-item {
-  border-radius: 4px;
+@media (max-width: 600px) {
+  .v-container {
+    padding: 16px;
+  }
+  
+  .text-subtitle-1 {
+    font-size: 1rem !important;
+    text-align: center;
+  }
+  
+  .text-body-2 {
+    font-size: 0.875rem !important;
+  }
 }
 </style>
-
