@@ -53,7 +53,7 @@ const handleLogout = async () => {
       elevation="0"
     >
       <!-- 모바일 메뉴 토글 버튼 -->
-      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-lg-and-up"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
 
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
@@ -70,7 +70,7 @@ const handleLogout = async () => {
 
       <!-- 데스크톱 메뉴 -->
       <v-spacer></v-spacer>
-      <div class="hidden-md-and-down menu-container">
+      <div class="hidden-sm-and-down menu-container">
         <v-btn v-for="item in menuItems" :key="item.title" variant="text" :ripple="false" class="menu-item"
           :active-class="'active-menu-item'" :class="{ 'v-btn--active': $route.name === item.route }"
           @click="handleMenuClick(item.route)" density="comfortable" min-height="82px">
@@ -80,7 +80,7 @@ const handleLogout = async () => {
       <v-spacer></v-spacer>
 
       <!-- 로그인/회원가입/마이페이지 버튼 -->
-      <div class="auth-buttons hidden-md-and-down">
+      <div class="auth-buttons hidden-sm-and-down">
         <template v-if="!authStore.isLoggedIn">
           <v-btn class="signup-btn" @click="goToSignup">
             회원가입
@@ -154,56 +154,42 @@ const handleLogout = async () => {
 }
 
 .nav-container {
-  width: 100%;
-  height: 82px;
-  background: white;
-  border-bottom: 1px solid #D9D9D9;
+  composes: content-wrapper-wide from '@/assets/styles/base.css';
+  height: var(--navbar-height);
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
 }
 
-@media (min-width: 960px) {
-  .nav-container {
-    position: absolute;
-    width: 1440px;
-    left: -18px;
-    top: 14px;
-  }
-}
 
 .logo-link {
   text-decoration: none;
   display: flex;
   align-items: center;
+  padding-left: var(--spacing-lg);
 }
 
-.logo {
-  margin-left: 40px;
-  transition: all 0.3s ease;
-}
+
 
 .menu-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  height: 82px;
+  gap: var(--spacing-lg);
+  height: 100%;
 }
 
 .menu-item {
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 16px;
-  opacity: 0.85;
+  composes: hover-effect from '@/assets/styles/common.css';
   height: 100%;
   background: transparent !important;
-  /* 배경색 제거 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* 메뉴 텍스트 스타일링 */
 .menu-text {
   position: relative;
-  padding: 6px 0;
+  padding: var(--spacing-xs) 0;
+  color: var(--color-text);
+  font-size: var(--menu-font-size);
+  font-weight: var(--menu-font-weight);
 }
 
 /* 밑줄 효과 */
@@ -230,7 +216,7 @@ const handleLogout = async () => {
 /* active 상태 스타일 */
 .active-menu-item .menu-text,
 .v-btn--active .menu-text {
-  color: #1890FF;
+  color: var(--color-primary);
 }
 
 .active-menu-item .menu-text::after,
@@ -240,80 +226,49 @@ const handleLogout = async () => {
 
 .auth-buttons {
   display: flex;
-  gap: 8px;
-  margin-right: 40px;
+  gap: var(--spacing-xs);
+  margin-right: var(--spacing-lg);
   white-space: nowrap;
 }
 
-.signup-btn,
-.login-btn {
-  height: 32px;
-  padding: 4px 15px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  line-height: 22px;
-  border-radius: 2px;
+/* 버튼 공통 스타일 */
+.auth-btn {
+  height: var(--button-height);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-family: var(--font-family);
+  border-radius: var(--border-radius-sm);
   text-transform: none;
   letter-spacing: normal;
 }
 
 .signup-btn {
-  background: #262626;
-  color: white;
-  border: 1px solid #262626;
-  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+  composes: auth-btn;
+  background: var(--color-primary-dark);
+  color: var(--color-background);
 }
 
-.login-btn {
-  background: white;
-  color: rgba(0, 0, 0, 0.85);
-  border: 1px solid #D9D9D9;
-  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.016);
-}
-
+.login-btn,
 .logout-btn {
-  background: white;
-  color: rgba(0, 0, 0, 0.85);
-  border: 1px solid #D9D9D9;
-  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.016);
-  height: 32px;
-  padding: 4px 15px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
-  line-height: 22px;
-  border-radius: 2px;
-  text-transform: none;
-  letter-spacing: normal;
+  composes: auth-btn;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
 }
 
-@media (max-width: 1400px) {
-  .nav-container {
-    width: 100%;
-    left: 0;
-  }
-
-  .menu-container {
-    gap: 24px;
-  }
-
-  .auth-buttons {
-    margin-right: 40px;
-  }
-}
 
 @media (max-width: 1200px) {
   .menu-container {
-    gap: 16px;
+    gap: var(--spacing-md);
   }
 
   .auth-buttons {
-    margin-right: 20px;
+    margin-right: var(--spacing-md);
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 960px) {
   .nav-container {
-    top: 0;
+    padding: 0 var(--spacing-sm);
   }
 
   .menu-container,
@@ -325,26 +280,16 @@ const handleLogout = async () => {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-  }
-
-  .logo {
-    margin-left: 0;
+    padding-left: 0;
   }
 }
 
-.v-navigation-drawer {
+/* 드로어 스타일 */
+:deep(.v-navigation-drawer) {
   .v-list-item {
-    font-size: 14px;
-    line-height: 22px;
-    color: rgba(0, 0, 0, 0.85);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
   }
-}
-
-/* v-btn의 기본 스타일 오버라이드 */
-:deep(.v-btn__content) {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

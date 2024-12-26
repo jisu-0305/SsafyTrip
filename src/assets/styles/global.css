@@ -41,6 +41,25 @@
   --hero-image-height-desktop: 37.5rem;
   --hero-image-height-mobile: 25rem;
   
+  /* Navbar */
+  --navbar-height: 82px;
+  --button-height: 32px;
+  --menu-font-size: 1rem;  /* 16px */
+  --menu-font-weight: 500;
+  
+  /* Colors */
+  --color-primary-dark: #262626;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  
+  /* Typography */
+  --font-size-sm: 14px;
+  --font-size-md: 18px;
+  --line-height-base: 22px;
 }
 
 /* Typography */
@@ -128,4 +147,24 @@ hr.v-divider {
   .section-padding {
     padding: 1rem 0;
   }
+}
+
+/* 호버 효과 */
+.hover-effect {
+  position: relative;
+}
+
+.hover-effect::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width var(--transition-base);
+}
+
+.hover-effect:hover::after {
+  width: 100%;
 }
