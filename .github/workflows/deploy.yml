@@ -13,57 +13,12 @@ jobs:
       # 1. 코드 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
-        
-      # 2. Node.js 설정 및 의존성 설치
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' # Node.js 버전
-          
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build
-
-     # 3. SSH 키 파일 생성
-      - name: Create SSH key file
-        run: |
-          echo "${{ secrets.SSAFYTRIP_KEY }}" > /tmp/ssafytrip-key.pem
-          chmod 400 /tmp/ssafytrip-key.pem
-
-      # 4. 기존 dist 폴더의 소유권 변경 및 삭제
-      - name: Prepare EC2 for new deployment
-        run: |
-          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
-          sudo chown -R ec2-user:ec2-user /home/ec2-user/frontend/dist || true
-          sudo rm -rf /home/ec2-user/frontend/dist
-          EOF
-
-      # 5. EC2에 dist 폴더 업로드
-      - name: Upload dist folder to EC2
-        uses: appleboy/scp-action@v0.1.2
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ec2-user
-          key: ${{ secrets.SSAFYTRIP_KEY }}
-          source: dist/*
-          target: /home/ec2-user/frontend
-          overwrite: true  # 덮어쓰기 활성화
-
-      # 6. EC2에서 권한 설정
-      - name: Set permissions for dist folder
-        run: |
-          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
-          sudo chmod +x /home/ec2-user/frontend
-          sudo chmod -R 755 /home/ec2-user/frontend/dist
-          sudo chown -R nginx:nginx /home/ec2-user/frontend/dist
-          EOF
-
+      
       # 7. Lighthouse 검사 및 결과 저장
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
-          lhci autorun --url=http://inssaroute.shop --upload.target=filesystem --outputDir=./lighthouse-reports
+          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=./lighthouse-reports
       - name: Check if Lighthouse Reports Directory Exists
         run: |
           if [ ! -d "./lighthouse-reports/" ]; then
