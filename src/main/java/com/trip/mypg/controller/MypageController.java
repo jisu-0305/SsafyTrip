@@ -1,13 +1,11 @@
 package com.trip.mypg.controller;
 
-import com.trip.member.dto.RegisterRequestDTO;
+import com.trip.common.ResponseDto;
 import com.trip.mypg.dto.DeleteRequestDTO;
+import com.trip.mypg.dto.MemberUpdateDTO;
 import com.trip.mypg.service.MypageServiceImpl;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +15,22 @@ import org.springframework.web.bind.annotation.*;
 public class MypageController {
     private final MypageServiceImpl mypageService;
 
-    // 회원 탈퇴 API
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestBody DeleteRequestDTO deleteRequestDTO, HttpSession session) {
-        boolean isDeleted = mypageService.deleteUser(deleteRequestDTO);
+    // 회원 정보 수정
+    @PutMapping
+    public ResponseEntity<ResponseDto> updateUser(@RequestBody MemberUpdateDTO updateRequest, HttpSession session) throws Exception {
+        long userId = (long) session.getAttribute("userId");
+        mypageService.updateUser(updateRequest, userId);
 
-        if (isDeleted) {
-            session.invalidate();
-            return ResponseEntity.ok("회원 탈퇴 성공");
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("비밀번호가 일치하지 않거나 이메일을 찾을 수 없습니다.");
-        }
-
+        return ResponseEntity.ok(ResponseDto.success("회원 수정 성공"));
     }
 
+    // 회원 비활성화
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deactivateUser(@RequestBody DeleteRequestDTO deleteRequestDTO, HttpSession session) {
+        mypageService.deactivateUser(deleteRequestDTO);
+
+        session.invalidate();
+        return ResponseEntity.ok(ResponseDto.success("회원 비활성화 성공"));
+    }
 
 }

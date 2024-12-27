@@ -77,7 +77,7 @@ public class OverviewDataUtil {
 
             // overview에 데이터 저장하기
             for(ApiDetailVo apiVo : tourismInfoList){
-                result += apiVo.getTitle() + ": " + apiVo.getContent() + "\n";
+                result += "<b>" + apiVo.getTitle() + "</b>" + ": " + apiVo.getContent() + "<br>";
 
             }
 
