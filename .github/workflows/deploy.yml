@@ -3,7 +3,7 @@ name: Deploy Frontend to EC2
 on:
   push:
     branches:
-      - feature/fe/78 # dev/fe 브랜치에 푸시될 때 실행
+      - feature/fe/78 # 특정 브랜치 푸시 시 실행
 
 jobs:
   deploy:
@@ -13,20 +13,37 @@ jobs:
       # 1. 코드 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      # 7. Lighthouse 검사 및 결과 저장
+
+      # 2. Node.js 설정 및 의존성 설치
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Node.js 버전
+          
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      # 3. Lighthouse 검사 및 결과 저장
+      - name: Create Lighthouse Reports Directory
+        run: |
+          echo "Creating Lighthouse Reports Directory..."
+          mkdir -p /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
+          chmod -R 777 /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
-          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=$GITHUB_WORKSPACE/lighthouse-reports
-      - name: Check if Lighthouse Reports Directory Exists
-        run: |
-          if [ ! -d "./lighthouse-reports/" ]; then
-            echo "Lighthouse reports directory does not exist!";
-            exit 1;
-          fi      
+          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=/home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
+          cp /home/runner/work/SsafyTrip/SsafyTrip/localhost-_index_html-* /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/
 
-     # AWS 자격 증명 구성
+      # 4. Lighthouse 결과 디렉토리 확인
+      - name: Check and List Directory Structure
+        run: |
+          echo "Checking entire directory structure..."
+          ls -R /home/runner/work/SsafyTrip/SsafyTrip || echo "Directory not found!"
+
+      # 5. AWS 자격 증명 구성
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -34,7 +51,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # S3로 Lighthouse 결과 업로드
+      # 6. S3로 Lighthouse 결과 업로드
       - name: Deliver Lighthouse Reports to S3
         run: |
-          aws s3 cp ./lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}
+          echo "Uploading Lighthouse Reports to S3..."
+          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/ --recursive 
