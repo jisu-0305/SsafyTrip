@@ -18,7 +18,7 @@ jobs:
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
-          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=./lighthouse-reports
+          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=$GITHUB_WORKSPACE/lighthouse-reports
       - name: Check if Lighthouse Reports Directory Exists
         run: |
           if [ ! -d "./lighthouse-reports/" ]; then
