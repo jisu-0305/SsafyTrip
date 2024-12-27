@@ -64,7 +64,13 @@ jobs:
         run: |
           npm install -g @lhci/cli
           lhci autorun --url=http://inssaroute.shop --upload.target=filesystem --outputDir=./lighthouse-reports
-          
+      - name: Check if Lighthouse Reports Directory Exists
+        run: |
+          if [ ! -d "./lighthouse-reports/" ]; then
+            echo "Lighthouse reports directory does not exist!";
+            exit 1;
+          fi      
+
      # AWS 자격 증명 구성
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -76,4 +82,4 @@ jobs:
       # S3로 Lighthouse 결과 업로드
       - name: Deliver Lighthouse Reports to S3
         run: |
-          aws s3 cp ./lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/ --recursive --acl public-read
+          aws s3 cp ./lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}
