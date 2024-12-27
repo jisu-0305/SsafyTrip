@@ -26,12 +26,12 @@ public class MemberController {
 
 	@Operation(summary = "회원가입", description = "아이디, 이름, 비밀번호, 이메일을 입력해 회원가입")
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@Parameter(description = "회원가입 시 필요한 회원정보(아이디, 비밀번호, 이름, 이메일).", required = true)
+	public ResponseEntity<ResponseDto> register(@Parameter(description = "회원가입 시 필요한 회원정보(아이디, 비밀번호, 이름, 이메일).", required = true)
 										   @RequestBody RegisterRequestDTO registerRequestDTO) {
 
 		memberService.registerMember(registerRequestDTO);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
+		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.success("회원가입 성공하였습니다."));
 	}
 
 
