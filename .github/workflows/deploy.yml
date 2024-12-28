@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "Creating Lighthouse Reports Directory..."
           mkdir -p /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
-          chmod -R 777 /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
+      #    chmod -R 777 /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
@@ -41,7 +41,6 @@ jobs:
       - name: Check and List Directory Structure
         run: |
           echo "Checking entire directory structure..."
-          ls -R /home/runner/work/SsafyTrip/SsafyTrip || echo "Directory not found!"
 
       # 5. AWS 자격 증명 구성
       - name: Configure AWS Credentials
@@ -55,4 +54,4 @@ jobs:
       - name: Deliver Lighthouse Reports to S3
         run: |
           echo "Uploading Lighthouse Reports to S3..."
-          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/ --recursive 
+          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive 
