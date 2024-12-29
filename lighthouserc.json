@@ -1,0 +1,14 @@
+{
+    "ci": {
+        "collect": {
+            "numberOfRuns": 1,
+            "url": [
+                "https://inssaroute.shop"
+            ]
+        },
+        "upload": {
+            "target": "filesystem",
+            "outputDir": "./lighthouse-reports"
+        }
+    }
+}

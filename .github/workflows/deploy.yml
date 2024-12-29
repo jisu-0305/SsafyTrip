@@ -26,21 +26,16 @@ jobs:
           npm run build
 
       # 3. Lighthouse 검사 및 결과 저장
-      - name: Create Lighthouse Reports Directory
-        run: |
-          echo "Creating Lighthouse Reports Directory..."
-          mkdir -p /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
-      #    chmod -R 777 /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
-          lhci autorun --url=https://inssaroute.shop --upload.target=filesystem --outputDir=/home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports
-          cp /home/runner/work/SsafyTrip/SsafyTrip/localhost-_index_html-* /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/
+          lhci autorun
 
-      # 4. Lighthouse 결과 디렉토리 확인
-      - name: Check and List Directory Structure
+      # 4. 디렉토리 구조 확인
+      - name: List Lighthouse Reports Directory Structure
         run: |
           echo "Checking entire directory structure..."
+          ls -R /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports || echo "Directory not found!"
 
       # 5. AWS 자격 증명 구성
       - name: Configure AWS Credentials
@@ -54,4 +49,4 @@ jobs:
       - name: Deliver Lighthouse Reports to S3
         run: |
           echo "Uploading Lighthouse Reports to S3..."
-          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive 
+          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive
