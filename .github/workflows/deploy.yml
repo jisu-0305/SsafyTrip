@@ -3,7 +3,7 @@ name: Deploy Frontend to EC2
 on:
   push:
     branches:
-      - feature/fe/78 # 특정 브랜치 푸시 시 실행
+      - dev/fe # 특정 브랜치 푸시 시 실행
 
 jobs:
   deploy:
@@ -25,19 +25,46 @@ jobs:
           npm install
           npm run build
 
-      # 3. Lighthouse 검사 및 결과 저장
+     # 3. SSH 키 파일 생성
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.SSAFYTRIP_KEY }}" > /tmp/ssafytrip-key.pem
+          chmod 400 /tmp/ssafytrip-key.pem
+
+      # 4. 기존 dist 폴더의 소유권 변경 및 삭제
+      - name: Prepare EC2 for new deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
+          sudo chown -R ec2-user:ec2-user /home/ec2-user/frontend/dist || true
+          sudo rm -rf /home/ec2-user/frontend/dist
+          EOF
+      # 5. EC2에 dist 폴더 업로드
+      - name: Upload dist folder to EC2
+        uses: appleboy/scp-action@v0.1.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ec2-user
+          key: ${{ secrets.SSAFYTRIP_KEY }}
+          source: dist/*
+          target: /home/ec2-user/frontend
+          overwrite: true  # 덮어쓰기 활성화
+
+      # 6. EC2에서 권한 설정
+      - name: Set permissions for dist folder
+        run: |
+          ssh -o StrictHostKeyChecking=no -i /tmp/ssafytrip-key.pem ec2-user@${{ secrets.SERVER_IP }} << 'EOF'
+          sudo chmod +x /home/ec2-user/frontend
+          sudo chmod -R 755 /home/ec2-user/frontend/dist
+          sudo chown -R nginx:nginx /home/ec2-user/frontend/dist
+          EOF
+
+      # 7. Lighthouse 검사 및 결과 저장
       - name: Run Lighthouse and Save Report
         run: |
           npm install -g @lhci/cli
           lhci autorun
 
-      # 4. 디렉토리 구조 확인
-      - name: List Lighthouse Reports Directory Structure
-        run: |
-          echo "Checking entire directory structure..."
-          ls -R /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports || echo "Directory not found!"
-
-      # 5. AWS 자격 증명 구성
+      # 8. AWS 자격 증명 구성
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -45,8 +72,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # 6. S3로 Lighthouse 결과 업로드
+      # 9. 기존 S3 파일 삭제
+      - name: Delete Existing Files in S3 Bucket
+        run: |
+          echo "Deleting existing files in S3 bucket..."
+          aws s3 rm s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive
+
+      # 10. S3로 Lighthouse 결과 업로드
       - name: Deliver Lighthouse Reports to S3
         run: |
           echo "Uploading Lighthouse Reports to S3..."
-          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive
+          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive --exclude "*" --include "*.html"
