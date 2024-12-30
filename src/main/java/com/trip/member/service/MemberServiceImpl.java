@@ -6,9 +6,9 @@ import com.trip.member.dto.RegisterRequestDTO;
 import com.trip.member.entity.Member;
 import com.trip.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 
 @Service
@@ -16,22 +16,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Transactional
 	@Override
-	public boolean registerMember(RegisterRequestDTO registerRequestDTO) {
-		Member newMember = Member.fromDTO(registerRequestDTO);
-		Member member = memberRepository.save(newMember);
+	public void registerMember(RegisterRequestDTO registerRequestDTO) {
+		try {
+			// 비밀번호 암호화
+			String encodedPassword = passwordEncoder.encode(registerRequestDTO.getPassword());
+			registerRequestDTO.setPassword(encodedPassword);
 
-		return member != null ;
+			Member newMember = Member.fromDTO(registerRequestDTO);
+			Member member = memberRepository.save(newMember);
+		}catch (Exception e){
+			throw new IllegalArgumentException("회원 가입에 실패했습니다.");
+		}
 	}
 
 
 	@Override
 	public LoginResponseDTO loginMember(LoginRequestDTO request) {
-		return memberRepository.findByEmailAndPassword(request.getEmail(), request.getPassword())
-				.map(LoginResponseDTO::from) 	   // 값이 있으면 DTO로 변환
-				.orElse(null);               // 값이 없으면 null 반환
+		return memberRepository.findByEmail(request.getEmail())
+				.filter(member -> {
+					return passwordEncoder.matches(request.getPassword(), member.getPassword());
+				})
+				.map(LoginResponseDTO::from)
+				.orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 	}
 
 
