@@ -3,7 +3,7 @@ name: Deploy Frontend to EC2
 on:
   push:
     branches:
-      - dev/fe # dev/fe 브랜치에 푸시될 때 실행
+      - dev/fe # 특정 브랜치 푸시 시 실행
 
 jobs:
   deploy:
@@ -38,7 +38,6 @@ jobs:
           sudo chown -R ec2-user:ec2-user /home/ec2-user/frontend/dist || true
           sudo rm -rf /home/ec2-user/frontend/dist
           EOF
-
       # 5. EC2에 dist 폴더 업로드
       - name: Upload dist folder to EC2
         uses: appleboy/scp-action@v0.1.2
@@ -58,3 +57,29 @@ jobs:
           sudo chmod -R 755 /home/ec2-user/frontend/dist
           sudo chown -R nginx:nginx /home/ec2-user/frontend/dist
           EOF
+
+      # 7. Lighthouse 검사 및 결과 저장
+      - name: Run Lighthouse and Save Report
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun
+
+      # 8. AWS 자격 증명 구성
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      # 9. 기존 S3 파일 삭제
+      - name: Delete Existing Files in S3 Bucket
+        run: |
+          echo "Deleting existing files in S3 bucket..."
+          aws s3 rm s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive
+
+      # 10. S3로 Lighthouse 결과 업로드
+      - name: Deliver Lighthouse Reports to S3
+        run: |
+          echo "Uploading Lighthouse Reports to S3..."
+          aws s3 cp /home/runner/work/SsafyTrip/SsafyTrip/lighthouse-reports/ s3://${{ secrets.AWS_S3_BUCKET }}/lighthouse/ --recursive --exclude "*" --include "*.html"
