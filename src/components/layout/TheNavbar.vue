@@ -53,7 +53,10 @@ const handleLogout = async () => {
       elevation="0"
     >
       <!-- 모바일 메뉴 토글 버튼 -->
-      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon 
+        @click="drawer = !drawer" 
+        class="mobile-menu-btn"
+      ></v-app-bar-nav-icon>
 
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
@@ -290,6 +293,18 @@ const handleLogout = async () => {
     font-size: var(--font-size-sm);
     line-height: var(--line-height-base);
     color: var(--color-text);
+  }
+}
+
+/* 모바일 메뉴 토글 버튼 */
+.mobile-menu-btn {
+  display: block;
+}
+
+/* md(960px) 초과일 때 숨김 */
+@media (min-width: 961px) {
+  .mobile-menu-btn {
+    display: none;
   }
 }
 </style>
