@@ -83,78 +83,71 @@ const login = async () => {
   <v-container class="fill-height" fluid>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" lg="4">
-        <v-card class="login-card mx-auto" max-width="400" elevation="0" :border="true">
+        <v-card class="auth-card" elevation="0" :border="true">
           <v-card-item class="px-6 py-6">
-            <v-card-title class="text-h5 font-weight-bold mb-2">
-              로그인
-            </v-card-title>
-            <v-card-subtitle class="text-body-2 text-grey-darken-1">
+            <v-card-title class="auth-title">로그인</v-card-title>
+            <v-card-subtitle class="auth-subtitle">
               서비스를 이용하시려면 로그인해주세요.
             </v-card-subtitle>
           </v-card-item>
 
-          <v-card-text class="px-6">
-            <v-form @submit.prevent="login">
-              <v-text-field
-                v-model="form.email"
-                label="이메일"
-                type="email"
-                variant="outlined"
-                density="comfortable"
-                class="mb-2"
-                :error-messages="formError.email"
-                @focus="clearError('email')"
-                ></v-text-field>
+          <v-form @submit.prevent="login" class="auth-form">
+            <v-text-field
+              v-model="form.email"
+              label="이메일"
+              type="email"
+              variant="outlined"
+              density="comfortable"
+              class="mb-2"
+              :error-messages="formError.email"
+              @focus="clearError('email')"
+              ></v-text-field>
 
-              <v-text-field
-                v-model="form.password"
-                label="비밀번호"
-                type="password"
-                variant="outlined"
-                density="comfortable"
-                class="mb-2"
-                :error-messages="formError.password"
-                @focus="clearError('password')"
-                ></v-text-field>
+            <v-text-field
+              v-model="form.password"
+              label="비밀번호"
+              type="password"
+              variant="outlined"
+              density="comfortable"
+              class="mb-2"
+              :error-messages="formError.password"
+              @focus="clearError('password')"
+              ></v-text-field>
 
-              <v-checkbox
-                v-model="saveId"
-                label="이메일 저장"
-                class="mb-2"
-                density="compact"
-                color="primary"
-              ></v-checkbox>
+            <v-checkbox
+              v-model="saveId"
+              label="이메일 저장"
+              class="mb-2"
+              density="compact"
+              color="primary"
+            ></v-checkbox>
 
-                <!-- 로그인 에러 메시지 -->
-                <v-alert
-                  v-if="authStore.loginError"
-                  type="error"
-                  variant="tonal"
-                  class="mb-4"
-                  density="compact"
-                >
-                  {{ authStore.loginError }}
-                </v-alert>
+            <!-- 로그인 에러 메시지 -->
+            <v-alert
+              v-if="authStore.loginError"
+              type="error"
+              variant="tonal"
+              class="mb-4"
+              density="compact"
+            >
+              {{ authStore.loginError }}
+            </v-alert>
 
+            <v-btn
+              block
+              color="primary"
+              type="submit"
+              :loading="authStore.isLoading"
+              class="auth-btn mb-4"
+            >
+              로그인
+            </v-btn>
 
-                <v-btn
-                block
-                color="primary"
-                size="large"
-                type="submit"
-                :loading="authStore.isLoading"
-                class="mb-4"
-              >
-                로그인
-              </v-btn>
-
-              <div class="d-flex justify-space-between mb-4">
-
+            <div class="auth-link-group">
               <v-btn
                 variant="text"
                 density="comfortable"
-                class="text-caption"
-                color="grey-darken-1"
+                class="auth-link"
                 @click="router.push('/join')"
               >
                 회원가입
@@ -163,8 +156,7 @@ const login = async () => {
               <v-btn
                 variant="text"
                 density="comfortable"
-                class="text-caption"
-                color="grey-darken-1"
+                class="auth-link"
               >
                 계정 찾기
               </v-btn>
@@ -172,27 +164,12 @@ const login = async () => {
               <v-btn
                 variant="text"
                 density="comfortable"
-                class="text-caption"
-                color="grey-darken-1"
+                class="auth-link"
               >
                 비밀번호 재설정
               </v-btn>
             </div>
-
-              <!-- <v-divider class="mb-4"></v-divider> -->
-
-              <!-- <v-btn
-                block
-                color="#FEE500"
-                size="large"
-                class="text-black"
-                elevation="0"
-              >
-                <v-icon icon="mdi-chat" size="18" class="mr-2"></v-icon>
-                카카오 로그인
-              </v-btn> -->
-            </v-form>
-          </v-card-text>
+          </v-form>
         </v-card>
       </v-col>
     </v-row>
@@ -200,9 +177,5 @@ const login = async () => {
 </template>
 
 <style scoped>
-
-:deep(.v-btn) {
-  text-transform: none;
-  letter-spacing: normal;
-}
+/* 스타일 제거하고 global.css 사용 */
 </style>
