@@ -130,20 +130,48 @@ const columns = [
 
             <div class="list-area">
               <SearchResultInfo :total-count="totalElements" />
-              <BoardList
-                :articles="questions"
-                :columns="columns"
-                :on-row-click="handleRowClick"
-                type="question"
-              />
+              <v-card>
+                <v-card-text v-if="!questions.length" class="py-16">
+                  <div class="d-flex flex-column align-center">
+                    <v-icon
+                      icon="mdi-help-circle-outline"
+                      size="64"
+                      color="grey-lighten-1"
+                      class="mb-4"
+                    ></v-icon>
+                    <h3 class="text-h6 text-grey-darken-1 font-weight-medium mb-2">
+                      문의 내역이 없습니다
+                    </h3>
+                    <p class="text-body-1 text-grey">
+                      궁금한 점이 있다면 문의해주세요!
+                    </p>
+                    <v-btn
+                      color="primary"
+                      class="mt-4"
+                      prepend-icon="mdi-plus"
+                      @click="goToWrite"
+                    >
+                      문의하기
+                    </v-btn>
+                  </div>
+                </v-card-text>
 
-              <div class="text-center mt-6">
-                <v-pagination
-                  v-model="currentPage"
-                  :length="totalPages"
-                  @update:model-value="handlePageChange(columns.questionId)"
-                ></v-pagination>
-              </div>
+                <BoardList
+                  v-else
+                  :articles="questions"
+                  :columns="columns"
+                  :on-row-click="handleRowClick"
+                  type="question"
+                />
+
+                <div v-if="questions.length" class="text-center mt-6">
+                  <v-pagination
+                    v-model="currentPage"
+                    :length="totalPages"
+                    @update:model-value="handlePageChange"
+                  ></v-pagination>
+                </div>
+              </v-card>
             </div>
           </div>
         </div>

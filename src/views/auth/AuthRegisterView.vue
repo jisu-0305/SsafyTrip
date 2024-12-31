@@ -279,6 +279,7 @@ const validateForm = () => {
               hide-details
               style="border-radius: 6px;"
               bg-color="white"
+              placeholder=""
             ></v-text-field>
 
             <v-radio-group

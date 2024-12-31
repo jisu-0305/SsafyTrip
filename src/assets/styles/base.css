@@ -39,16 +39,28 @@ img {
   }
 }
 
-/* Layout */
-.page-container {
-  max-width: none;
-  padding: 0;
+/* Layout Variables */
+:root {
+  --content-max-width: 1200px;
+  --content-max-width-wide: 1440px;
+  --content-padding: 1rem;
+  --section-max-width: 1140px;
 }
 
 .content-wrapper {
-  max-width: 1100px;
+  max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 var(--content-padding);
+}
+
+/* 넓은 레이아웃이 필요한 특정 페이지용 */
+.content-wrapper-wide {
+  max-width: var(--content-max-width-wide);
+}
+
+/* 좁은 레이아웃이 필요한 특정 섹션용 */
+.content-wrapper-narrow {
+  max-width: var(--section-max-width);
 }
 
 .inner-content {

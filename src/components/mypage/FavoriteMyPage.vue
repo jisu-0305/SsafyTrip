@@ -122,7 +122,7 @@ onMounted(fetchAttractions);
                     <v-btn
                       color="primary"
                       class="mt-4"
-                      @click="$router.push('/attraction')"
+                      @click="$router.push('/attract/search')"
                     >
                       여행지 둘러보기
                     </v-btn>
@@ -206,11 +206,6 @@ onMounted(fetchAttractions);
 </template>
 
 <style scoped>
-.page-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-}
 
 .v-list-item {
   transition: background-color 0.3s ease;

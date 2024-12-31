@@ -55,12 +55,36 @@ onMounted(async () => {
     <v-row justify="center">
       <v-col cols="12" class="content-wrapper">
         <div class="inner-content">
-          <PageHeader title="나의 댓글" icon="mdi-heart" />
+          <PageHeader title="나의 댓글" icon="mdi-comment" />
           <div class="content-area">
             <div class="list-area">
               <SearchResultInfo :total-count="totalCount" />
               <v-card>
-                <v-list lines="three">
+                <v-card-text v-if="!myCommentItems.length" class="py-16">
+                  <div class="d-flex flex-column align-center">
+                    <v-icon
+                      icon="mdi-comment-outline"
+                      size="64"
+                      color="grey-lighten-1"
+                      class="mb-4"
+                    ></v-icon>
+                    <h3 class="text-h6 text-grey-darken-1 font-weight-medium mb-2">
+                      작성한 댓글이 없습니다
+                    </h3>
+                    <p class="text-body-1 text-grey">
+                      여행지에 대한 의견을 공유해보세요!
+                    </p>
+                    <v-btn
+                      color="primary"
+                      class="mt-4"
+                      @click="$router.push('/attract/search')"
+                    >
+                      여행지 둘러보기
+                    </v-btn>
+                  </div>
+                </v-card-text>
+
+                <v-list v-else lines="three">
                   <v-list-item
                     v-for="item in myCommentItems"
                     :key="item.id"

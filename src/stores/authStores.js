@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import authApi from "@/api/authApi";
 import router from "@/router";
@@ -15,9 +15,6 @@ export const useAuthStore = defineStore(
     const setLoginState = (userData) => {
       user.value = userData;
       isLoggedIn.value = true;
-
-      console.log("authStores from jun");
-      console.log(userData.role);
       isAdmin.value = userData?.role === "ROLE_ADMIN";
     };
 
@@ -35,7 +32,7 @@ export const useAuthStore = defineStore(
         setLoginState(response.data);
         return { success: true };
       } catch (error) {
-        loginError.value = "로그인에 실패했습니다.";
+        loginError.value = error.response?.data?.message || "로그인에 실패했습니다.";
         return { success: false };
       } finally {
         isLoading.value = false;
@@ -48,39 +45,37 @@ export const useAuthStore = defineStore(
         clearLoginState();
         return { success: true };
       } catch (error) {
-        console.error("로그아웃 실패:", error);
+        const errorMessage = error.response?.data?.message || "로그아웃 중 오류가 발생했습니다.";
+        alert(errorMessage);
         return { success: false };
       }
     };
 
     const checkSession = async () => {
+      if (!isLoggedIn.value) return;
+      
       try {
         const response = await authApi.checkSession();
-        if (response.data.isValid) {
-          setLoginState(response.data.user);
-          return true;
-        } else {
-          clearLoginState();
-          return false;
+        if (response.status >= 200 && response.status < 300) {
+          return;
         }
+        throw new Error("세션이 만료되었습니다.");
       } catch (error) {
+        const errorMessage = error.response?.data?.message || "세션이 만료되었습니다. 다시 로그인해주세요.";
+        alert(errorMessage);
         clearLoginState();
-        return false;
       }
     };
 
     const handleAuthError = (error) => {
+      const errorMessage = error.response?.data?.message || "인증 오류가 발생했습니다.";
+      alert(errorMessage);
       if (error.response?.status === 401 || error.response?.status === 403) {
         clearLoginState();
         router.push("/login");
       }
       throw error;
     };
-
-    // 앱 시작 시 세션 체크
-    onMounted(() => {
-      checkSession();
-    });
 
     return {
       user,

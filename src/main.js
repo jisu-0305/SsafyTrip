@@ -11,7 +11,10 @@ import router from "./router";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-import './assets/styles/global.css'
+
+import '@/assets/styles/base.css'
+import '@/assets/styles/common.css'
+import '@/assets/styles/global.css'
 
 
 const app = createApp(App);
