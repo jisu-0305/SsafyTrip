@@ -34,9 +34,6 @@ public class S3Util {
         // 해당 이름이 S3에 저장된 객체의 키(Key)
         String uuidFileName = UUID.randomUUID() + ext;
 
-        System.out.println(fileName);
-        System.out.println(ext);
-        System.out.println(uuidFileName);
 
         // 로컬에 저장
         String localPath = localLocation + uuidFileName;
@@ -61,9 +58,7 @@ public class S3Util {
         try {
             // 삭제 시에는 S3에 저장된 객체의 키(Key)를 넣기. url이 아닌.
             s3Config.amazonS3Client().deleteObject(bucket, fileName);
-            System.out.println("이미지 삭제 성공: " + fileName);
         } catch (Exception e) {
-            System.err.println("이미지 삭제 실패: " + fileName + " - " + e.getMessage());
             throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
         }
     }
