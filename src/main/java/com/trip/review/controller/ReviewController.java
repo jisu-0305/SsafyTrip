@@ -1,6 +1,4 @@
-// 시간 에러, Service쪽 리팩터링 진행하기.
 package com.trip.review.controller;
-
 
 
 import com.trip.global.SuccessRes;
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
