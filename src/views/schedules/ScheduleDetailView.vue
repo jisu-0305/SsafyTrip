@@ -113,20 +113,9 @@ onMounted(async () => {
   }
 });
 
-// scheduleDetail이 변경될 때 AI 분석 실행
-watch(() => scheduleDetail.value, async (newSchedule) => {
-  if (newSchedule) {
-    try {
-      await aiStore.analyzeSchedule(newSchedule);
-    } catch (error) {
-      console.error('AI 분석 중 오류 발생:', error);
-    }
-  }
-}, { immediate: true });
-
-// AI 분석 시작 함수 수정
+// startAiAnalysis 함수 수정
 const startAiAnalysis = async () => {
-  if (!scheduleDetail.value) return;
+  if (!scheduleDetail.value || showAiContent.value) return;  // 이미 분석된 경우 중복 실행 방지
   
   try {
     const formattedData = {
@@ -150,7 +139,6 @@ const startAiAnalysis = async () => {
       }))
     };
 
-    console.log('AI 분석 요청 데이터:', JSON.stringify(formattedData));
     await aiStore.analyzeSchedule(formattedData);
     showAiContent.value = true;
   } catch (error) {

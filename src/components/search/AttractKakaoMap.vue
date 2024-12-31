@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAttractionStore } from '@/stores/attractionStore';
 
@@ -7,26 +7,69 @@ const emit = defineEmits(['hover-marker', 'click-marker']);
 const attractionStore = useAttractionStore();
 const { mapPositions, attractions } = storeToRefs(attractionStore);
 
-let map;
+let map = null;
 const markers = ref([]);
 const infowindow = ref(null);
 const selectedMarker = ref(null);
+const isMapScriptLoaded = ref(false);
 
-const initMap = () => {
-  const container = document.getElementById("map");
-  const options = {
-    center: new kakao.maps.LatLng(36.3504119, 127.3845475),
-    level: 13,
-  };
-  map = new kakao.maps.Map(container, options);
-  infowindow.value = new kakao.maps.InfoWindow({ zIndex: 1 });
+const loadKakaoMapScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.kakao && window.kakao.maps) {
+      isMapScriptLoaded.value = true;
+      resolve(window.kakao.maps);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY}`;
+    
+    script.onload = () => {
+      window.kakao.maps.load(() => {
+        isMapScriptLoaded.value = true;
+        resolve(window.kakao.maps);
+      });
+    };
+    
+    script.onerror = (error) => {
+      reject(new Error('카카오맵 스크립트 로딩 실패'));
+    };
+
+    document.head.appendChild(script);
+  });
+};
+
+const initMap = async () => {
+  try {
+    await loadKakaoMapScript();
+    const container = document.getElementById('map');
+    if (!container) return;
+    
+    const options = {
+      center: new kakao.maps.LatLng(36.3504119, 127.3845475),
+      level: 13,
+    };
+    
+    map = new kakao.maps.Map(container, options);
+    infowindow.value = new kakao.maps.InfoWindow({ zIndex: 1 });
+    
+    // 카카오맵 초기화 후 마커 위치 재설정
+    attractionStore.setMapPositions();
+    
+    if (mapPositions.value?.length) {
+      loadMarkers();
+    }
+  } catch (error) {
+    console.error('맵 초기화 실패:', error);
+  }
 };
 
 const loadMarkers = () => {
+  if (!map || !mapPositions.value?.length) return;
+
+  // 기존 마커들 제거
   markers.value.forEach(marker => marker.setMap(null));
   markers.value = [];
-
-  if (!mapPositions.value?.length) return;
 
   mapPositions.value.forEach((position, index) => {
     const marker = new kakao.maps.Marker({
@@ -77,23 +120,34 @@ const loadMarkers = () => {
     markers.value.push(marker);
   });
 
+  // 모든 마커가 보이도록 지도 영역 재설정
   const bounds = new kakao.maps.LatLngBounds();
   mapPositions.value.forEach(position => bounds.extend(position.latlng));
   map.setBounds(bounds);
 };
 
-watch(mapPositions, loadMarkers, { deep: true });
+watch(mapPositions, (newPositions) => {
+  if (newPositions?.length && map) {
+    loadMarkers();
+  }
+}, { deep: true });
 
-onMounted(() => {
-  if (window.kakao?.maps) {
-    initMap();
-  } else {
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
-      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-    }`;
-    script.onload = () => kakao.maps.load(initMap);
-    document.head.appendChild(script);
+onMounted(async () => {
+  await initMap();
+});
+
+onUnmounted(() => {
+  // 컴포넌트 언마운트 시 정리
+  if (markers.value.length) {
+    markers.value.forEach(marker => marker.setMap(null));
+    markers.value = [];
+  }
+  if (map) {
+    map = null;
+  }
+  if (infowindow.value) {
+    infowindow.value.close();
+    infowindow.value = null;
   }
 });
 </script>

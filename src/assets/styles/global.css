@@ -1,22 +1,56 @@
+/* Design System Variables */
 :root {
+  /* Colors */
+  --color-primary: #1890FF;
+  --color-text: rgba(0, 0, 0, 0.85);
+  --color-text-secondary: #666;
+  --color-border: #D9D9D9;
+  --color-background: #f8f9fa;
+  --color-background-secondary: #f5f5f5;
+  
+  /* Typography */
   --font-family: 'Noto Sans KR', sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.6;
+  
+  /* Spacing */
+  --spacing-unit: 0.25rem;
+  --section-padding: 4rem;
+  
+  /* Transitions */
+  --transition-base: all 0.3s ease;
+  
+  /* Border Radius */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 1rem;
+  
+  /* Breakpoints */
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1264px;
+  --breakpoint-xl: 1904px;
+
+  /* Carousel */
+  --carousel-height-desktop: 31.25rem;
+  --carousel-height-mobile: 43.75rem;
+  --carousel-image-height-desktop: 25rem;
+  --carousel-image-height-mobile: 18.75rem;
+  
+  /* Hero */
+  --hero-image-height-desktop: 37.5rem;
+  --hero-image-height-mobile: 25rem;
+  
 }
 
+/* Typography */
 html, 
 body,
 .v-application {
   font-family: var(--font-family) !important;
 }
 
-.v-btn,
-.v-card,
-.v-text-field,
-.v-list-item,
-.v-card-title,
-.v-card-subtitle {
-  font-family: var(--font-family) !important;
-} 
-
+/* Vuetify Component Customization */
 .v-application {
   .text-h1,
   .text-h2,
@@ -31,44 +65,67 @@ body,
   .text-button,
   .text-caption,
   .text-overline {
-    font-family: 'Noto Sans KR', sans-serif !important;
-  }
-  
-  /* Vuetify 컴포넌트들의 텍스트도 포함 */
-  .v-card-title,
-  .v-card-subtitle,
-  .v-card-text,
-  .v-btn,
-  .v-list-item-title,
-  .v-list-item-subtitle {
-    font-family: 'Noto Sans KR', sans-serif !important;
+    font-family: var(--font-family) !important;
   }
 }
 
-.page-container {
-  max-width: none;
-  padding: 0;
+/* Vuetify Components Typography */
+.v-btn,
+.v-card,
+.v-text-field,
+.v-list-item,
+.v-card-title,
+.v-card-subtitle,
+.v-card-text,
+.v-list-item-title,
+.v-list-item-subtitle {
+  font-family: var(--font-family) !important;
 }
 
-.content-wrapper {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-.inner-content {
-  width: 100%;
-  padding: 16px 0;
-}
-
-@media (max-width: 1100px) {
-  .content-wrapper {
-    padding: 0 24px;
-  }
-}
-
+/* Divider */
 hr.v-divider {
   margin: 0;
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Typography */
+.title-text {
+  white-space: nowrap;
+  display: inline;
+}
+
+/* Media Queries */
+@media (max-width: 600px) {
+  .title-text {
+    white-space: normal;
+    display: block;
+  }
+
+  .title-text:first-child {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Image Optimizations */
+.optimized-image {
+  will-change: transform;
+  contain: content;
+}
+
+/* Common Sections */
+.section-padding {
+  padding: 4rem 0;
+}
+
+@media (max-width: 960px) {
+  .section-padding {
+    padding: 2rem 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .section-padding {
+    padding: 1rem 0;
+  }
 }

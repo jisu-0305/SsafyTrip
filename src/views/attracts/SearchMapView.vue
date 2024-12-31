@@ -19,7 +19,11 @@ const handlePageChange = async (page) => {
 };
 
 onMounted(async () => {
-  await attractionStore.fetchInitialAttractions();
+  try {
+    await attractionStore.fetchInitialAttractions();
+  } catch (error) {
+    console.error('초기 데이터 로딩 실패:', error);
+  }
 });
 
 const hoveredMarkerId = ref(null);

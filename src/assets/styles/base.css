@@ -1,0 +1,63 @@
+/* Reset & Base Styles */
+html {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}ㅗ
+
+/* Media & Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile Optimization */
+@media screen and (max-width: 600px) {
+  .v-container {
+    padding: 12px !important;
+  }
+  
+  .text-h3 {
+    font-size: 1.5rem !important;
+  }
+  
+  .text-h5 {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Layout */
+.page-container {
+  max-width: none;
+  padding: 0;
+}
+
+.content-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.inner-content {
+  width: 100%;
+  padding: 16px 0;
+}
+
+@media (max-width: 1100px) {
+  .content-wrapper {
+    padding: 0 24px;
+  }
+} 

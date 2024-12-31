@@ -105,7 +105,31 @@ onMounted(fetchAttractions);
             <div class="list-area">
               <SearchResultInfo :total-count="totalCount" />
               <v-card>
-                <v-list lines="three">
+                <v-card-text v-if="!favoriteList.length" class="py-16">
+                  <div class="d-flex flex-column align-center">
+                    <v-icon
+                      icon="mdi-heart-outline"
+                      size="64"
+                      color="grey-lighten-1"
+                      class="mb-4"
+                    ></v-icon>
+                    <h3 class="text-h6 text-grey-darken-1 font-weight-medium mb-2">
+                      찜한 여행지가 없습니다
+                    </h3>
+                    <p class="text-body-1 text-grey">
+                      마음에 드는 여행지를 찜해보세요!
+                    </p>
+                    <v-btn
+                      color="primary"
+                      class="mt-4"
+                      @click="$router.push('/attraction')"
+                    >
+                      여행지 둘러보기
+                    </v-btn>
+                  </div>
+                </v-card-text>
+
+                <v-list v-else lines="three">
                   <v-list-item
                     v-for="item in favoriteList"
                     :key="item.no"

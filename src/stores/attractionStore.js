@@ -19,6 +19,18 @@ export const useAttractionStore = defineStore('attraction', () => {
     sortBy: 'name'
   });
 
+  const setMapPositions = () => {
+    if (!window.kakao?.maps || !attractions.value.length) return;
+    
+    mapPositions.value = attractions.value.map(attraction => ({
+      title: attraction.title,
+      latlng: new kakao.maps.LatLng(
+        attraction.latitude || 37.5665,
+        attraction.longitude || 126.9780
+      )
+    }));
+  };
+
   const fetchAttractions = async (params = {}, resetPage = false) => {
     try {
       loading.value = true;
@@ -49,17 +61,7 @@ export const useAttractionStore = defineStore('attraction', () => {
       totalPages.value = response.data.totalPages || 0;
       totalCount.value = response.data.totalCount || 0;
       
-      if (attractions.value.length > 0) {
-        mapPositions.value = attractions.value.map(attraction => ({
-          title: attraction.title,
-          latlng: new kakao.maps.LatLng(
-            attraction.latitude || 37.5665,
-            attraction.longitude || 126.9780
-          )
-        }));
-      } else {
-        mapPositions.value = [];
-      }
+      setMapPositions();
     } catch (error) {
       console.error('관광지 목록 조회 실패:', error);
       attractions.value = [];
@@ -155,6 +157,7 @@ export const useAttractionStore = defineStore('attraction', () => {
     fetchAttractions,
     fetchInitialAttractions,
     fetchSidoList,
-    fetchPopularAttractions
+    fetchPopularAttractions,
+    setMapPositions
   };
 }); 

@@ -24,21 +24,44 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const items = ref([]);
 
+// 실제 라우팅 가능한 경로와 타이틀 매핑
+const routeMap = {
+  'main': { title: 'Home', path: '/' },
+  'attraction': { title: '관광지', path: '/attraction' },
+  'notice': { title: '공지사항', path: '/notice' },
+  'mypage': { title: '마이페이지', path: '/mypage' },
+  'board': { title: '게시판', path: '/board' },
+  'search': { title: '검색', path: '/search' },
+  'schedules': { title: '여행 일정', path: '/schedules' },
+  'question': { title: '1:1 문의', path: '/question' }
+};
+
 // 경로 변경 감지하여 브레드크럼 업데이트
 watch(() => route.path, () => {
   const pathArray = route.path.split('/').filter(x => x);
-  items.value = [
-    {
-      title: 'Home',
-      disabled: false,
-      href: '/',
-    },
-    ...pathArray.map((path, index) => ({
+  
+  // 홈 항상 추가
+  items.value = [{
+    title: 'Home',
+    disabled: false,
+    href: '/',
+  }];
+
+  // 중간 경로들 처리
+  let currentPath = '';
+  pathArray.forEach((path, index) => {
+    currentPath += `/${path}`;
+    
+    // 마지막 항목이거나 routeMap에 없는 경로는 클릭 불가능하게 처리
+    const isLastItem = index === pathArray.length - 1;
+    const mappedRoute = routeMap[path];
+    
+    items.value.push({
       title: getBreadcrumbTitle(path),
-      disabled: index === pathArray.length - 1,
-      href: `/${pathArray.slice(0, index + 1).join('/')}`,
-    }))
-  ];
+      disabled: isLastItem || !mappedRoute,
+      href: mappedRoute ? mappedRoute.path : undefined
+    });
+  });
 }, { immediate: true });
 
 // 경로명을 표시명으로 변환
@@ -50,7 +73,10 @@ function getBreadcrumbTitle(path) {
     'detail': '상세보기',
     'mypage': '마이페이지',
     'attraction': '관광지',
-    'board': '게시판'
+    'board': '게시판',
+    'search': '검색',
+    'schedules': '여행 일정',
+    'question': '1:1 문의'
   };
   return titleMap[path] || path;
 }

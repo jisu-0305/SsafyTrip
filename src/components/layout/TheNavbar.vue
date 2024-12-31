@@ -53,7 +53,7 @@ const handleLogout = async () => {
       elevation="0"
     >
       <!-- 모바일 메뉴 토글 버튼 -->
-      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-lg-and-up"></v-app-bar-nav-icon>
 
       <!-- 로고 -->
       <router-link :to="{ name: 'main' }" class="logo-link">
@@ -70,7 +70,7 @@ const handleLogout = async () => {
 
       <!-- 데스크톱 메뉴 -->
       <v-spacer></v-spacer>
-      <div class="hidden-sm-and-down menu-container">
+      <div class="hidden-md-and-down menu-container">
         <v-btn v-for="item in menuItems" :key="item.title" variant="text" :ripple="false" class="menu-item"
           :active-class="'active-menu-item'" :class="{ 'v-btn--active': $route.name === item.route }"
           @click="handleMenuClick(item.route)" density="comfortable" min-height="82px">
@@ -80,7 +80,7 @@ const handleLogout = async () => {
       <v-spacer></v-spacer>
 
       <!-- 로그인/회원가입/마이페이지 버튼 -->
-      <div class="auth-buttons hidden-sm-and-down">
+      <div class="auth-buttons hidden-md-and-down">
         <template v-if="!authStore.isLoggedIn">
           <v-btn class="signup-btn" @click="goToSignup">
             회원가입
@@ -311,17 +311,7 @@ const handleLogout = async () => {
   }
 }
 
-@media (max-width: 1100px) {
-  .menu-container {
-    gap: 8px;
-  }
-
-  .menu-item {
-    padding: 0 8px;
-  }
-}
-
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .nav-container {
     top: 0;
   }
