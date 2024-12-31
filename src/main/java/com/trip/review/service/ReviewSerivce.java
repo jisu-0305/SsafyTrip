@@ -1,6 +1,7 @@
 package com.trip.review.service;
 
 
+import com.trip.review.dto.PagedResponseDTO;
 import com.trip.review.dto.ReviewRequestDTO;
 import com.trip.review.dto.ReviewResponseDTO;
 import com.trip.review.dto.S3ResponseDTO;
@@ -18,10 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,12 +37,12 @@ public class ReviewSerivce {
 
 
     // 게시판 리스트 얻어오기
-    public Page<ReviewResponseDTO>getPagedReviews(int page, int size) {
+    public PagedResponseDTO getPagedReviews(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "created_at"));
-        Page<Object[]> reviewPage = reviewRepository.findAllReviewsWithFirstImage(pageable);
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "updated_at"));
+        Page<Object[]> reviewPageObject = reviewRepository.findAllReviewsWithFirstImage(pageable);
 
-        return reviewPage.map(objects -> new ReviewResponseDTO(
+        Page<ReviewResponseDTO> reviewPage = reviewPageObject.map(objects -> new ReviewResponseDTO(
                 ((Number) objects[0]).longValue(),       // reviewId
                 (String) objects[1],                    // email
                 (String) objects[2],                    // title
@@ -52,35 +52,12 @@ public class ReviewSerivce {
                 (objects[6] != null ? ((java.sql.Timestamp) objects[6]).toLocalDateTime() : null), // updatedAt
                 (String) objects[7]                     // firstImageUrl
         ));
+
+        return PagedResponseDTO.builder().content(reviewPage.getContent())
+                .totalPages(reviewPage.getTotalPages())
+                .totalElements(reviewPage.getTotalElements())
+                .build();
     }
-
-
-
-
-    public List<ReviewResponseDTO>getPagedReviewsTemp(int page, int size) {
-
-        List<Object[]> result = reviewRepository.findAllreviewsWithFirstImageTemp();
-
-        List<ReviewResponseDTO> reviewResponseDTOList = new ArrayList<>();
-        result.stream().forEach(row -> {
-            // reviewResponseDTO 생성 및 리스트에 추가
-            reviewResponseDTOList.add(
-                    new ReviewResponseDTO(
-                            (long) row[0],  // reviewId (Long 변환 필요)
-                            (String) row[1],                   // email
-                            (String) row[2],                   // title
-                            (String) row[3],                   // content
-                            (int) row[4],  // hit (Integer 변환 필요)
-                            ((Timestamp) row[5]).toLocalDateTime(),                   // createdAt
-                            ((Timestamp)row[6]).toLocalDateTime(),                   // updatedAt
-                            (String) row[7]                    // firstImageUrl (nullable 가능)
-                    )
-            );
-        });
-
-        return reviewResponseDTOList;
-    }
-
 
 
     // 특정 게시판 조회
@@ -88,8 +65,11 @@ public class ReviewSerivce {
 
         Optional<Review> review = reviewRepository.findById(reviewId);
 
-        ReviewResponseDTO reviewResponseDTO = review.map(reviewEntity -> ReviewResponseDTO.fromEntity(reviewEntity))
-                .orElseThrow(() -> new EntityNotFoundException("review not found"));
+        ReviewResponseDTO reviewResponseDTO = review.map(reviewEntity -> {
+            reviewEntity.setHit(reviewEntity.getHit() + 1); // 조회수 증가
+            reviewRepository.save(reviewEntity);
+            return ReviewResponseDTO.fromEntity(reviewEntity);
+        }).orElseThrow(() -> new EntityNotFoundException("review not found"));
 
         return reviewResponseDTO;
     }
@@ -133,9 +113,9 @@ public class ReviewSerivce {
         reviewRepository.save(review);
 
 
-        Optional<Review> savereview = reviewRepository.findById(review.getReviewId());
+        Optional<Review> saveReview = reviewRepository.findById(review.getReviewId());
 
-        ReviewResponseDTO reviewResponseDTO = savereview.map(reviewEntity -> ReviewResponseDTO.fromEntity(reviewEntity))
+        ReviewResponseDTO reviewResponseDTO = saveReview.map(reviewEntity -> ReviewResponseDTO.fromEntity(reviewEntity))
                 .orElseThrow(() -> new EntityNotFoundException("review not found"));
 
         return reviewResponseDTO;
@@ -159,7 +139,7 @@ public class ReviewSerivce {
 
 
     // s3를 통해 이미지 업로드
-    public S3ResponseDTO uploadImage(MultipartRequest request) {
+    public S3ResponseDTO uploadImage(MultipartFile request) {
 
         S3ResponseDTO s3ResponseDTO= null;
         try {

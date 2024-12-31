@@ -1,6 +1,7 @@
 package com.trip.review.util;
 
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.trip.config.S3Config;
 import com.trip.review.dto.S3ResponseDTO;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -19,32 +21,34 @@ import java.util.UUID;
 public class S3Util {
     private final S3Config s3Config;
 
-    private String localLocation = "C:\\Users\\ucs21\\"; //현재는 window 기준.
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public S3ResponseDTO imageUpload(MultipartRequest request) throws IOException {
-        // 이미지 파일 추출
-        MultipartFile file = request.getFile("upload"); //upload는 이미지 파일을 보낼 때 사용한 name 속성의 값
+    public S3ResponseDTO imageUpload(MultipartFile file) throws IOException {
 
-
+        // 파일 이름에서 확장자 추출
         String fileName = file.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf("."));
-        // 해당 이름이 S3에 저장된 객체의 키(Key)
+
+        // S3에 저장할 파일 이름(UUID 기반)
         String uuidFileName = UUID.randomUUID() + ext;
 
+        // InputStream으로 파일 내용 읽기
+        InputStream inputStream = file.getInputStream();
 
-        // 로컬에 저장
-        String localPath = localLocation + uuidFileName;
-        File localFile = new File(localPath);
-        file.transferTo(localFile);
 
-        // S3에 이미지 저장하기, PutObjectRequest("버킷명", "파일명", "서버에 저장할 파일"), withCannedAcl는 접근 제어 정책 관련 메소드
-        s3Config.amazonS3Client().putObject(new PutObjectRequest(bucket, uuidFileName, localFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        // 파일 메타데이터 설정
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize()); // 파일 크기
+        metadata.setContentType(file.getContentType()); // 파일 타입
 
-        // 로컬에 저장한 파일 지우기
-        localFile.delete();
+        // S3에 파일 업로드
+        s3Config.amazonS3Client().putObject(
+                new PutObjectRequest(bucket, uuidFileName, inputStream, metadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead) // 공개 접근 권한 설정
+        );
+
 
         // S3에 저장된 이미지의 Url 주소 가져오기, getUrl("버킷명", "서버에 저장한 파일명")
         String s3Url = s3Config.amazonS3Client().getUrl(bucket, uuidFileName).toString();

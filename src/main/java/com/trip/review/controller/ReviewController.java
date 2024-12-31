@@ -2,10 +2,7 @@ package com.trip.review.controller;
 
 
 import com.trip.global.SuccessRes;
-import com.trip.review.dto.ReviewImageResponseDTO;
-import com.trip.review.dto.ReviewRequestDTO;
-import com.trip.review.dto.ReviewResponseDTO;
-import com.trip.review.dto.S3ResponseDTO;
+import com.trip.review.dto.*;
 import com.trip.review.service.ReviewSerivce;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +24,10 @@ public class ReviewController {
 
     // 1. 게시판 전체 리스트 조회 (GET /reviews)
     @GetMapping
-    public ResponseEntity<Page<ReviewResponseDTO>> getPagedReviews(@RequestParam(defaultValue = "1") int page,
-                                                                   @RequestParam(defaultValue = "10") int size) {
-        Page<ReviewResponseDTO> reviewList = reviewService.getPagedReviews(page, size);
-        return ResponseEntity.ok().body(reviewList);
+    public ResponseEntity<PagedResponseDTO> getPagedReviews(@RequestParam(defaultValue = "1") int page,
+                                                            @RequestParam(defaultValue = "10") int size) {
+        PagedResponseDTO pagedResponseDTO = reviewService.getPagedReviews(page, size);
+        return ResponseEntity.ok().body(pagedResponseDTO);
 
     }
 
@@ -74,7 +71,7 @@ public class ReviewController {
     // 6. S3에 이미지 업로드하기
     @PostMapping("/upload-image")
     // MultipartRequest: 클라이언트로부터 업로드된 여러 파일(이미지)이나 폼 데이터를 처리하기 위해 사용
-    public ResponseEntity<ReviewImageResponseDTO> uploadImage(MultipartRequest request, HttpSession session){
+    public ResponseEntity<ReviewImageResponseDTO> uploadImage(@RequestPart("upload") MultipartFile request, HttpSession session){
 
         // s3에 이미지 업로드
         S3ResponseDTO s3ResponseDTO = reviewService.uploadImage(request);
@@ -99,7 +96,7 @@ public class ReviewController {
     }
 
 
-    // S3에 저장된 이미지들 삭제하기(등록 취소 시)
+    // 7. S3에 저장된 이미지들 삭제하기(등록 취소 시)
     @DeleteMapping("/clear-session")
     public ResponseEntity<SuccessRes> clearSessionImages(HttpSession session) {
 
