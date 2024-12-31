@@ -122,7 +122,7 @@ onMounted(fetchAttractions);
                     <v-btn
                       color="primary"
                       class="mt-4"
-                      @click="$router.push('/attraction')"
+                      @click="$router.push('/attract/search')"
                     >
                       여행지 둘러보기
                     </v-btn>
