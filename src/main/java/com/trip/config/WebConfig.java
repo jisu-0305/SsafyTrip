@@ -29,9 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
                 c -> c.isAnnotationPresent(RestController.class));
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(swaggerInterceptor)
-                .addPathPatterns("/api/**");
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(swaggerInterceptor)
+//                .addPathPatterns("/api/**");
+//    }
 }

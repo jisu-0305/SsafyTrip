@@ -223,3 +223,49 @@ VALUES
     (3, 20269, '2024-12-02 09:00:00', '가평 영양잣마을', 100000, 1),
     (3, 20268, '2024-12-02 15:00:00', '가평 연하리향나무', 100000, 1),
     (3, 20255, '2024-12-03 09:00:00', '황가평양냉면', 0, 1);
+
+
+-- 리뷰 테이블
+DROP TABLE IF EXISTS reviews;
+CREATE TABLE reviews (
+    review_id BIGINT AUTO_INCREMENT PRIMARY KEY,      -- 게시글 ID (Primary Key)
+    email VARCHAR(255) NOT NULL,                      -- 작성자 이메일
+    hit INT DEFAULT 0,                                -- 조회수
+    title VARCHAR(255) NOT NULL,                      -- 제목
+    content TEXT NOT NULL,                            -- 게시글 내용 (HTML 포함)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,    -- 생성 시간
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 수정 시간
+	CONSTRAINT fk_reviews_email FOREIGN KEY (email) REFERENCES members(email) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 리뷰 이미지 테이블
+DROP TABLE IF EXISTS review_images;
+CREATE TABLE review_images (
+    image_id BIGINT AUTO_INCREMENT PRIMARY KEY,          -- 이미지 ID (Primary Key)
+    review_id BIGINT NOT NULL,                            -- 연관된 게시글 ID (Foreign Key)
+    image_url VARCHAR(2083) NOT NULL,                   -- S3 이미지 경로 (URL)
+    s3_key VARCHAR(512) NOT NULL,                       -- S3 키 (파일 이름)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,       -- 이미지 추가 시간
+    CONSTRAINT fk_review_images_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE
+);
+
+
+
+INSERT INTO reviews (email, title, content, hit, created_at, updated_at)
+VALUES ('hong@naver.com', '첫 번째 게시글', '<p>게시글 내용 1</p>', 5, NOW(), NOW());
+INSERT INTO reviews (email, title, content, hit, created_at, updated_at)
+VALUES ('hong@naver.com', '두 번째 게시글', '<p>게시글 내용 2</p>', 3, NOW(), NOW());
+INSERT INTO reviews (email, title, content, hit, created_at, updated_at)
+VALUES ('admin@naver.com', '여섯 번째 게시글', '<p>게시글 내용 2</p>', 3, NOW(), NOW());
+
+INSERT INTO review_images (review_id, image_url, s3_key, created_at)
+VALUES (1, 'https://s3.ap-northeast-2.amazonaws.com/profile-images-prod.inssaroute.shop/profile3.png', 'image1.jpg', NOW());
+INSERT INTO review_images (review_id, image_url, s3_key, created_at)
+VALUES (1, 'https://s3.ap-northeast-2.amazonaws.com/profile-images-prod.inssaroute.shop/profile3.png', 'image1.jpg', NOW());
+INSERT INTO review_images (review_id, image_url, s3_key, created_at)
+VALUES (1, 'https://s3.ap-northeast-2.amazonaws.com/profile-images-prod.inssaroute.shop/profile3.png', 'image1.jpg', NOW());
+
+INSERT INTO review_images (review_id, image_url, s3_key, created_at)
+VALUES (2, 'https://s3.ap-northeast-2.amazonaws.com/profile-images-prod.inssaroute.shop/profile1.png', 'image1.jpg', NOW());
+INSERT INTO review_images (review_id, image_url, s3_key, created_at)
+VALUES (2, 'https://s3.ap-northeast-2.amazonaws.com/profile-images-prod.inssaroute.shop/profile1.png', 'image1.jpg', NOW());

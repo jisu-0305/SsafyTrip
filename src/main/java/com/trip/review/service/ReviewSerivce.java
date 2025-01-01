@@ -1,10 +1,7 @@
 package com.trip.review.service;
 
 
-import com.trip.review.dto.PagedResponseDTO;
-import com.trip.review.dto.ReviewRequestDTO;
-import com.trip.review.dto.ReviewResponseDTO;
-import com.trip.review.dto.S3ResponseDTO;
+import com.trip.review.dto.*;
 import com.trip.review.entity.Review;
 import com.trip.review.entity.ReviewImage;
 import com.trip.review.repository.ReviewImageRepository;
@@ -109,9 +106,12 @@ public class ReviewSerivce {
     public ReviewResponseDTO updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO) {
 
         Review review = reviewRepository.findById(reviewId).get();
+        if(!review.getEmail().equals(reviewRequestDTO.getEmail())){
+            throw new IllegalArgumentException("이메일 불일치 email: " + reviewRequestDTO.getEmail());
+        }
+
         review.update(reviewRequestDTO);
         reviewRepository.save(review);
-
 
         Optional<Review> saveReview = reviewRepository.findById(review.getReviewId());
 
@@ -123,11 +123,15 @@ public class ReviewSerivce {
 
 
     // 게시판 삭제
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(Long reviewId, DeleteRequestDTO deleteRequestDTO) {
 
         // 1. 게시글 존재 여부 확인
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + reviewId));
+
+        if(!review.getEmail().equals(deleteRequestDTO.getEmail())){
+            throw new IllegalArgumentException("이메일 불일치 email: " + deleteRequestDTO.getEmail());
+        }
 
         // 2. s3삭제
         List<String> s3KeyList = reviewImageRepository.findS3KeysByreviewId(reviewId);

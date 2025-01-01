@@ -24,7 +24,7 @@ public class ReviewController {
     private final ReviewSerivce reviewService;
 
     // 1. 게시판 전체 리스트 조회 (GET /reviews)
-    @Operation(summary = "게시판 전체 리스트 조회", description = "전체 리뷰 리스트를 페이지네이션하여 조회")
+    @Operation(summary = "게시판 전체 리스트 조회", description = "전체 리뷰 리스트를 페이지네이션하여 조회. 해당 리뷰가 이미지를 가지고 있을 시, 첫번째 이미지도 같이 반환했어")
     @GetMapping
     public ResponseEntity<PagedResponseDTO> getPagedReviews(@RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
@@ -62,8 +62,8 @@ public class ReviewController {
     // 5. 게시판 삭제
     @Operation(summary = "게시판 삭제", description = "리뷰 삭제")
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<SuccessRes> deleteReview(@PathVariable("reviewId") Long reviewId) {
-        reviewService.deleteReview(reviewId);
+    public ResponseEntity<SuccessRes> deleteReview(@PathVariable("reviewId") Long reviewId, @RequestBody DeleteRequestDTO deleteRequestDTO) {
+        reviewService.deleteReview(reviewId, deleteRequestDTO);
         return ResponseEntity.ok().body(new SuccessRes("게시물이 성공적으로 삭제되었습니다."));
     }
 
@@ -95,7 +95,7 @@ public class ReviewController {
     }
 
     // 7. S3에 저장된 이미지들 삭제하기(등록 취소 시)
-    @Operation(summary = "S3 이미지 삭제", description = "세션에 저장된 모든 이미지를 삭제")
+    @Operation(summary = "S3 이미지 삭제", description = "세션에 저장된 모든 이미지를 삭제, Quill Editor에서 저장하지 않고 이미지만 업로드 시, 반드시 호출해주기!")
     @DeleteMapping("/clear-session")
     public ResponseEntity<SuccessRes> clearSessionImages(HttpSession session) {
         reviewService.deleteImage(session);
