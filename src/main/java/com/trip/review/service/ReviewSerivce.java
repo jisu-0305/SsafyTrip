@@ -63,7 +63,7 @@ public class ReviewSerivce {
         Optional<Review> review = reviewRepository.findById(reviewId);
 
         ReviewResponseDTO reviewResponseDTO = review.map(reviewEntity -> {
-            reviewEntity.setHit(reviewEntity.getHit() + 1); // 조회수 증가
+            reviewEntity.addHit(); // 조회수 증가
             reviewRepository.save(reviewEntity);
             return ReviewResponseDTO.fromEntity(reviewEntity);
         }).orElseThrow(() -> new EntityNotFoundException("review not found"));
@@ -76,7 +76,8 @@ public class ReviewSerivce {
     @Transactional
     public ReviewResponseDTO createReview(ReviewRequestDTO reviewRequestDTO, HttpSession session) {
 
-        Review review = reviewRepository.save(reviewRequestDTO.toEntity());
+        Review review = reviewRepository.save(Review.fromRequestDtoToEntity(reviewRequestDTO));
+
 
         List<String> s3KeyList = (List<String>) session.getAttribute("S3Keys");
         List<String> s3UrlList = (List<String>) session.getAttribute("S3Urls");

@@ -21,14 +21,6 @@ public class ReviewResponseDTO {
     private LocalDateTime updatedAt;
     private String firstImageUrl;
 
-    // DTO → Entity
-    public Review toEntity() {
-        return Review.builder()
-                .email(this.email)
-                .title(this.title)
-                .content(this.content)
-                .build();
-    }
 
     // Entity → DTO
     public static ReviewResponseDTO fromEntity(Review reveiw) {

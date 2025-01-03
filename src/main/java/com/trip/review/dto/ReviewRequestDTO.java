@@ -13,11 +13,4 @@ public class ReviewRequestDTO {
     private String title;
     private String content;
 
-    public Review toEntity() {
-        return Review.builder()
-                .email(this.email)
-                .title(this.title)
-                .content(this.content)
-                .build();
-    }
 }

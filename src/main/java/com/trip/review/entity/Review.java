@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reviews")
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,16 +54,15 @@ public class Review {
 
 
     // DTO → Entity
-    public static Review toEntity(Review dto) {
-        Review review = new Review();
-        review.setReviewId(dto.getReviewId()); // Review ID와 Board ID 매핑
-        review.setEmail(dto.getEmail());
-        review.setTitle(dto.getTitle());
-        review.setContent(dto.getContent());
-        review.setHit(dto.getHit());
-        review.setCreatedAt(dto.getCreatedAt());
-        review.setUpdatedAt(dto.getUpdatedAt());
-        return review;
+    public static Review fromRequestDtoToEntity(ReviewRequestDTO dto) {
+        return Review.builder()
+                .email(dto.getEmail())
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .hit(0) // 조회수 초기값
+                .createdAt(LocalDateTime.now()) // 생성 시간 설정
+                .updatedAt(LocalDateTime.now()) // 수정 시간 초기화
+                .build();
     }
 
     // update
@@ -76,7 +74,9 @@ public class Review {
             this.content = dto.getContent();
         }
         this.updatedAt = LocalDateTime.now();
-        System.out.println("update");
-        System.out.println(updatedAt);
+    }
+
+    public void addHit(){
+        this.hit++;
     }
 }
