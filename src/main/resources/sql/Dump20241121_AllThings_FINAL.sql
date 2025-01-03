@@ -243,7 +243,7 @@ DROP TABLE IF EXISTS review_images;
 CREATE TABLE review_images (
     image_id BIGINT AUTO_INCREMENT PRIMARY KEY,          -- 이미지 ID (Primary Key)
     review_id BIGINT NOT NULL,                            -- 연관된 게시글 ID (Foreign Key)
-    image_url VARCHAR(2083) NOT NULL,                   -- S3 이미지 경로 (URL)
+    image_url VARCHAR(255) NOT NULL,                   -- S3 이미지 경로 (URL)
     s3_key VARCHAR(512) NOT NULL,                       -- S3 키 (파일 이름)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,       -- 이미지 추가 시간
     CONSTRAINT fk_review_images_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE
