@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "review_images")
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

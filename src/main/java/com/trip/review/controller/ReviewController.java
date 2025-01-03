@@ -67,7 +67,7 @@ public class ReviewController {
         return ResponseEntity.ok().body(new SuccessRes("게시물이 성공적으로 삭제되었습니다."));
     }
 
-    // 6. S3에 이미지 업로드하기
+    // 6. S3에 이미지 업로드하기(이미지 url들을 db에 저장하는 작업은 게시판 작성 시)
     // MultipartRequest: 클라이언트로부터 업로드된 여러 파일(이미지)이나 폼 데이터를 처리하기 위해 사용
     @Operation(summary = "S3에 이미지 업로드", description = "이미지를 S3에 업로드하고 URL 반환")
     @PostMapping("/upload-image")
