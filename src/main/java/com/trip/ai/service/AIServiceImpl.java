@@ -8,7 +8,6 @@ import com.trip.attraction.service.AttractionService;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class AIServiceImpl implements AIService {
 
     private final AttractionService attractionService;
     private final ChatClient chatClient;
-    private final ImageModel imageModel;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -148,31 +146,31 @@ public class AIServiceImpl implements AIService {
     }
 
 
-    private String generateImageURL(String prompt) {
-        try {
-            var response = imageModel.call(
-                    new ImagePrompt(prompt, OpenAiImageOptions.builder()
-                            .withQuality("standard")
-                            .withHeight(1024)
-                            .withWidth(1024)
-                            .withN(1)
-                            .build())
-            );
-
-            var output = response.getResult().getOutput();
-            if (output != null && output.getUrl() != null) {
-                return output.getUrl();
-            }
-
-            if (response.getResults() != null && !response.getResults().isEmpty()) {
-                return response.getResults().get(0).getOutput().getUrl();
-            }
-
-            throw new RuntimeException("Image URL not found in AI response.");
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate image URL", e);
-        }
-    }
+//    private String generateImageURL(String prompt) {
+//        try {
+//            var response = imageModel.call(
+//                    new ImagePrompt(prompt, OpenAiImageOptions.builder()
+//                            .withQuality("standard")
+//                            .withHeight(1024)
+//                            .withWidth(1024)
+//                            .withN(1)
+//                            .build())
+//            );
+//
+//            var output = response.getResult().getOutput();
+//            if (output != null && output.getUrl() != null) {
+//                return output.getUrl();
+//            }
+//
+//            if (response.getResults() != null && !response.getResults().isEmpty()) {
+//                return response.getResults().get(0).getOutput().getUrl();
+//            }
+//
+//            throw new RuntimeException("Image URL not found in AI response.");
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed to generate image URL", e);
+//        }
+//    }
 
     private String extractPureJson(String response) {
         int startIndex = response.indexOf("[");

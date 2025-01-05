@@ -4,12 +4,14 @@ import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.service.AIService;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.image.ImageModel;
-import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.image.ImageResponse;
-import org.springframework.ai.openai.OpenAiImageOptions;
+import org.springframework.ai.image.*;
+import org.springframework.ai.stabilityai.StabilityAiImageModel;
+import org.springframework.ai.stabilityai.api.StabilityAiImageOptions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AIController {
 
     private final AIService aIService;
-    private final ImageModel openaiImageModel;
+    private final StabilityAiImageModel stabilityAiImageModel;
 
     @PostMapping("/weather")
     public ResponseEntity<WeatherAndClothesResponseDto> getWeatherAndClothes(@RequestBody ScheduleDetailDto scheduleDetail) {
@@ -25,17 +27,44 @@ public class AIController {
         return ResponseEntity.ok(responseDto);
     }
 
-//    @GetMapping("/image")
-//    public ImageResponse generateImage(
-//            @RequestParam(value = "prompt", defaultValue = "당신은 사용자가 여행 계획을 세울 때 적합한 옷차림을 추천하는 AI 스타일리스트입니다. 부산 여행을 1박 2일 계획중이고 첫날은 비와 함께 20도의 날씨 이고 시장을 갈 생각이야. 2번째 날은 맑은 날씨와 함께 17도의 온도이고 바다를 갈생각이야. 여기에 맞는 옷 코디 이미지 생성해줘. 그 외에 배경은 그냥 없어도 돼. 딱 옷만. 잘하면 승진 시켜줄게.") String prompt) {
-//
-//        return openaiImageModel.call(
-//                new ImagePrompt(prompt,
-//                        OpenAiImageOptions.builder()
-//                                .withQuality("standard")
-//                                .withN(1) // 여기에서 n 값을 1로 설정
-//                                .withHeight(256)
-//                                .withWidth(256)
-//                                .build()));
-//    }
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> generateImage(
+            @RequestParam(value = "prompt", defaultValue = "You are an AI stylist helping a user plan a trip wardrobe. Create outfits suitable for a 2-day trip to Busan. Day 1: Rainy, 20°C, visiting a market. Day 2: Sunny, 17°C, visiting a beach. Focus on clothing only. Backgrounds are not required.") String prompt) {
+
+        ImageResponse response = stabilityAiImageModel.call(
+                new ImagePrompt(prompt,
+                        StabilityAiImageOptions.builder()
+                                .withSamples(1) // 생성 image 개수
+                                .withHeight(512)
+                                .withWidth(512)
+                                .withCfgScale(9f)
+                                .withSteps(20)
+                                .withResponseFormat("image/png") // Response format
+                                .build()));
+
+        List<ImageGeneration> generations = response.getResults();
+        if (generations.isEmpty()) {
+            return ResponseEntity.badRequest().body(null); // 이미지가 생성되지 않음
+        }
+
+        // 첫 번째 이미지의 데이터를 가져옴
+        Image image = generations.get(0).getOutput();
+        byte[] imageBytes;
+
+        if (image.getB64Json() != null) {
+            // Base64 데이터를 디코딩
+            imageBytes = Base64.getDecoder().decode(image.getB64Json());
+        } else if (image.getUrl() != null) {
+            // URL이 제공된 경우 에러 또는 별도 처리 (예: URL로부터 데이터를 다운로드)
+            return ResponseEntity.badRequest()
+                    .body(null); // URL 기반 처리는 필요에 따라 구현
+        } else {
+            return ResponseEntity.badRequest().body(null); // 유효한 이미지 데이터가 없음
+        }
+
+        // 반환된 이미지를 클라이언트로 전달
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/png")
+                .body(imageBytes);
+    }
 }
