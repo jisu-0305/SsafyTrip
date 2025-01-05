@@ -78,43 +78,47 @@ const loadMarkers = () => {
       title: position.title,
     });
 
+    // 커스텀 오버레이 생성
+    const content = `
+      <div class="wrap">
+        <div class="info">
+          <div class="title">
+            ${attractions.value[index].title}
+            <div class="close" title="닫기" onclick="this.parentElement.parentElement.parentElement.style.display='none'"></div>
+          </div>
+          <div class="body">
+            <div class="desc">
+              <div class="ellipsis">${attractions.value[index].addr1 || ''}</div>
+              <div class="info-stats">
+                <span>조회수: ${attractions.value[index].views}</span>
+                <span>좋아요: ${attractions.value[index].hit}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    const overlay = new kakao.maps.CustomOverlay({
+      content: content,
+      position: position.latlng,
+      xAnchor: 0.5,
+      yAnchor: 1.3,
+      zIndex: 3
+    });
+
+    // 마커 이벤트 리스너
     kakao.maps.event.addListener(marker, 'mouseover', () => {
       emit('hover-marker', attractions.value[index].contentId);
-      if (marker !== selectedMarker.value) {
-        marker.setImage(new kakao.maps.MarkerImage(
-          '//t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-          new kakao.maps.Size(24, 35)
-        ));
-      }
+      overlay.setMap(map);
     });
 
     kakao.maps.event.addListener(marker, 'mouseout', () => {
       emit('hover-marker', null);
-      if (marker !== selectedMarker.value) {
-        marker.setImage(null);
-      }
+      overlay.setMap(null);
     });
 
     kakao.maps.event.addListener(marker, 'click', () => {
-      if (selectedMarker.value) {
-        selectedMarker.value.setImage(null);
-      }
-      marker.setImage(new kakao.maps.MarkerImage(
-        '//t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-        new kakao.maps.Size(24, 35)
-      ));
-      selectedMarker.value = marker;
       emit('click-marker', attractions.value[index].contentId);
-      
-      const content = `
-        <div class="custom-overlay">
-          <h3>${attractions.value[index].title}</h3>
-          <p>조회수: ${attractions.value[index].views}</p>
-        </div>
-      `;
-
-      infowindow.value.setContent(content);
-      infowindow.value.open(map, marker);
     });
 
     markers.value.push(marker);
@@ -160,23 +164,86 @@ onUnmounted(() => {
 #map {
   width: 100%;
   height: 850px;
+}
+
+:deep(.wrap) {
+  position: absolute;
+  left: 0;
+  bottom: 40px;
+  width: 288px;
+  height: auto;
+  margin-left: -144px;
+  text-align: left;
+  font-size: 12px;
+  font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;
+  line-height: 1.5;
+}
+
+:deep(.wrap .info) {
+  width: 286px;
+  height: auto;
+  border-radius: 5px;
+  border-bottom: 2px solid #ccc;
+  border-right: 1px solid #ccc;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0px 1px 2px #888;
+}
+
+:deep(.info .title) {
+  padding: 5px 0 0 10px;
+  height: 30px;
+  background: #eee;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  font-weight: bold;
   position: relative;
 }
 
-:deep(.custom-overlay) {
-  padding: 10px;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+:deep(.info .close) {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  width: 17px;
+  height: 17px;
+  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png');
+  cursor: pointer;
 }
 
-:deep(.custom-overlay h3) {
-  margin: 0 0 5px 0;
-  font-size: 16px;
+:deep(.info .body) {
+  position: relative;
+  overflow: hidden;
+  padding: 15px;
 }
 
-:deep(.custom-overlay p) {
-  margin: 0;
-  font-size: 14px;
+:deep(.info .desc) {
+  position: relative;
+}
+
+:deep(.desc .ellipsis) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 5px;
+}
+
+:deep(.info-stats) {
+  margin-top: 5px;
+  color: #666;
+}
+
+:deep(.info-stats span) {
+  margin-right: 10px;
+}
+
+:deep(.info:after) {
+  content: '';
+  position: absolute;
+  margin-left: -12px;
+  left: 50%;
+  bottom: -12px;
+  width: 22px;
+  height: 12px;
+  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png');
 }
 </style>
