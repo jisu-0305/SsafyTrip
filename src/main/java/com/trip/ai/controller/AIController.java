@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,17 +41,15 @@ public class AIController {
                                 .withResponseFormat("image/png") // Response format
                                 .build()));
 
-        List<ImageGeneration> generations = response.getResults();
-        if (generations.isEmpty()) {
-            return ResponseEntity.badRequest().body(null); // 이미지가 생성되지 않음
+        //이미지 데이터 가져오기
+        Image image = response.getResult().getOutput();
+        if (image == null) {
+            return ResponseEntity.badRequest().body(null);
         }
-
-        // 첫 번째 이미지의 데이터를 가져옴
-        Image image = generations.get(0).getOutput();
         byte[] imageBytes;
 
         if (image.getB64Json() != null) {
-            // Base64 데이터를 디코딩
+            // Base64 데이터를 디코딩 -> 여기서 s3 또는 redis를 통한 이미지 관리가 필요할듯함
             imageBytes = Base64.getDecoder().decode(image.getB64Json());
         } else if (image.getUrl() != null) {
             // URL이 제공된 경우 에러 또는 별도 처리 (예: URL로부터 데이터를 다운로드)
