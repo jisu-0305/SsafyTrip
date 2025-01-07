@@ -6,6 +6,7 @@ import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.dto.WeatherDto;
 import com.trip.attraction.service.AttractionService;
 import com.trip.schedule.dto.ScheduleDetailDto;
+import com.trip.translation.service.TranslationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.image.ImagePrompt;
@@ -22,6 +23,7 @@ public class AIServiceImpl implements AIService {
     private final AttractionService attractionService;
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final TranslationService translationService;
 
     @Override
     public WeatherAndClothesResponseDto getWeatherAndClothes(ScheduleDetailDto scheduleDetail) {
@@ -29,17 +31,22 @@ public class AIServiceImpl implements AIService {
         List<WeatherDto> weatherList = getWeatherList(scheduleDetail);
 
         // 2. 코디 프롬프트 생성
-        String clothesPrompt = generateClothesPrompt(weatherList);
-//        System.out.println("prompt: "+clothesPrompt);
+        String korClothesPrompt = generateClothesPrompt(weatherList);
+        System.out.println("prompt: " + korClothesPrompt);
 
-        // 3. 코디 이미지 생성 및 URL 추출
+        // 3. 번역 진행
+        String engClothesPrompt = translationService.translateKorToEng(korClothesPrompt);
+        System.out.println("prompt: " + engClothesPrompt);
+
+        // 4. 코디 이미지 생성 및 URL 추출
 //        String clothesURL = generateImageURL(clothesPrompt);
         //AI 이미지 생성기능 잠금 - 타 기능 완성시 풀기
         String clothesURL = "https://static-00.iconduck.com/assets.00/no-image-icon-512x512-lfoanl0w.png";
 
-        // 4. 준비물 DTO 생성 및 추출
-        String supplies = generateSupplies(weatherList);
-
+        // 5. 준비물 DTO 생성 및 추출
+//        String supplies = generateSupplies(weatherList);
+        String supplies = "";
+        
         return new WeatherAndClothesResponseDto(weatherList, clothesURL, supplies);
     }
 
