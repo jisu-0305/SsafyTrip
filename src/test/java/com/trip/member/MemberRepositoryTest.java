@@ -10,16 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@DataJpaTest // JPA Repository 테스트에 사용하는 어노테이션
-
-// Spring Boot는 기본적으로 테스트 환경에서 임베디드 데이터베이스를 사용하려함(H2, HSQLDB 등).
-// MySQL 같은 실제 데이터베이스를 사용하고 싶다면, 테스트 클래스에서 Spring Boot의 임베디드 데이터베이스 대체 기능을 비활성화
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
 
@@ -28,6 +26,7 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("회원 저장 테스트")
+//    @Rollback(false)
     void saveMember() {
         // given
         Member member = Member.builder()
@@ -40,7 +39,7 @@ class MemberRepositoryTest {
                 .role(Role.ROLE_USER)
                 .status(Status.ACTIVE)
                 .build();
-        /*
+
         // when
         Member savedMember = memberRepository.save(member);
 
@@ -48,10 +47,10 @@ class MemberRepositoryTest {
         assertThat(savedMember).isNotNull();
         assertThat(savedMember.getUserId()).isGreaterThan(0); // ID가 자동 생성되었는지 확인
         assertThat(savedMember.getEmail()).isEqualTo("john@example.com");
-    */
+
     }
 
-/*
+
     @Test
     @DisplayName("이메일로 회원 조회 테스트")
     void findByEmail() {
@@ -149,5 +148,5 @@ class MemberRepositoryTest {
         assertThat(foundMember.get().getName()).isEqualTo("Password Check");
     }
 
- */
+
 }
