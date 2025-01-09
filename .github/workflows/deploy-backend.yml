@@ -60,3 +60,14 @@ jobs:
           pkill -f 'java -jar' || true # 기존 실행 중인 애플리케이션 종료
           nohup java -jar /home/ec2-user/backend/target/SpringFrameWorkTrip-0.0.1-SNAPSHOT.jar > /home/ec2-user/backend/app.log 2>&1 &
           EOF
+
+      # 9. 서버 상태 확인 (헬스 체크)
+      - name: Health Check
+        run: |
+          sleep 20 # 서버 기동 시간 대기
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://inssaroute.shop/api/attractions/guguns/1)
+          if [ "$RESPONSE" -ne 200 ]; then
+            echo "Health check failed. HTTP Status: $RESPONSE"
+            exit 1
+          fi
+          echo "Server is healthy! HTTP Status: $RESPONSE"
