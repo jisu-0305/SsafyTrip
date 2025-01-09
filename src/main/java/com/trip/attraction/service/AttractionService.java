@@ -18,8 +18,6 @@ public interface AttractionService {
 
     AttractionDetailResponseDto getAttractionDetailWithComments(int attractionId, Long userId);
 
-    AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId);
-
     List<AttractionDto> enrichWithLikeStatus(List<AttractionDto> attractions, Long userId);
 
     public Map<String, List<String>> getTitlesByDate(ScheduleDetailDto scheduleDetail);
