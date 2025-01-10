@@ -1,5 +1,6 @@
 package com.trip.ai.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.service.AIService;
 import com.trip.schedule.dto.ScheduleDetailDto;
@@ -22,6 +23,14 @@ public class AIController {
 
     @PostMapping("/weather")
     public ResponseEntity<WeatherAndClothesResponseDto> getWeatherAndClothes(@RequestBody ScheduleDetailDto scheduleDetail) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(scheduleDetail);
+            System.out.println("Received JSON: " + json);
+        } catch (Exception e) {
+            System.err.println("Failed to convert to JSON: " + e.getMessage());
+        }
+
         WeatherAndClothesResponseDto responseDto = aIService.getWeatherAndClothes(scheduleDetail);
         return ResponseEntity.ok(responseDto);
     }
