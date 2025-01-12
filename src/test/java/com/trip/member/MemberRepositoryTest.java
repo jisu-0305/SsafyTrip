@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,7 +25,6 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("회원 저장 테스트")
-//    @Rollback(false)
     void saveMember() {
         // given
         Member member = Member.builder()
@@ -147,6 +145,4 @@ class MemberRepositoryTest {
         assertThat(foundMember).isPresent();
         assertThat(foundMember.get().getName()).isEqualTo("Password Check");
     }
-
-
 }

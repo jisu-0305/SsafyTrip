@@ -35,6 +35,7 @@ class MemberServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
     @Test
     void registerMember_Success() {
         // given
