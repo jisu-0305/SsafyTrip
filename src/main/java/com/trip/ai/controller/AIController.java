@@ -3,6 +3,8 @@ package com.trip.ai.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.service.AIService;
+import com.trip.review.dto.S3ResponseDTO;
+import com.trip.review.util.S3Util;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.image.*;
@@ -11,6 +13,9 @@ import org.springframework.ai.stabilityai.api.StabilityAiImageOptions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 
 @RestController
@@ -20,6 +25,8 @@ public class AIController {
 
     private final AIService aIService;
     private final StabilityAiImageModel stabilityAiImageModel;
+    private final S3Util s3Util;
+    private final String FOLDER_NAME = "aiclothe";
 
     @PostMapping("/weather")
     public ResponseEntity<WeatherAndClothesResponseDto> getWeatherAndClothes(@RequestBody ScheduleDetailDto scheduleDetail) {
@@ -36,7 +43,7 @@ public class AIController {
     }
 
     @GetMapping("/image")
-    public ResponseEntity<byte[]> generateImage(
+    public ResponseEntity<String> generateImage(
             @RequestParam(value = "prompt", defaultValue = "You are an AI stylist helping a user plan a trip wardrobe. Create outfits suitable for a 2-day trip to Busan. Day 1: Rainy, 20°C, visiting a market. Day 2: Sunny, 17°C, visiting a beach. Focus on clothing only. Backgrounds are not required.") String prompt) {
 
         ImageResponse response = stabilityAiImageModel.call(
@@ -68,9 +75,16 @@ public class AIController {
             return ResponseEntity.badRequest().body(null); // 유효한 이미지 데이터가 없음
         }
 
-        // 반환된 이미지를 클라이언트로 전달
-        return ResponseEntity.ok()
-                .header("Content-Type", "image/png")
-                .body(imageBytes);
+        // S3에 업로드
+        String fileName = "ai_generated_" + System.currentTimeMillis() + ".png";
+
+        try (InputStream inputStream = new ByteArrayInputStream(imageBytes)) {
+            S3ResponseDTO s3ResponseDTO = s3Util.imageUpload(inputStream, FOLDER_NAME, fileName, imageBytes.length, "image/png");
+
+            // S3 URL 반환
+            return ResponseEntity.ok(s3ResponseDTO.getS3Url());
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Image upload failed.");
+        }
     }
 }

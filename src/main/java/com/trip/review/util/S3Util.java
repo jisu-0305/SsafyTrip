@@ -53,6 +53,29 @@ public class S3Util {
         return new S3ResponseDTO(s3Url, s3FilePathName);
     }
 
+    public S3ResponseDTO imageUpload(InputStream inputStream, String folderName, String fileName, long contentLength, String contentType) {
+        try {
+            // S3 경로 생성
+            String s3FilePathName = folderName + "/" + fileName;
+
+            // 파일 메타데이터 설정
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(contentLength);
+            metadata.setContentType(contentType);
+
+            // S3에 파일 업로드
+            s3Config.amazonS3Client().putObject(
+                    new PutObjectRequest(bucket, s3FilePathName, inputStream, metadata)
+            );
+
+            // S3에 저장된 이미지의 Url 주소 가져오기
+            String s3Url = s3Config.amazonS3Client().getUrl(bucket, s3FilePathName).toString();
+
+            return new S3ResponseDTO(s3Url, s3FilePathName);
+        } catch (Exception e) {
+            throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.", e);
+        }
+    }
 
     // S3에서 이미지 삭제
     public void deleteImage(String fileName, String folderName) {
