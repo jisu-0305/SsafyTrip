@@ -30,21 +30,22 @@ public class CommentController {
             @PathVariable("attractionId") int attractionId,
             @RequestBody CommentCreateRequestDto requestDto,
             HttpSession session) {
-        long userId = ((Long)session.getAttribute("userId"));
-        // 로그인된 사용자 이메일 가져오기
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(401).body(ResponseDto.failure("로그인이 필요합니다."));
+        }
+
         String loggedInEmail = (String) session.getAttribute("email");
         if (loggedInEmail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ResponseDto.failure("로그인이 필요합니다."));
         }
 
-        // 작성자 이메일과 로그인된 이메일 비교
         if (!loggedInEmail.equals(requestDto.getEmail())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ResponseDto.failure("작성자의 이메일이 로그인된 사용자와 일치하지 않습니다."));
         }
 
-        // 댓글 생성
         commentService.createComment(attractionId, requestDto, userId);
         return ResponseEntity.ok(ResponseDto.success("Comment created successfully"));
     }
@@ -52,14 +53,12 @@ public class CommentController {
     @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글 ID를 통해 댓글을 삭제합니다.")
     public ResponseEntity<ResponseDto> deleteComment(@PathVariable("commentId") int commentId, HttpSession session) {
-        // 로그인된 사용자 이메일 가져오기
         String loggedInEmail = (String) session.getAttribute("email");
         if (loggedInEmail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ResponseDto.failure("로그인이 필요합니다."));
         }
 
-        // 댓글 삭제
         long userId = ((Long)session.getAttribute("userId"));
         boolean isDeleted = commentService.deleteComment(commentId, userId);
         if (!isDeleted) {
@@ -79,7 +78,6 @@ public class CommentController {
             throw new UnauthorizedException("로그인이 필요합니다.");
         }
 
-        // 사용자 댓글 조회
         List<CommentResponseDto> comments = commentService.getUserComments(userId);
         return ResponseEntity.ok(comments);
     }

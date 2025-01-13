@@ -134,7 +134,7 @@ public class AttractionServiceImpl implements AttractionService {
                 .build();
     }
 
-    public AttractionDto enrichWithLikeStatus(AttractionDto attraction, Long userId) {
+    public AttractionDto enrichWithLikeStatusIndividual(AttractionDto attraction, Long userId) {
         boolean isLike = favoriteService.isLikedByUser(userId, attraction.getNo());
         attraction.setIsLike(isLike);
         return attraction;
@@ -142,7 +142,7 @@ public class AttractionServiceImpl implements AttractionService {
 
     public List<AttractionDto> enrichWithLikeStatus(List<AttractionDto> attractions, Long userId) {
         return attractions.stream()
-                .map(attraction -> enrichWithLikeStatus(attraction, userId))
+                .map(attraction -> enrichWithLikeStatusIndividual(attraction, userId))
                 .collect(Collectors.toList());
     }
 
