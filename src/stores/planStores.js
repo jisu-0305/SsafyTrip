@@ -138,7 +138,7 @@ export const usePlanStore = defineStore('plan', () => {
         time: scheduleTime.value,
         memo: scheduleMemo.value,
         estimatedCost: Number(estimatedCost.value),
-        attractionId: selectedSpot.value.contentId,
+        attractionId: selectedSpot.value.no,
         date: selectedDate.value
       };
       
