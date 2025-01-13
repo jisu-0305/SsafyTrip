@@ -31,7 +31,7 @@ public class ReviewSerivce {
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final S3Util s3Util;
-
+    private final String FOLDER_NAME  = "review";
 
     // 게시판 리스트 얻어오기
     public PagedResponseDTO getPagedReviews(int page, int size) {
@@ -136,7 +136,7 @@ public class ReviewSerivce {
 
         // 2. s3삭제
         List<String> s3KeyList = reviewImageRepository.findS3KeysByreviewId(reviewId);
-        s3KeyList.forEach(s3Util::deleteImage); // 병렬 스트림 대신 일반 스트림 사용
+        s3KeyList.forEach(fileName -> s3Util.deleteImage("review", fileName));
 
         //3. 게시글 삭제(delete cascade로 image도 같이 삭제)
         reviewRepository.delete(review);
@@ -148,7 +148,7 @@ public class ReviewSerivce {
 
         S3ResponseDTO s3ResponseDTO= null;
         try {
-            s3ResponseDTO =s3Util.imageUpload(request);
+            s3ResponseDTO =s3Util.imageUpload(request, FOLDER_NAME);
         } catch (IOException e) {
 
         }
@@ -162,7 +162,7 @@ public class ReviewSerivce {
 
         List<String> s3KeyList = (List<String>) session.getAttribute("S3Keys");
         if (s3KeyList != null) {
-            s3KeyList.parallelStream().forEach(key -> s3Util.deleteImage(key));
+            s3KeyList.parallelStream().forEach(key -> s3Util.deleteImage(key, FOLDER_NAME));
         }
 
         session.removeAttribute("S3Keys");
