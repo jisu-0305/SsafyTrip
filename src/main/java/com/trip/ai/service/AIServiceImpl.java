@@ -5,14 +5,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trip.ai.dto.WeatherAndClothesResponseDto;
 import com.trip.ai.dto.WeatherDto;
 import com.trip.attraction.service.AttractionService;
+import com.trip.review.dto.S3ResponseDTO;
+import com.trip.review.util.S3Util;
 import com.trip.schedule.dto.ScheduleDetailDto;
 import com.trip.translation.service.TranslationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.image.Image;
 import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.openai.OpenAiImageOptions;
+import org.springframework.ai.image.ImageResponse;
+import org.springframework.ai.stabilityai.StabilityAiImageModel;
+import org.springframework.ai.stabilityai.api.StabilityAiImageOptions;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +33,9 @@ public class AIServiceImpl implements AIService {
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
     private final TranslationService translationService;
+    private final StabilityAiImageModel stabilityAiImageModel;
+    private final S3Util s3Util;
+    private final String FOLDER_NAME = "aiclothe";
 
     @Override
     public WeatherAndClothesResponseDto getWeatherAndClothes(ScheduleDetailDto scheduleDetail) {
@@ -32,21 +44,16 @@ public class AIServiceImpl implements AIService {
 
         // 2. 코디 프롬프트 생성
         String korClothesPrompt = generateClothesPrompt(weatherList);
-        System.out.println("prompt: " + korClothesPrompt);
 
         // 3. 번역 진행
         String engClothesPrompt = translationService.translateKorToEng(korClothesPrompt);
-        System.out.println("prompt: " + engClothesPrompt);
 
         // 4. 코디 이미지 생성 및 URL 추출
-//        String clothesURL = generateImageURL(clothesPrompt);
-        //AI 이미지 생성기능 잠금 - 타 기능 완성시 풀기
-        String clothesURL = "https://static-00.iconduck.com/assets.00/no-image-icon-512x512-lfoanl0w.png";
+        String clothesURL = generateImageURL(engClothesPrompt);
 
         // 5. 준비물 DTO 생성 및 추출
-//        String supplies = generateSupplies(weatherList);
-        String supplies = "";
-        
+        String supplies = generateSupplies(weatherList);
+
         return new WeatherAndClothesResponseDto(weatherList, clothesURL, supplies);
     }
 
@@ -63,7 +70,6 @@ public class AIServiceImpl implements AIService {
         // 순수 JSON 데이터 추출
         String cleanedJsonResponse = extractPureJson(jsonResponse);
 
-        // WeatherDto 리스트로 변환
         try {
             return objectMapper.readValue(cleanedJsonResponse, new TypeReference<List<WeatherDto>>() {});
         } catch (Exception e) {
@@ -106,7 +112,7 @@ public class AIServiceImpl implements AIService {
     private String generateClothesPrompt(List<WeatherDto> weatherList) {
         StringBuilder promptBuilder = new StringBuilder();
 
-        promptBuilder.append("여행일정과 날씨를 참고하여 옷만 존재하는 코디북을 얻고 싶습니다. 한 이미지 안에 날짜 사이즈만큼의 직사각형으로 분리하여, 각 날짜별 코디를 넣어주세요. 아래 JSON 데이터를 참고하여 이미지를 제작하세요. 이미지는 코디만 포함하며, 텍스트나 불필요한 배경 이미지는 넣지 마세요.");
+        promptBuilder.append("Create a high-resolution image with outfits divided into equal sections, one for each day of the trip. Each section contains exactly one flat-lay arrangement of clothing and accessories based on the weather and location provided in the JSON data. No text, people, or unnecessary background images—only neatly arranged clothing and accessories for each day.\n\n");
 
         int day = 1;
         for (WeatherDto weather : weatherList) {
@@ -120,7 +126,7 @@ public class AIServiceImpl implements AIService {
             day++;
         }
 
-        promptBuilder.append("코디북 이미지는 다음 JSON 데이터를 기반으로 만들어주세요. ");
+        promptBuilder.append("Create a coordinate book image based on the following JSON data.");
         return promptBuilder.toString();
     }
 
@@ -152,32 +158,40 @@ public class AIServiceImpl implements AIService {
         return response.trim();
     }
 
+    private String generateImageURL(String prompt) {
+        ImageResponse response = stabilityAiImageModel.call(
+                new ImagePrompt(prompt,
+                        StabilityAiImageOptions.builder()
+                                .withSamples(1) // 생성 image 개수
+                                .withHeight(512)
+                                .withWidth(512)
+                                .withCfgScale(9f)
+                                .withSteps(20)
+                                .withResponseFormat("image/png") // Response format
+                                .build()));
 
-//    private String generateImageURL(String prompt) {
-//        try {
-//            var response = imageModel.call(
-//                    new ImagePrompt(prompt, OpenAiImageOptions.builder()
-//                            .withQuality("standard")
-//                            .withHeight(1024)
-//                            .withWidth(1024)
-//                            .withN(1)
-//                            .build())
-//            );
-//
-//            var output = response.getResult().getOutput();
-//            if (output != null && output.getUrl() != null) {
-//                return output.getUrl();
-//            }
-//
-//            if (response.getResults() != null && !response.getResults().isEmpty()) {
-//                return response.getResults().get(0).getOutput().getUrl();
-//            }
-//
-//            throw new RuntimeException("Image URL not found in AI response.");
-//        } catch (Exception e) {
-//            throw new RuntimeException("Failed to generate image URL", e);
-//        }
-//    }
+        //이미지 데이터 가져오기
+        Image image = response.getResult().getOutput();
+
+        byte[] imageBytes = new byte[0];
+
+        if (image.getB64Json() != null) {
+            // Base64 데이터를 디코딩 -> 여기서 s3 또는 redis를 통한 이미지 관리가 필요할듯함
+            imageBytes = Base64.getDecoder().decode(image.getB64Json());
+        }
+
+        // S3에 업로드
+        String fileName = "ai_generated_" + System.currentTimeMillis() + ".png";
+
+        try (InputStream inputStream = new ByteArrayInputStream(imageBytes)) {
+            S3ResponseDTO s3ResponseDTO = s3Util.imageUpload(inputStream, FOLDER_NAME, fileName, imageBytes.length, "image/png");
+
+            // S3 URL 반환
+            return s3ResponseDTO.getS3Url();
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     private String extractPureJson(String response) {
         int startIndex = response.indexOf("[");
