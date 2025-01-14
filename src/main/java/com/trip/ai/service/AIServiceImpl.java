@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -42,17 +43,22 @@ public class AIServiceImpl implements AIService {
         // 1. WeatherDto 리스트 생성
         List<WeatherDto> weatherList = getWeatherList(scheduleDetail);
 
-        // 2. 코디 프롬프트 생성
-        String korClothesPrompt = generateClothesPrompt(weatherList);
+        // 2. 코디 이미지 생성과 준비물 생성 병렬 처리
+        CompletableFuture<String> clothesURLFuture = CompletableFuture.supplyAsync(() -> {
+            String korClothesPrompt = generateClothesPrompt(weatherList);
+            String engClothesPrompt = translationService.translateKorToEng(korClothesPrompt);
+            return generateImageURL(engClothesPrompt);
+        });
 
-        // 3. 번역 진행
-        String engClothesPrompt = translationService.translateKorToEng(korClothesPrompt);
+        CompletableFuture<String> suppliesFuture = CompletableFuture.supplyAsync(() -> {
+            return generateSupplies(weatherList);
+        });
 
-        // 4. 코디 이미지 생성 및 URL 추출
-        String clothesURL = generateImageURL(engClothesPrompt);
+        CompletableFuture.allOf(clothesURLFuture, suppliesFuture).join();
 
-        // 5. 준비물 DTO 생성 및 추출
-        String supplies = generateSupplies(weatherList);
+        // 3. 비동기 작업 결과 가져오기
+        String clothesURL = clothesURLFuture.join();
+        String supplies = suppliesFuture.join();
 
         return new WeatherAndClothesResponseDto(weatherList, clothesURL, supplies);
     }
@@ -112,7 +118,11 @@ public class AIServiceImpl implements AIService {
     private String generateClothesPrompt(List<WeatherDto> weatherList) {
         StringBuilder promptBuilder = new StringBuilder();
 
-        promptBuilder.append("Create a high-resolution image with outfits divided into equal sections, one for each day of the trip. Each section contains exactly one flat-lay arrangement of clothing and accessories based on the weather and location provided in the JSON data. No text, people, or unnecessary background images—only neatly arranged clothing and accessories for each day.\n\n");
+        promptBuilder.append("Create a high-resolution image with outfits divided into equal sections, one for each day of the trip. ");
+        promptBuilder.append("If there are two days (e.g., Day 1 and Day 2), the image must contain exactly two outfit sets, ");
+        promptBuilder.append("each corresponding to a single day. Each section should contain one flat-lay arrangement of clothing and accessories ");
+        promptBuilder.append("based on the weather and location provided in the JSON data. Add a clear dividing line between each section to visually separate the outfits. ");
+        promptBuilder.append("Do not include text, people, or unnecessary background images—only neatly arranged clothing and accessories for each day.\n\n");
 
         int day = 1;
         for (WeatherDto weather : weatherList) {
@@ -166,7 +176,7 @@ public class AIServiceImpl implements AIService {
                                 .withHeight(512)
                                 .withWidth(512)
                                 .withCfgScale(9f)
-                                .withSteps(20)
+                                .withSteps(25)
                                 .withResponseFormat("image/png") // Response format
                                 .build()));
 
