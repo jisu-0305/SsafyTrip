@@ -349,6 +349,28 @@ export const usePlanStore = defineStore('plan', () => {
     }
   };
 
+  // 기존 상태 선언부분 아래에 추가
+  const markers = ref([]); // 지도 마커 저장
+  const markerColors = [
+    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF',
+    '#00FFFF', '#FFA500', '#800080', '#008000', '#FFC0CB'
+  ];
+
+  // 마커 관련 함수들
+  const addMarker = (spot, day) => {
+    markers.value.push({
+      latitude: spot.latitude,
+      longitude: spot.longitude,
+      title: spot.title,
+      day: day,
+      color: markerColors[(day - 1) % markerColors.length]
+    });
+  };
+
+  const clearMarkers = () => {
+    markers.value = [];
+  };
+
   return {
     // 찜 목록 관련
     wishList,
@@ -405,5 +427,9 @@ export const usePlanStore = defineStore('plan', () => {
     allSchedules,
     fetchAllSchedules,
     fetchScheduleDetail,
+
+    markers,
+    addMarker,
+    clearMarkers,
   };
 }); 

@@ -143,11 +143,6 @@ const formatTime = (time) => {
   return time;
 };
 
-// 현재 계획의 날짜 가져오기
-const getCurrentPlanDate = () => {
-  const currentPlan = planStore.plans.find(plan => plan.day === planStore.currentDay);
-  return currentPlan?.date;
-};
 
 // 날짜 포맷팅 함수 수정
 const formatDate = (dateString) => {
