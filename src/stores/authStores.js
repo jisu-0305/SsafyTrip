@@ -30,10 +30,14 @@ export const useAuthStore = defineStore(
         loginError.value = null;
         const response = await authApi.login(credentials);
         setLoginState(response.data);
-        return { success: true };
+        return true;
       } catch (error) {
-        loginError.value = error.response?.data?.message || "로그인에 실패했습니다.";
-        return { success: false };
+        if (error.response?.status === 401) {
+          loginError.value = "아이디 또는 비밀번호가 맞지 않습니다.";
+        } else {
+          loginError.value = "로그인 중 오류가 발생했습니다.";
+        }
+        return false;
       } finally {
         isLoading.value = false;
       }
@@ -68,12 +72,22 @@ export const useAuthStore = defineStore(
     };
 
     const handleAuthError = (error) => {
-      const errorMessage = error.response?.data?.message || "인증 오류가 발생했습니다.";
-      alert(errorMessage);
-      if (error.response?.status === 401 || error.response?.status === 403) {
+      if (error.config?.url?.includes('/members/login')) {
+        throw error;
+      }
+
+      let errorMessage = "인증 오류가 발생했습니다.";
+      
+      if (error.response?.status === 401) {
+        errorMessage = "세션이 만료되었습니다. 다시 로그인해주세요.";
         clearLoginState();
         router.push("/login");
+      } else if (error.response?.status === 403) {
+        errorMessage = "해당 작업에 대한 권한이 없습니다.";
+        router.back();
       }
+      
+      alert(errorMessage);
       throw error;
     };
 

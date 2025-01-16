@@ -152,7 +152,10 @@ const addSchedule = () => {
     return;
   }
   
-  console.log('Adding schedule for date:', planStore.selectedDate);
+  // 마커 추가
+  planStore.addMarker(planStore.selectedSpot, planStore.currentDay);
+  
+  // 일정 추가
   planStore.addSchedule();
   closePopup();
 };

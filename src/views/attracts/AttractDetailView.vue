@@ -20,9 +20,6 @@ const authStore = useAuthStore();
 const newComment = ref('');
 
 const favoriteStore = useFavoriteStore();
-const { favoriteAttractions } = storeToRefs(favoriteStore);
-
-const attractionStore = useAttractionStore();
 
 const initMap = () => {
   if (!window.kakao?.maps || !attraction.value) return;
@@ -93,37 +90,33 @@ const contentTypes = {
   39: "음식점",
 };
 
-const submitComment = async () => {
-  if (!newComment.value.trim()) return;
-
-  try {
-    await axios.post("/api/comments", {
-      attractionId: parseInt(route.params.id),
-      content: newComment.value,
-    });
-
-    // 댓글 작성 후 목록 새로고침
-    await attractionDetailStore.fetchAttractionDetail(
-      parseInt(route.params.id)
-    );
-    newComment.value = ""; // 입력창 초기화
-  } catch (error) {
-    console.error("댓글 작성 실패:", error);
-    alert("댓글 작성에 실패했습니다.");
-  }
-};
-
 const toggleFavorite = async () => {
   if (!authStore.isLoggedIn) {
     alert("로그인이 필요한 서비스입니다.");
     return;
   }
-  await favoriteStore.toggleFavorite(parseInt(route.params.id));
-
-  if (attraction.value.isLike == false) {
-    attraction.value.isLike = true;
-  } else {
-    attraction.value.isLike = false;
+  
+  const attractId = parseInt(route.params.id);
+  const prevIsLike = attraction.value.isLike;
+  const originalHit = attraction.value.hit;
+  
+  try {
+    await favoriteStore.toggleFavorite(attractId);
+    
+    // 좋아요 상태 업데이트
+    attraction.value.isLike = favoriteStore.favoriteAttractions.has(attractId);
+    
+    // 이전 상태와 현재 상태를 비교하여 hit 수 업데이트
+    if (!prevIsLike && attraction.value.isLike) {
+      // 좋아요를 눌렀을 때
+      attraction.value.hit = originalHit + 1;
+    } else if (prevIsLike && !attraction.value.isLike) {
+      // 좋아요를 취소했을 때
+      attraction.value.hit = originalHit - 1;
+    }
+  } catch (error) {
+    console.error('좋아요 토글 실패:', error);
+    alert('좋아요 처리 중 오류가 발생했습니다.');
   }
 };
 
@@ -172,19 +165,16 @@ const goBack = () => {
                     <v-chip class="ml-2" color="primary" size="small">
                       {{ contentTypes[attraction?.contentTypeId] }}
                     </v-chip>
-                    <v-btn
+                      <v-btn
                       icon
                       variant="text"
-                      :color="favoriteAttractions.has(parseInt(route.params.id)) ? 'red' : ''"
+                      :color="attraction?.isLike ? 'red' : ''"
                       :loading="favoriteStore.loading"
                       @click="toggleFavorite"
                       class="ml-2"
                     >
                       <v-icon>
-                        {{ favoriteAttractions.has(parseInt(route.params.id)) 
-                          ? 'mdi-heart' 
-                          : 'mdi-heart-outline' 
-                        }}
+                        {{ attraction?.isLike ? 'mdi-heart' : 'mdi-heart-outline' }}
                       </v-icon>
                     </v-btn>
                   </v-card-title>
@@ -202,9 +192,10 @@ const goBack = () => {
                           {{ attraction?.tel }}
                         </div>
 
-                        <div class="text-body-1 mb-4">
-                          {{ attraction?.overview || '상세 설명이 없습니다.' }}
-                        </div>
+                        <div
+                         class="text-body-1 mb-4"
+                        v-html="attraction?.overview || '상세 설명이 없습니다.' "
+                        ></div>
 
                         <div class="d-flex gap-4">
                           <v-chip variant="outlined">
@@ -212,11 +203,11 @@ const goBack = () => {
                             조회수 {{ attraction?.views }}
                           </v-chip>
                           <v-chip 
-                            :color="favoriteAttractions.has(parseInt(route.params.id)) ? 'red' : ''"
-                            :variant="favoriteAttractions.has(parseInt(route.params.id)) ? 'tonal' : 'outlined'"
+                            :color="attraction?.isLike ? 'red' : ''"
+                            :variant="attraction?.isLike ? 'tonal' : 'outlined'"
                           >
                             <v-icon start>mdi-heart</v-icon>
-                            좋아요 {{ attraction?.hit }}
+                            좋아요 {{ attraction?.hit || 0 }}
                           </v-chip>
                         </div>
                       </v-col>

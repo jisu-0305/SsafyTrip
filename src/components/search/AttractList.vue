@@ -1,9 +1,17 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAttractionStore } from '@/stores/attractionStore';
+import { useFavoriteStore } from '@/stores/favoriteStore';
+import { useAuthStore } from '@/stores/authStores';
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 
+const router = useRouter();
 const attractionStore = useAttractionStore();
-const { attractions, currentPage, totalPages, totalCount, contentTypeList } = storeToRefs(attractionStore);
+const favoriteStore = useFavoriteStore();
+const authStore = useAuthStore();
+const { attractions, currentPage, totalPages, totalCount } = storeToRefs(attractionStore);
+const { favoriteAttractions } = storeToRefs(favoriteStore);
 
 // 천 단위 콤마 포맷팅 함수
 const formatNumber = (num) => {
@@ -16,8 +24,36 @@ const handlePageChange = (page) => {
   emit('update:page', page);
 };
 
+const handleFavoriteToggle = async (event, attractId) => {
+  event.stopPropagation();
+  
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요한 서비스입니다.');
+    router.push({ name: 'user-login' });
+    return;
+  }
+
+  await favoriteStore.toggleFavorite(attractId);
+  
+  // 좋아요 수 업데이트
+  const attraction = attractions.value.find(item => item.no === attractId);
+  if (attraction) {
+    attraction.isLike = !attraction.isLike;
+    attraction.hit = attraction.isLike ? attraction.hit + 1 : Math.max(0, attraction.hit - 1);
+  }
+};
+
 const props = defineProps({
   hoveredMarkerId: Number
+});
+
+onMounted(() => {
+  // 각 관광지의 isLike 상태를 favoriteAttractions에 반영
+  attractions.value.forEach(attraction => {
+    if (attraction.isLike) {
+      favoriteStore.setFavoriteStatus(attraction.no, true);
+    }
+  });
 });
 </script>
 
@@ -75,9 +111,19 @@ const props = defineProps({
             
             <div class="text-caption text-grey-darken-3">{{ attraction.address }}</div>
             <div class="d-flex align-center gap-4">
-              
               <div class="d-flex align-center">
-                <v-icon size="small" color="error" class="me-1">mdi-heart</v-icon>
+                <v-btn
+                  icon
+                  variant="text"
+                  size="small"
+                  :color="attraction.isLike ? 'error' : ''"
+                  :loading="favoriteStore.loading"
+                  @click="(e) => handleFavoriteToggle(e, attraction.no)"
+                >
+                  <v-icon>
+                    {{ attraction.isLike ? 'mdi-heart' : 'mdi-heart-outline' }}
+                  </v-icon>
+                </v-btn>
                 <span class="text-caption">{{ attraction.hit }}</span>
               </div>
               

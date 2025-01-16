@@ -24,9 +24,7 @@ const address = ref({
   detailAddress: "",
 });
 
-const emailDuplicateError = ref(false);  // 이메일 중복 여부
 
-const isDuplicateFlag = ref(false); //이메일 중복 확인 체크
 
 const emailMessage = ref('') // 이메일 확인 메시지
 const emailChecked = ref(false) // 이메일 확인 여부
@@ -53,6 +51,12 @@ const passwordsDontMatch = computed(() => {
 });
 
 
+// 이메일 형식 검증을 위한 함수 추가
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
 // 이메일 중복 확인 함수 수정
 const checkEmailDuplicateListener = async () => {
   if (!form.value.email) {
@@ -60,9 +64,14 @@ const checkEmailDuplicateListener = async () => {
     return
   }
 
+  if (!validateEmail(form.value.email)) {
+    emailMessage.value = '올바른 이메일 형식이 아닙니다.'
+    return
+  }
+
   try {
-    const response = await authApi.checkEmailDuplication(form.value.email);
-    emailChecked.value = true;
+    const response = await authApi.checkEmailDuplication(form.value.email)
+    emailChecked.value = true
     
     if (response.data) {
       emailMessage.value = '중복된 이메일입니다.'
@@ -70,8 +79,8 @@ const checkEmailDuplicateListener = async () => {
       emailMessage.value = '사용할 수 있는 이메일입니다.'
     }
   } catch (error) {
-    console.error('이메일 중복 확인 실패:', error);
-    emailMessage.value = '이메일 중복 확인에 실패했습니다.';
+    console.error('이메일 중복 확인 실패:', error)
+    emailMessage.value = '이메일 중복 확인에 실패했습니다.'
   }
 }
 
@@ -137,7 +146,13 @@ const submitForm = async () => {
   }
 }
 
-// submitForm 함수 위에 추가
+// 오늘 날짜를 YYYY-MM-DD 형식으로 가져오는 computed 속성 추가
+const today = computed(() => {
+  const date = new Date()
+  return date.toISOString().split('T')[0]
+})
+
+// validateForm 함수에 생년월일 검증 로직 추가
 const validateForm = () => {
   let isValid = true
   
@@ -149,6 +164,11 @@ const validateForm = () => {
 
   if (!form.value.email) {
     alert('이메일을 입력해주세요.')
+    return false
+  }
+
+  if (!validateEmail(form.value.email)) {
+    alert('올바른 이메일 형식이 아닙니다.')
     return false
   }
 
@@ -169,6 +189,14 @@ const validateForm = () => {
 
   if (!form.value.birthdate) {
     alert('생년월일을 입력해주세요.')
+    return false
+  }
+
+  const selectedDate = new Date(form.value.birthdate)
+  const currentDate = new Date()
+  
+  if (selectedDate > currentDate) {
+    alert('생년월일은 현재 날짜보다 미래일 수 없습니다.')
     return false
   }
 
@@ -217,6 +245,7 @@ const validateForm = () => {
               <v-text-field
                 v-model="form.email"
                 label="이메일"
+                type="email"
                 variant="outlined"
                 density="comfortable"
                 hide-details
@@ -272,6 +301,7 @@ const validateForm = () => {
               v-model="form.birthdate"
               label="생년월일"
               type="date"
+              :max="today"
               variant="outlined"
               density="comfortable"
               class="mb-3"

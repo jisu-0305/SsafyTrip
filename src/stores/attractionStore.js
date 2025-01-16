@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { listAttractions, getInitialAttractions, getSidoList } from '@/api/attractApi';
+import { useFavoriteStore } from '@/stores/favoriteStore';
 
 export const useAttractionStore = defineStore('attraction', () => {
   const attractions = ref([]);
@@ -144,6 +145,18 @@ export const useAttractionStore = defineStore('attraction', () => {
     }
   };
 
+  const handleFavoriteToggle = async (attractionId) => {
+    const favoriteStore = useFavoriteStore();
+    await favoriteStore.toggleFavorite(attractionId);
+    
+    // 목록에서 해당 관광지 찾아서 상태 업데이트
+    const attraction = attractions.value.find(item => item.no === attractionId);
+    if (attraction) {
+      attraction.isLike = !attraction.isLike;
+      attraction.hit = attraction.isLike ? attraction.hit + 1 : Math.max(0, attraction.hit - 1);
+    }
+  };
+
   return {
     attractions,
     totalPages,
@@ -158,6 +171,7 @@ export const useAttractionStore = defineStore('attraction', () => {
     fetchInitialAttractions,
     fetchSidoList,
     fetchPopularAttractions,
-    setMapPositions
+    setMapPositions,
+    handleFavoriteToggle,
   };
 }); 
