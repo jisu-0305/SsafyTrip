@@ -53,30 +53,34 @@ const clearError = (field) => {
 }
 
 const login = async () => {
-  if (!validateForm()) return
+  if (!validateForm()) return;
 
-  const { success } = await authStore.login({
-    email: form.value.email,
-    password: form.value.password
-  })
+  try {
+    const success = await authStore.login({
+      email: form.value.email,
+      password: form.value.password
+    });
 
-  if (success) {
-    if (saveId.value) {
-      localStorage.setItem('savedEmail', form.value.email)
+    if (success) {
+      if (saveId.value) {
+        localStorage.setItem('savedEmail', form.value.email);
+      } else {
+        localStorage.removeItem('savedEmail');
+      }
+      
+      menuStore.setUserInfo({
+        name: authStore.user?.name || 'User'
+      });
+      
+      router.push('/');
     } else {
-      localStorage.removeItem('savedEmail')
+      form.value.password = '';
     }
-    
-    // 사용자 정보 설정
-    menuStore.setUserInfo({
-      name: authStore.user?.name || 'User'
-    })
-    
-    router.push('/')
-  } else {
-    form.value.password = ''
+  } catch (error) {
+    console.error('로그인 실패:', error);
+    form.value.password = '';
   }
-}
+};
 </script>
 
 <template>
