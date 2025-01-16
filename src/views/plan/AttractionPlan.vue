@@ -52,13 +52,6 @@
             <v-card>
               <v-card-title class="d-flex justify-space-between align-center px-4">
                 <span>일정 목록</span>
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-plus"
-                  @click="planStore.addNewPlan"
-                >
-                  일정 추가
-                </v-btn>
               </v-card-title>
 
               <v-divider></v-divider>
@@ -163,10 +156,6 @@ const endDate = ref(null);
 const memo = ref('');
 const plans = ref([{ day: 1, schedules: [] }]);
 
-// 일정 카드 추가
-const addNewPlan = () => {
-    plans.value.push({ day: plans.value.length + 1, schedules: [] });
-};
 
 // 찜 목록 팝업 열기
 const showWishListPopup = (day) => {
@@ -174,30 +163,6 @@ const showWishListPopup = (day) => {
   planStore.setShowWishList(true);
 };
 
-// 일정 추가
-const addSchedule = (schedule) => {
-    const dayIndex = plans.value.findIndex((plan) => plan.day === currentDay.value);
-    if (dayIndex !== -1) {
-        plans.value[dayIndex].schedules.push({
-            ...schedule,
-            attractionId: selectedSpot.value.no,
-        });
-    }
-    console.log('일정 추가:', plans.value);
-    planStore.setShowSchedulePopup(false); // 팝업 닫기
-};
-
-// 일정 추가 팝업 닫기
-const closeSchedulePopup = () => {
-    planStore.setShowSchedulePopup(false);
-};
-
-// 총 비용 계산
-const calculateTotalCost = () => {
-    return plans.value.reduce((total, plan) => {
-        return total + plan.schedules.reduce((dayTotal, schedule) => dayTotal + schedule.cost, 0);
-    }, 0);
-};
 
 // 일정 저장
 const savePlans = async () => {
@@ -235,23 +200,6 @@ const savePlans = async () => {
   }
 };
 
-// 일정 카드 삭제
-const removePlan = (day) => {
-  plans.value = plans.value.filter(plan => plan.day !== day);
-  // 남은 일정들의 day 번호 재정렬
-  plans.value = plans.value.map((plan, index) => ({
-    ...plan,
-    day: index + 1
-  }));
-};
-
-// 일정 내 스케줄 업데이트
-const updateSchedules = (day, newSchedules) => {
-  const planIndex = plans.value.findIndex(plan => plan.day === day);
-  if (planIndex !== -1) {
-    plans.value[planIndex].schedules = newSchedules;
-  }
-};
 
 onMounted(() => {
   // 컴포넌트 마운트 시 currentDay 설정
