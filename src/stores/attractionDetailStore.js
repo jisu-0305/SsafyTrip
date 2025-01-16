@@ -15,14 +15,9 @@ export const useAttractionDetailStore = defineStore("attractionDetail", () => {
       attraction.value = response.data.attract;
       comments.value = response.data.commentList;
 
-      console.log("학준");
-      console.log("attractionDetailStore");
-      console.log(attraction.value.overview);
-      console.log(attraction.value.isLike);
-
       // 좋아요 상태 설정
       const favoriteStore = useFavoriteStore();
-      if (attraction.value?.isFavorite) {
+      if (attraction.value?.isLike) {
         favoriteStore.setFavoriteStatus(attractId, true);
       }
     } catch (error) {
