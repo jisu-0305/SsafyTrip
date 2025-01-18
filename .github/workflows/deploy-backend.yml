@@ -64,7 +64,7 @@ jobs:
       # 9. 서버 상태 확인 (헬스 체크)
       - name: Health Check
         run: |
-          sleep 20 # 서버 기동 시간 대기
+          sleep 35 # 서버 기동 시간 대기
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://inssaroute.shop/api/attractions/guguns/1)
           if [ "$RESPONSE" -ne 200 ]; then
             echo "Health check failed. HTTP Status: $RESPONSE"
