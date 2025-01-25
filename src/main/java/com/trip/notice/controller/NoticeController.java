@@ -114,7 +114,7 @@ public class NoticeController {
     }
 
 
-    @Operation(summary = "S3에 이미지 업로드", description = "이미지를 S3에 업로드하고 URL 반환")
+    @Operation(summary = "S3에 이미지 업로드", description = "이미지를 S3에 업로드하고 URL 반환, 파라미터명 보이는 것과 같이 upload로!")
     @PostMapping("/upload-image")
     public ResponseEntity<ReviewImageResponseDTO> uploadImage(@RequestPart("upload") MultipartFile request, HttpSession session) {
         // s3에 이미지 업로드
