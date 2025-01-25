@@ -112,8 +112,6 @@
             <td>
                 <img src="https://img.shields.io/badge/Java-007396?logo=java&logoColor=white"/>
                 <img src="https://img.shields.io/badge/Spring-6DB33F?logo=spring&logoColor=white">
-                <img src=""/>
-                <img src="">
             </td>
         </tr>
         <tr>
