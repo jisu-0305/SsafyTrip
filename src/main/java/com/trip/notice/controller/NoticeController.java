@@ -1,19 +1,15 @@
 package com.trip.notice.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.trip.global.SuccessRes;
+import com.trip.review.dto.ReviewImageResponseDTO;
+import com.trip.review.dto.S3ResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.trip.notice.dto.NoticeCreateRequestDto;
 import com.trip.notice.dto.NoticeCreateResponseDto;
@@ -32,6 +28,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/notices")
@@ -76,6 +73,9 @@ public class NoticeController {
 //        }
         
         NoticeCreateResponseDto response = noticeService.createNotice(requestDto);
+
+        session.removeAttribute("S3Keys");
+        session.removeAttribute("S3Urls");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -111,5 +111,39 @@ public class NoticeController {
         
         NoticeDeleteResponseDto response = noticeService.deleteNotice(noticeId);
         return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "S3에 이미지 업로드", description = "이미지를 S3에 업로드하고 URL 반환")
+    @PostMapping("/upload-image")
+    public ResponseEntity<ReviewImageResponseDTO> uploadImage(@RequestPart("upload") MultipartFile request, HttpSession session) {
+        // s3에 이미지 업로드
+        S3ResponseDTO s3ResponseDTO = noticeService.uploadImage(request);
+
+        // 세션에서 기존 URL, key List를 가져오기
+        List<String> s3KeyList = (List<String>) session.getAttribute("S3Keys");
+        List<String> s3UrlList = (List<String>) session.getAttribute("S3Urls");
+
+        if (s3KeyList == null) {
+            s3KeyList = new ArrayList<>();
+            s3UrlList = new ArrayList<>();
+        }
+
+        // 업로드된 URL을 세션에 추가
+        s3KeyList.add(s3ResponseDTO.getS3Key());
+        s3UrlList.add(s3ResponseDTO.getS3Url());
+
+        session.setAttribute("S3Keys", s3KeyList);
+        session.setAttribute("S3Urls", s3UrlList);
+
+        return ResponseEntity.ok().body(new ReviewImageResponseDTO(s3ResponseDTO.getS3Url(), "success"));
+    }
+
+
+    @Operation(summary = "S3 이미지 삭제", description = "세션에 저장된 모든 이미지를 삭제, Quill Editor에서 저장하지 않고 이미지만 업로드 시, 반드시 호출해주기!")
+    @DeleteMapping("/clear-session")
+    public ResponseEntity<SuccessRes> clearSessionImages(HttpSession session) {
+        noticeService.deleteImage(session);
+        return ResponseEntity.ok().body(new SuccessRes("세션에 저장된 모든 이미지가 삭제되었습니다."));
     }
 }
