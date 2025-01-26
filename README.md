@@ -159,7 +159,8 @@
 
 |                                                       김지수                                                        |            김도희            |                 이학준                 |
 | :-----------------------------------------------------------------------------------------------------------------: | :---------------------------: | :------------------------------------: |
-| <img src="https://github.com/LuizyHub/exam-lab/assets/120697456/5392a423-dc8e-447d-bbb4-c2df055653a3" width="120"/> | <img src="" width="120" />    | <img src="" width="120" />             |
+| <img src="https://github.com/LuizyHub/exam-lab/assets/120697456/5392a423-dc8e-447d-bbb4-c2df055653a3" width="120"/> | <img src="https://github.com/user-attachments/assets/d1b74ee8-6dec-4bda-bf70-b99f38e7b2a7" width="120"/>
+" width="120" />    | <img src="" width="120" />             |
 |                                                       **BE**                                                        | **FE**    |       **FE or BE or Full-stack**       |
 |                                     [@jisu-0305](https://github.com/jisu-0305)                                      |      [@Dobee-Kim](https://github.com/Dobee-Kim)      |       [@lhj4499](https://github.com/lhj4499)       |
 
