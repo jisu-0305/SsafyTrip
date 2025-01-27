@@ -31,6 +31,34 @@ const emailChecked = ref(false) // 이메일 확인 여부
 
 const isLoading = ref(false)  // 로딩 상태 추가
 
+// 이름 유효성 검사를 위한 함수 추가
+const validateName = (name) => {
+  const nameRegex = /^[가-힣a-zA-Z\s]+$/;
+  return nameRegex.test(name);
+};
+
+// 이름 관련 상태 추가
+const nameMessage = ref('');
+const nameValid = ref(true);
+
+// 이름 입력 시 유효성 검사
+const checkNameValidation = () => {
+  if (!form.value.name) {
+    nameMessage.value = '이름을 입력해주세요.';
+    nameValid.value = false;
+    return;
+  }
+
+  if (!validateName(form.value.name)) {
+    nameMessage.value = '이름에는 한글, 영문만 사용할 수 있습니다.';
+    nameValid.value = false;
+    return;
+  }
+
+  nameMessage.value = '';
+  nameValid.value = true;
+};
+
 // function test(){
 //   console.log("test");
 //   registerAxios({
@@ -135,7 +163,7 @@ const submitForm = async () => {
     isLoading.value = true  // 로딩 시작
     const registerData = prepareDataToSend()
     
-    const response = await authApi.register(registerData)
+   await authApi.register(registerData)
     alert('회원가입이 완료되었습니다.')
     router.push({ name: 'user-login' })
   } catch (error) {
@@ -156,12 +184,19 @@ const today = computed(() => {
 const validateForm = () => {
   let isValid = true
   
+  
   // 필수 필드 검증
   if (!form.value.name) {
     alert('이름을 입력해주세요.')
     return false
   }
 
+  if (!validateName(form.value.name)) {
+    alert('이름에는 한글, 영문만 사용할 수 있습니다.')
+    return false
+  }
+
+  
   if (!form.value.email) {
     alert('이메일을 입력해주세요.')
     return false
@@ -236,7 +271,10 @@ const validateForm = () => {
               variant="outlined"
               density="comfortable"
               class="mb-3"
-              hide-details
+              @input="checkNameValidation"
+              :error-messages="nameMessage"
+              :error="!nameValid"
+              hide-details="auto"
               style="border-radius: 6px;"
               bg-color="white"
             ></v-text-field>
