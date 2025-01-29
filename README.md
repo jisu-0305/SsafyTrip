@@ -61,9 +61,9 @@
 
 ### 마이페이지 기능
 
-> 큰 설명
+> 내가 찜한 명소 목록, 댓글, 여행 일정, 1:1 문의를 한눈에 볼 수 있습니다.
 
-<img alt='' src="" />
+<img alt='' src="https://github.com/user-attachments/assets/6c9b1ee8-501e-4fb9-a29c-41147d4f0fce" />
 
 ### 여행 일정 만들기
 
