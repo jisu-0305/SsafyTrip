@@ -2,14 +2,12 @@ package com.trip.question.controller;
 
 import com.trip.question.dto.*;
 import com.trip.question.service.QuestionService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +17,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     // 전체 리스트 조회
+    @Operation(summary = "전체 문의사항 리스트 조회", description = "전체 문의사항 리스트를 페이지네이션을 통해 조회 가능")
     @GetMapping("/questions")
     public ResponseEntity<PagedQuestionResponseDto> getAllQuestions(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -31,6 +30,7 @@ public class QuestionController {
     }
 
     // 리스트 추가
+    @Operation(summary = "문의사항 추가", description = "새로운 문의사항을 등록")
     @PostMapping("/questions")
     public ResponseEntity<Boolean> insertQuestions(@RequestBody QuestionInsertReqDto questionInsertReqDto, HttpSession session){
         AuthorizedUserDto user = isAuthenticated(session);
@@ -43,6 +43,7 @@ public class QuestionController {
 
 
     // 1:1 문의 상세보기
+    @Operation(summary = "1대1 문의 상세 조회", description = "문의 ID로 특정 문의사항 상세 정보 조회")
     @GetMapping("/questions/{questionId}")
     public ResponseEntity<QuestionDetailResDto> getQuestionById(@PathVariable int questionId, HttpSession session){
         AuthorizedUserDto user = isAuthenticated(session);
@@ -55,7 +56,7 @@ public class QuestionController {
     }
 
 
-
+    @Operation(summary = "문의사항 답변하기", description = "관리자는 문의사항에 해당 api를 통해 답변 가능")
     @PostMapping("/questions/{questionId}/answer")
     public ResponseEntity<Boolean> insertQuestionAnswer(@PathVariable int questionId,
                                                         @RequestBody QuestionAnswerContentDto questionAnswerContentDto,
@@ -71,8 +72,22 @@ public class QuestionController {
 
 
     public AuthorizedUserDto isAuthenticated(HttpSession session) {
-        long userId = ((Long)session.getAttribute("userId"));
+        if (session == null) {
+            throw new IllegalStateException("Session is null. User is not authenticated.");
 
+        }
+
+        Object userIdObj = session.getAttribute("userId");
+
+        if (userIdObj == null) {
+            throw new IllegalStateException("User ID not found in session. User is not authenticated.");
+        }
+
+        if (!(userIdObj instanceof Long)) {
+            throw new IllegalStateException("Invalid user ID type in session.");
+        }
+
+        long userId = (Long)userIdObj;
         String email = (String) session.getAttribute("email");
         String userRole = (String) session.getAttribute("userRole");
 
