@@ -30,7 +30,6 @@ public class MemberController {
 										   @RequestBody RegisterRequestDTO registerRequestDTO) {
 
 		memberService.registerMember(registerRequestDTO);
-
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.success("회원가입 성공하였습니다."));
 	}
 
@@ -53,7 +52,7 @@ public class MemberController {
 
 		session.setAttribute("userId", loginResponseDTO.getUserId());
 		session.setAttribute("email", loginResponseDTO.getEmail());
-		session.setAttribute("userRole", loginResponseDTO.getRole());
+		session.setAttribute("userRole", loginResponseDTO.getRole().toString());
 		session.setAttribute("userAddress", loginResponseDTO.getAddress());
 
 		return ResponseEntity.ok(loginResponseDTO);
