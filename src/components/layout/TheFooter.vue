@@ -5,7 +5,7 @@ const router = useRouter();
 
 const quickLinks = [
   { title: '여행 일정', icon: 'mdi-calendar-outline', route: 'schedules' },
-  { title: '관광지', icon: 'mdi-map-marker-outline', route: 'attraction' },
+  { title: '관광지', icon: 'mdi-map-marker-outline', route: 'attract-search' },
   { title: '공지사항', icon: 'mdi-bell-outline', route: 'notice' },
   { title: '1:1 문의', icon: 'mdi-help-circle-outline', route: 'question' }
 ];
@@ -57,12 +57,16 @@ const handleLinkClick = (route) => {
           <h3 class="text-subtitle-1 font-weight-bold mb-4">고객센터</h3>
           <div class="d-flex flex-column gap-2 text-body-2 text-grey-darken-1 align-center">
             <div class="d-flex align-center justify-center">
+              <v-icon size="small" class="mr-2">mdi-account</v-icon>
+              <span>김도희, 김지수, 이학준</span>
+            </div>
+            <div class="d-flex align-center justify-center">
               <v-icon size="small" class="mr-2">mdi-email-outline</v-icon>
               <span>support@inssaroute.com</span>
             </div>
             <div class="d-flex align-center justify-center">
               <v-icon size="small" class="mr-2">mdi-phone-outline</v-icon>
-              <span>1544-0000</span>
+              <span>0000-0000</span>
             </div>
             <div class="d-flex align-center justify-center">
               <v-icon size="small" class="mr-2">mdi-clock-outline</v-icon>
